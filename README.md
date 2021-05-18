@@ -2,8 +2,6 @@
 Unity .assets and AssetBundle editor
 
 UAAE is an advanced editor for Unity .assets and AssetBundle files. It is based on DerPopo's UABE tool, but slightly improves its functions.
-This tool uses an open source library: [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET).
-
 UAAE isn't so `advanced` because it is still missing a lot of features and has lots of bugs, so unless your game is unity 2019.3+, please use the original [UABE](https://github.com/DerPopo/UABE) for now.
 
 #### Supported unity versions: 5 - 2020.2
@@ -60,6 +58,12 @@ This list may be incomplete!
 * Settings
 * MacOS and Mobile support
 * Implement the features that are going to be in new [UABE](https://community.7daystodie.com/topic/1871-unity-assets-bundle-extractor/?do=findComment&comment=357397)
+
+## Credits
+* [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)
+
+## Disclaimer
+**None of the repo, the tool, nor the repo owner is affiliated with, or sponsored or authorized by, Unity Technologies or its affiliates.**
 
 ## License
 This software is distributed under the MIT License
