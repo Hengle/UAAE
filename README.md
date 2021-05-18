@@ -1,7 +1,7 @@
 # Unity Assets Advanced Editor
 Unity .assets and AssetBundle editor
 
-UAAE is an advanced editor for Unity .assets and AssetBundle files. It is based on DerPopo's UABE tool, but slightly improves its functions.
+UAAE is an advanced editor for Unity .assets and AssetBundle files. It is based on DerPopo's UABE tool, but improves its functions.
 UAAE isn't so `advanced` because it is still missing a lot of features and has lots of bugs, so unless your game is unity 2019.3+, please use the original [UABE](https://github.com/DerPopo/UABE) for now.
 
 #### Supported unity versions: 5 - 2020.2
