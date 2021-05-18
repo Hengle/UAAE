@@ -5,6 +5,10 @@
     <TargetFramework>net5.0-windows</TargetFramework>
 	<Platforms>AnyCPU;x64;x86</Platforms>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <Authors>Igor55</Authors>
+    <Product>Unity Assets Advanced Editor</Product>
+    <Copyright>Copyright © Igor55, 2021</Copyright>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
