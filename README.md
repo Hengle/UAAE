@@ -2,7 +2,7 @@
 Unity .assets and AssetBundle editor
 
 UAAE is an advanced editor for Unity .assets and AssetBundle files. It is based on DerPopo's UABE tool, but improves its functions.
-UAAE isn't so `advanced` because it is still missing a lot of features and has lots of bugs, so unless your game is unity 2019.3+, please use the original [UABE](https://github.com/DerPopo/UABE) for now.
+UAAE isn't so `advanced` because it is still missing a lot of features and may have some bugs, so unless your game is unity 2019.3+, please use the original [UABE](https://github.com/DerPopo/UABE) for now. But it's better than nothing at all. Feel free to contribute.
 
 #### Supported unity versions: 5 - 2020.2
 
@@ -22,11 +22,15 @@ This list may be incomplete!
   * Remove dependency option
   * Save map to file
 * [view asset] option in data view
+* Tabs in data view
+  * Dump view tab
+  * Raw view tab
+  * Preview tab
 * Container data view
   * Add container option
   * Edit container option
   * Remove container option
-* Monobehaviour deserialization in data view
+* Monobehaviour deserialization in data view (including il2cpp technology)
 * Asset list searching
   * By name
   * Binary content
@@ -40,23 +44,28 @@ This list may be incomplete!
 * Plugin support
 * Plugins
   * Texture plugin
-  * Text asset plugin
-  * Audio plugin
+  * TextAsset plugin
+  * Audio plugin (including Wwise)
   * Mesh plugin
   * MovieTexture plugin
   * Prefab/Scene plugin **(custom)** *
   * Sprite editor plugin **(custom)** *
 * ModInstaller and ModMaker
 * Cldb/Tpk editor
-* Type tree remove option
+* Undo/Redo option
+* Edit button
+  * Dump editor tab
+  * Raw editor tab
+  * Asset editor (this is where the list of plugins will be)
 * Bundle compression support
 * Batch import/export assets
 * Command line support
 * Blank assets file/bundle creation
+* Blank ResS/Resource file creation
 * Blank MonoScript creation
 * Progress bar form when opening multiple assets files
 * Settings
-* MacOS and Mobile support
+* MacOS, Linux and Mobile support
 * Implement the features that are going to be in new [UABE](https://community.7daystodie.com/topic/1871-unity-assets-bundle-extractor/?do=findComment&comment=357397)
 
 ## Credits

@@ -1,36 +1,59 @@
 ﻿using System;
 using System.IO;
+using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
+using AssetsTools.NET.Extra;
 
 namespace AssetsAdvancedEditor.Assets
 {
     public class AssetExporter
     {
-        public StreamWriter writer;
+        public AssetsWorkspace Workspace;
+        public StreamWriter Writer;
 
-        public void ExportRawAsset(AssetsFile file, AssetDetailsListItem item, FileStream fs)
+        public AssetExporter(AssetsWorkspace workspace) => Workspace = workspace;
+
+        public void ExportRawAsset(string path, AssetDetailsListItem listItem)
         {
-            var br = file.reader;
-            br.Position = item.Position;
-            var data = br.ReadBytes(item.Size);
-            fs.Write(data);
+            var file = Workspace.LoadedFiles[listItem.FileID];
+            var br = file.file.reader;
+            var assetId = new AssetID(file.path, listItem.PathID);
+            byte[] data;
+            if (Workspace.NewAssetDatas.ContainsKey(assetId))
+            {
+                data = Workspace.NewAssetDatas[assetId].ToArray();
+            }
+            else
+            {
+                br.Position = listItem.Position;
+                data = br.ReadBytes((int)listItem.Size);
+            }
+            File.WriteAllBytes(path, data);
         }
 
-        public void ExportDump(AssetTypeValueField baseField, StreamWriter writer, DumpType dumpType)
+        public void ExportDump(string path, AssetDetailsListItem listItem, DumpType dumpType)
         {
-            this.writer = writer;
+            using var fs = File.OpenWrite(path);
+            using var writer = new StreamWriter(fs);
+            ExportDump(writer, listItem, dumpType);
+        }
+
+        public void ExportDump(StreamWriter writer, AssetDetailsListItem listItem, DumpType dumpType)
+        {
+            Writer = writer;
             try
             {
+                var field = Workspace.GetAssetData(listItem).Instance.GetBaseField();
                 switch (dumpType)
                 {
                     case DumpType.TXT:
-                        RecurseTextDump(baseField);
+                        RecurseTextDump(field);
                         break;
                     case DumpType.XML:
-                        // todo
+                        RecurseXmlDump();
                         break;
                     case DumpType.JSON:
-                        // todo
+                        RecurseJsonDump();
                         break;
                     default:
                         return;
@@ -61,11 +84,11 @@ namespace AssetsAdvancedEditor.Assets
                 var sizeTypeName = sizeTemplate.type;
                 var sizeFieldName = sizeTemplate.name;
                 var size = field.GetValue().AsArray().size;
-                writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName} ({size} {(size != 1 ? "items" : "item")})");
-                writer.WriteLine($"{new string(' ', depth + 1)}{sizeAlign} {sizeTypeName} {sizeFieldName} = {size}");
+                Writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName} ({size} {(size != 1 ? "items" : "item")})");
+                Writer.WriteLine($"{new string(' ', depth + 1)}{sizeAlign} {sizeTypeName} {sizeFieldName} = {size}");
                 for (var i = 0; i < field.childrenCount; i++)
                 {
-                    writer.WriteLine($"{new string(' ', depth + 1)}[{i}]");
+                    Writer.WriteLine($"{new string(' ', depth + 1)}[{i}]");
                     RecurseTextDump(field.children[i], depth + 2);
                 }
             }
@@ -90,13 +113,23 @@ namespace AssetsAdvancedEditor.Assets
                         value = $" = {field.GetValue().AsString()}";
                     }
                 }
-                writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName}{value}");
+                Writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName}{value}");
 
                 for (var i = 0; i < field.childrenCount; i++)
                 {
                     RecurseTextDump(field.children[i], depth + 1);
                 }
             }
+        }
+
+        private void RecurseXmlDump()
+        {
+            // todo
+        }
+
+        private void RecurseJsonDump()
+        {
+            // todo
         }
     }
 }

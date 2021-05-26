@@ -1,9 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AssetsAdvancedEditor.Utils
@@ -12,27 +10,44 @@ namespace AssetsAdvancedEditor.Utils
     ///  Represents a common dialog box that allows the user to specify options for saving a folder.
     ///  This class cannot be inherited.
     /// </summary>
-    public sealed class FolderDialog : Component, IFolderDialog
+    public sealed class OpenFolderDialog
     {
         /// <summary>
         ///  Gets or sets folder in which dialog will be open.
         /// </summary>
+        /// <returns>The folder in which dialog will be open. The default value is a <see cref="string.Empty"/></returns>
         public string InitialFolder { get; set; }
 
         /// <summary>
         ///  Gets or sets directory in which dialog will be open if there is no recent directory available.
         /// </summary>
+        /// <returns>The directory in which dialog will be open if there is no recent directory available.
+        ///  The default value is a <see cref="string.Empty"/></returns>
         public string DefaultFolder { get; set; }
 
         /// <summary>
         ///  Gets or sets selected folder.
         /// </summary>
+        /// <returns>The folder that last selected by the user. The default value is a <see cref="string.Empty"/></returns>
         public string Folder { get; set; }
+
+        /// <summary>
+        ///  Gets or sets a value indicating whether the dialog box restores the directory to the previously selected directory before closing.
+        /// </summary>
+        /// <returns><see langword="true"/> if the dialog box restores the directory to the previously selected directory if the user changed the directory
+        ///  while searching for files; otherwise, <see langword="false"/>. The default value is <see langword="false"/>.</returns>
+        public bool RestoreDirectory { get; set; }
 
         /// <summary>
         ///  Gets or sets the folder dialog box title.
         /// </summary>
+        /// <returns>The folder dialog box title. The default value is a <see cref="string.Empty"/></returns>
         public string Title { get; set; }
+
+        /// <summary>
+        ///  Initializes an instance of <see cref="OpenFolderDialog"/> class.
+        /// </summary>
+        internal OpenFolderDialog() => Reset();
 
         /// <summary>
         ///  Resets all dialog box options to their default values.
@@ -42,6 +57,7 @@ namespace AssetsAdvancedEditor.Utils
             InitialFolder = "";
             DefaultFolder = "";
             Folder = "";
+            RestoreDirectory = false;
             Title = "";
         }
 
@@ -66,13 +82,16 @@ namespace AssetsAdvancedEditor.Utils
 
         public DialogResult ShowVistaDialog(IWin32Window owner)
         {
-            var dialogRCW = new NativeMethods.FileOpenDialogRCW();
-            var frm = (NativeMethods.IFileDialog)dialogRCW;
+            var frm = (NativeMethods.IFileDialog)new NativeMethods.FileOpenDialogRCW();
             frm.GetOptions(out var options);
             options |= NativeMethods.FOS_PICKFOLDERS | NativeMethods.FOS_FORCEFILESYSTEM |
                        NativeMethods.FOS_NOVALIDATE | NativeMethods.FOS_NOTESTFILECREATE |
                        NativeMethods.FOS_DONTADDTORECENT;
             frm.SetOptions(options);
+            if (!string.IsNullOrEmpty(Title))
+            {
+                frm.SetTitle(Title);
+            }
             if (InitialFolder != null)
             {
                 var riid = new Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"); //IShellItem
@@ -113,43 +132,38 @@ namespace AssetsAdvancedEditor.Utils
 
         public DialogResult ShowLegacyDialog(IWin32Window owner)
         {
-            using var frm = new SaveFileDialog
+            var frm = new SaveFileDialog
             {
                 CheckFileExists = false,
                 CheckPathExists = true,
                 CreatePrompt = false,
                 Filter = @"|" + Guid.Empty,
-                FileName = "any"
+                FileName = "any",
+                ValidateNames = false,
+                OverwritePrompt = false,
+                RestoreDirectory = RestoreDirectory
             };
+            if (!string.IsNullOrEmpty(Title))
+                frm.Title = Title;
+
             if (!string.IsNullOrEmpty(InitialFolder))
                 frm.InitialDirectory = InitialFolder;
-            frm.OverwritePrompt = false;
-            if (string.IsNullOrEmpty(Title))
-                Title = "Select Folder";
-            frm.Title = Title;
-            frm.ValidateNames = false;
-            if (frm.ShowDialog(owner) == DialogResult.OK)
-            {
-                Folder = Path.GetDirectoryName(frm.FileName);
-                return DialogResult.OK;
-            }
-            return DialogResult.Cancel;
+
+            Folder = Path.GetDirectoryName(frm.FileName);
+            return frm.ShowDialog(owner);
         }
     }
 
     public class WindowWrapper : IWin32Window
     {
         /// <summary>
-        ///     Constructor
+        ///  Constructor
         /// </summary>
         /// <param name="handle">Handle to wrap</param>
-        public WindowWrapper(IntPtr handle)
-        {
-            Handle = handle;
-        }
+        public WindowWrapper(IntPtr handle) => Handle = handle;
 
         /// <summary>
-        ///     Original ptr
+        ///  Original ptr
         /// </summary>
         public IntPtr Handle { get; }
     }
@@ -181,9 +195,7 @@ namespace AssetsAdvancedEditor.Utils
         [ClassInterface(ClassInterfaceType.None)]
         [TypeLibType(TypeLibTypeFlags.FCanCreate)]
         [Guid("DC1C5A9C-E88A-4DDE-A5A1-60F82A20AEF7")]
-        internal class FileOpenDialogRCW
-        {
-        }
+        internal class FileOpenDialogRCW { }
 
 
         [ComImport]
@@ -193,7 +205,7 @@ namespace AssetsAdvancedEditor.Utils
         {
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
             [PreserveSig]
-            uint Show([In] [Optional] IntPtr hwndOwner); //IModalWindow 
+            uint Show([In][Optional] IntPtr hwndOwner); //IModalWindow 
 
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -234,19 +246,19 @@ namespace AssetsAdvancedEditor.Utils
             uint GetCurrentSelection([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-            uint SetFileName([In] [MarshalAs(UnmanagedType.LPWStr)] string pszName);
+            uint SetFileName([In][MarshalAs(UnmanagedType.LPWStr)] string pszName);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
             uint GetFileName([MarshalAs(UnmanagedType.LPWStr)] out string pszName);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-            uint SetTitle([In] [MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
+            uint SetTitle([In][MarshalAs(UnmanagedType.LPWStr)] string pszTitle);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-            uint SetOkButtonLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszText);
+            uint SetOkButtonLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszText);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-            uint SetFileNameLabel([In] [MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
+            uint SetFileNameLabel([In][MarshalAs(UnmanagedType.LPWStr)] string pszLabel);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
             uint GetResult([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
@@ -256,7 +268,7 @@ namespace AssetsAdvancedEditor.Utils
                 IShellItem psi, uint fdap);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-            uint SetDefaultExtension([In] [MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
+            uint SetDefaultExtension([In][MarshalAs(UnmanagedType.LPWStr)] string pszDefaultExtension);
 
             [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
             uint Close([MarshalAs(UnmanagedType.Error)] uint hr);

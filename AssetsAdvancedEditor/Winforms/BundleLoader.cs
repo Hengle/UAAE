@@ -13,7 +13,6 @@ namespace AssetsAdvancedEditor.Winforms
         public AssetBundleFile Bundle;
         public BundleFileInstance BundleInst;
         public bool Loaded;
-        public bool DecompressedToFile;
 
         public BundleLoader(BundleFileInstance bundleInst)
         {
@@ -62,15 +61,14 @@ namespace AssetsAdvancedEditor.Winforms
         private void decompressButton_Click(object sender, EventArgs e)
         {
             if (BundleInst == null) return;
-            try
-            {
+            //try
+            //{
                 var bw = new BackgroundWorker();
                 if (Bundle.IsBundleDataCompressed())
                 {
                     var bunDecomp = new BundleDecompression();
                     if (bunDecomp.ShowDialog() != DialogResult.OK) return;
                     var choice = bunDecomp.cboxDecompType.SelectedIndex;
-                    DecompressedToFile = choice == 0;
                     switch (choice)
                     {
                         // Decompress to File
@@ -106,16 +104,16 @@ namespace AssetsAdvancedEditor.Winforms
                 }
                 bw.RunWorkerCompleted += delegate
                 {
-                    lblNote.Text = @"Done. Click Load to open the file.";
+                    lblNote.Text = @"Done. Click Load to open the bundle.";
                     btnDecompress.Enabled = false;
                     btnLoad.Enabled = true;
                 };
                 bw.RunWorkerAsync();
-            }
-            catch (Exception ex)
-            {
-                MsgBoxUtils.ShowErrorDialog("Something went wrong when unpacking the bundle:\n" + ex);
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MsgBoxUtils.ShowErrorDialog("Something went wrong when unpacking the bundle:\n" + ex);
+            //}
         }
 
         private void DecompressToFile(string savePath)

@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
 using AssetsTools.NET;
 
 namespace AssetsAdvancedEditor.Winforms
 {
-    public partial class AssetData : Form
+    public partial class AssetDataViewer : Form
     {
         private readonly AssetTypeValueField _baseField;
         private readonly uint _format;
         private readonly string _rootDir;
 
-        public AssetData(AssetWorkspace workspace, AssetTypeValueField baseField)
+        public AssetDataViewer(AssetsWorkspace workspace, AssetTypeValueField baseField)
         {
             InitializeComponent();
             _format = workspace.MainFile.file.header.format;
@@ -26,15 +25,15 @@ namespace AssetsAdvancedEditor.Winforms
             var type = _baseField.GetFieldType();
             if (type == "MonoBehaviour")
             {
-                var desMonos = MonoLoader.TryDeserializeMono(_baseField, _format, _rootDir);
-                if (desMonos != null) // not tested
-                {
-                    var newTemplateField = _baseField.templateField;
-                    newTemplateField.children = _baseField.templateField.children.Concat(desMonos).ToArray();
-                    newTemplateField.childrenCount = newTemplateField.children.Length;
+                //var desMonos = MonoLoader.TryDeserializeMono(_baseField, _format, _rootDir);
+                //if (desMonos != null) // not tested
+                //{
+                //    var newTemplateField = _baseField.templateField;
+                //    newTemplateField.children = _baseField.templateField.children.Concat(desMonos).ToArray();
+                //    newTemplateField.childrenCount = newTemplateField.children.Length;
 
-                    _baseField.templateField = newTemplateField;
-                }
+                //    _baseField.templateField = newTemplateField;
+                //}
             }
 
             rawViewTree.Nodes.Add(type + " " + _baseField.GetName());

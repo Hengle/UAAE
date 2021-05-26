@@ -16,10 +16,10 @@ namespace AssetsAdvancedEditor
             var usesConsole = AttachConsole(-1);
             if (usesConsole)
             {
-                var (Left, Top) = Console.GetCursorPosition();
-                Console.SetCursorPosition(0, Top);
-                Console.Write(new string(' ', Left));
-                Console.SetCursorPosition(0, Top);
+                var (left, top) = Console.GetCursorPosition();
+                Console.SetCursorPosition(0, top);
+                Console.Write(new string(' ', left));
+                Console.SetCursorPosition(0, top);
             }
             if (args.Length > 0)
             {

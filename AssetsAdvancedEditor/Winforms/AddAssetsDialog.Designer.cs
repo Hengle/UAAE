@@ -198,7 +198,7 @@ namespace AssetsAdvancedEditor.Winforms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AddAssetsDialog";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Add assets";
             this.Load += new System.EventHandler(this.AddAssetDialog_Load);
             this.ResumeLayout(false);

@@ -9,33 +9,44 @@ namespace AssetsAdvancedEditor.Assets
 {
     public class AssetImporter
     {
+        public AssetsWorkspace Workspace;
         public StreamReader Reader;
         public AssetsFileWriter Writer;
 
-        public AssetsReplacer ImportRawAsset(AssetDetailsListItem item, FileStream fs)
+        public AssetImporter(AssetsWorkspace workspace) => Workspace = workspace;
+
+        public AssetsReplacer ImportRawAsset(string path, AssetDetailsListItem item)
         {
-            var ms = new MemoryStream();
-            fs.CopyTo(ms);
-            return AssetModifier.CreateAssetReplacer(item, ms.ToArray());
+            return AssetModifier.CreateAssetReplacer(item, File.ReadAllBytes(path));
         }
 
-        public AssetsReplacer ImportDump(AssetWorkspace workspace, AssetDetailsListItem listItem, StreamReader reader, DumpType dumpType)
+        public AssetsReplacer ImportDump(string path, AssetDetailsListItem listItem, DumpType dumpType)
+        {
+            using var fs = File.OpenRead(path);
+            using var reader = new StreamReader(fs);
+            return ImportDump(reader, listItem, dumpType);
+        }
+
+        public AssetsReplacer ImportDump(StreamReader reader, AssetDetailsListItem listItem, DumpType dumpType)
         {
             using var ms = new MemoryStream();
             Reader = reader;
-            Writer = new AssetsFileWriter(ms);
+            Writer = new AssetsFileWriter(ms)
+            {
+                bigEndian = false
+            };
             try
             {
                 switch (dumpType)
                 {
                     case DumpType.TXT:
-                        ImportTextDumpLoop(workspace);
+                        ImportTxtDumpLoop();
                         break;
                     case DumpType.XML:
-                        // todo
+                        ImportXmlDumpLoop();
                         break;
                     case DumpType.JSON:
-                        // todo
+                        ImportJsonDumpLoop();
                         break;
                     default:
                         return null;
@@ -49,14 +60,14 @@ namespace AssetsAdvancedEditor.Assets
             return AssetModifier.CreateAssetReplacer(listItem, ms.ToArray());
         }
 
-        private void ImportTextDumpLoop(AssetWorkspace workspace)
+        private void ImportTxtDumpLoop()
         {
             var error = "";
-            var cldb = workspace.Am.classFile;
+            var cldb = Workspace.Am.classFile;
             var alignStack = new Stack<bool>();
 
             var line = Reader.ReadLine();
-            var assetType = line[2..line.LastIndexOf(' ')];
+            var assetType = line?[2..line.LastIndexOf(' ')];
             var cldbType = AssetHelper.FindAssetClassByName(cldb, assetType);
 
             if (cldbType == null)
@@ -91,21 +102,20 @@ namespace AssetsAdvancedEditor.Assets
                 if (eqSign != -1)
                 {
                     var type = line[typeName..];
-                    type = type.Remove(type.IndexOf(' '));
+                    type = type.StartsWith("unsigned") ?
+                        type.Split()[0] + ' ' + type.Split()[1] : 
+                        type.Split()[0];
 
-                    var fieldName = line[(typeName + type.Length + 1)..];
-                    fieldName = fieldName.Remove(fieldName.IndexOf(' '));
-                    //if (cldbType != null)
-                    //{
+                    var fieldName = line[(typeName + type.Length + 1)..].Split()[0];
+                    if (cldbType != null)
+                    {
+                        var valid = cldbType.fields.Any(f =>
+                            f.typeName.GetString(cldb) == type &&
+                            f.fieldName.GetString(cldb) == fieldName);
 
-                    //    var valid = cldbType.fields.Any(f =>
-                    //        f.typeName.GetString(cldb) == type &&
-                    //        f.fieldName.GetString(cldb) == fieldName &&
-                    //        f.depth == thisDepth);
-
-                    //    if (!valid)
-                    //        error += $"This asset does not contain a field \"{fieldName}\" of type \"{type}\"\n";
-                    //}
+                        if (!valid)
+                            error += $"This asset does not contain a field \"{fieldName}\" of type \"{type}\"\n";
+                    }
 
                     var success = WriteData(type, valueStr);
 
@@ -189,6 +199,16 @@ namespace AssetsAdvancedEditor.Assets
             {
                 return false;
             }
+        }
+
+        private void ImportXmlDumpLoop()
+        {
+            // todo
+        }
+
+        private void ImportJsonDumpLoop()
+        {
+            // todo
         }
     }
 }

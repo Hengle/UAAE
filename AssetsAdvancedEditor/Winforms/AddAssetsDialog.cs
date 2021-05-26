@@ -9,10 +9,10 @@ namespace AssetsAdvancedEditor.Winforms
 {
     public partial class AddAssetsDialog : Form
     {
-        public AssetWorkspace Workspace;
+        public AssetsWorkspace Workspace;
         public List<AssetDetailsListItem> ListItems;
         private static long _nextPathId;
-        public AddAssetsDialog(AssetWorkspace workspace)
+        public AddAssetsDialog(AssetsWorkspace workspace)
         {
             InitializeComponent();
             Workspace = workspace;
@@ -51,7 +51,7 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnOK_Click(object sender, EventArgs e)
         {
             var cldb = Workspace.Am.classFile;
-            var typeTree = Workspace.MainFile.file.typeTree;
+            var typeTree = Workspace.LoadedFiles[cboxFileID.SelectedIndex].file.typeTree;
             string type;
             if (uint.TryParse(boxTypeNameOrID.Text, out var typeId))
             {
@@ -98,11 +98,6 @@ namespace AssetsAdvancedEditor.Winforms
                         {
                             typeId = (uint)cldbType.classId;
                         }
-                        else
-                        {
-                            typeId = 0x01;
-                            type = "GameObject";
-                        }
                     }
                 }
                 else
@@ -111,16 +106,12 @@ namespace AssetsAdvancedEditor.Winforms
                     {
                         typeId = (uint)cldbType.classId;
                     }
-                    else
-                    {
-                        typeId = 0x01;
-                        type = "GameObject";
-                    }
                 }
             }
             var fileId = cboxFileID.SelectedIndex;
             var pathId = Convert.ToInt64(boxPathID.Text);
-            var monoId = typeId == 0x72 ? Convert.ToUInt16(boxMonoID.Text) : (ushort)0xFFFF;
+            var monoSelected = cboxTypePreset.SelectedIndex == 1;
+            var monoId = typeId == 0x72 && monoSelected ? Convert.ToUInt16(boxMonoID.Text) : ushort.MaxValue;
             var count = Convert.ToInt32(boxCount.Text);
             for (var i = 0; i < count; i++)
             {

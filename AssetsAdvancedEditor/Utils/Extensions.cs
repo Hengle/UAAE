@@ -2,8 +2,7 @@
 using AssetsTools.NET.Extra;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using AssetsAdvancedEditor.Assets;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
 using SevenZip.Compression.LZMA;
 
@@ -11,36 +10,25 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
-        public static AssetExternal GetExtAssetNewData(this AssetsManager am, AssetsFileInstance relativeTo, int fileId, long pathId,
-                                               MemoryStream data, bool onlyGetInfo = false, bool forceFromCldb = false)
+        public static AssetTypeTemplateField MakeTemplateBaseField(this AssetsManager am, AssetsFile file, AssetDetailsListItem listItem, bool forceFromCldb = false)
         {
-            var ext = new AssetExternal();
-            if (fileId == 0 && pathId == 0)
+            var hasTypeTree = file.typeTree.hasTypeTree;
+            var baseField = new AssetTypeTemplateField();
+            var scriptIndex = listItem.MonoID;
+            var fixedId = AssetHelper.FixAudioID(listItem.TypeID);
+
+            if (hasTypeTree && !forceFromCldb)
             {
-                ext.info = null;
-                ext.instance = null;
-                ext.file = null;
-            }
-            else if (fileId != 0)
-            {
-                var dep = relativeTo.GetDependency(am, fileId - 1);
-                ext.info = dep.table.GetAssetInfo(pathId);
-                ext.instance = !onlyGetInfo ? am.GetTypeInstanceNewData(dep.file, ext.info, data, forceFromCldb) : null;
-                ext.file = dep;
+                baseField.From0D(
+                    scriptIndex == 0xFFFF
+                        ? AssetHelper.FindTypeTreeTypeByID(file.typeTree, fixedId)
+                        : AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, scriptIndex), 0);
             }
             else
             {
-                ext.info = relativeTo.table.GetAssetInfo(pathId);
-                ext.instance = !onlyGetInfo ? am.GetTypeInstanceNewData(relativeTo.file, ext.info, data, forceFromCldb) : null;
-                ext.file = relativeTo;
+                baseField.FromClassDatabase(am.classFile, AssetHelper.FindAssetClassByID(am.classFile, fixedId), 0);
             }
-            return ext;
-        }
-
-        public static AssetTypeInstance GetTypeInstanceNewData(this AssetsManager am, AssetsFile file, AssetFileInfoEx info,
-                                                               MemoryStream data, bool forceFromCldb = false)
-        {
-            return new (am.GetTemplateBaseField(file, info, forceFromCldb), new AssetsFileReader(data), 0);
+            return baseField;
         }
 
         public static bool IsBundleDataCompressed(this AssetBundleFile bundle)

@@ -18,5 +18,10 @@ namespace AssetsAdvancedEditor.Assets
         {
             return new BundleReplacerFromMemory(name, name, isSerialized, data, -1);
         }
+
+        public static BundleReplacer CreateBundleRemover(string name, bool isSerialized, int bundleListIndex = -1)
+        {
+            return new BundleRemover(name, isSerialized, bundleListIndex);
+        }
     }
 }

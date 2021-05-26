@@ -8,7 +8,7 @@
         public uint TypeID { get; set; }
         public int FileID { get; set; }
         public long PathID { get; set; }
-        public int Size { get; set; }
+        public long Size { get; set; }
         public string Modified { get; set; }
         public long Position { get; set; }
         public ushort MonoID { get; set; }

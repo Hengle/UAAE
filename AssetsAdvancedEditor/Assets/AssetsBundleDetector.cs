@@ -4,7 +4,7 @@ using AssetsTools.NET;
 
 namespace AssetsAdvancedEditor.Assets
 {
-    public static class AssetBundleDetector
+    public static class AssetsBundleDetector
     {
         public static DetectedFileType DetectFileType(string filePath)
         {

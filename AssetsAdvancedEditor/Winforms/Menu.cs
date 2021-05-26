@@ -16,12 +16,12 @@ namespace AssetsAdvancedEditor.Winforms
         private BundleFileInstance _bundleInst;
         private BundleLoader _loader;
         private bool _modified;
-        private readonly Dictionary<string, BundleReplacer> _newFiles;
+        private readonly Dictionary<string, BundleReplacer> _modifiedFiles;
 
         public Menu()
         {
             InitializeComponent();
-            _newFiles = new Dictionary<string, BundleReplacer>();
+            _modifiedFiles = new Dictionary<string, BundleReplacer>();
             _modified = false;
         }
 
@@ -35,23 +35,19 @@ namespace AssetsAdvancedEditor.Winforms
                     _am.LoadClassPackage("classdata.tpk");
                     if (_am.classPackage.valid) return;
                     MsgBoxUtils.ShowErrorDialog("Invalid classdata.tpk file.");
-                    Close();
-                    Environment.Exit(1);
                 }
                 catch (Exception ex)
                 {
                     MsgBoxUtils.ShowErrorDialog("Can't load classdata.tpk:\n" + ex);
-                    Close();
-                    Environment.Exit(1);
                 }
             }
             else
             {
                 MsgBoxUtils.ShowErrorDialog("Missing classdata.tpk by exe.\n" +
                                             "Please make sure it exists.");
-                Close();
-                Environment.Exit(1);
             }
+            Close();
+            Environment.Exit(1);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -65,7 +61,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (ofd.ShowDialog() != DialogResult.OK) return;
             var selectedFile = ofd.FileName;
 
-            var fileType = AssetBundleDetector.DetectFileType(selectedFile);
+            var fileType = AssetsBundleDetector.DetectFileType(selectedFile);
 
             CloseAllFiles();
 
@@ -121,6 +117,7 @@ namespace AssetsAdvancedEditor.Winforms
             cboxBundleContents.Enabled = true;
             btnExport.Enabled = true;
             btnImport.Enabled = true;
+            btnRemove.Enabled = true;
             btnInfo.Enabled = true;
 
             var infos = _bundleInst.file.bundleInf6.dirInf;
@@ -139,14 +136,17 @@ namespace AssetsAdvancedEditor.Winforms
             using (var fs = File.OpenWrite(path))
             using (var writer = new AssetsFileWriter(fs))
             {
-                _bundleInst.file.Write(writer, _newFiles.Values.ToList());
+                _bundleInst.file.Write(writer, _modifiedFiles.Values.ToList());
             }
             _modified = false;
+            var items = cboxBundleContents.Items.Cast<string>().Select(i => i.Replace(" *", ""));
+            cboxBundleContents.Items.Clear();
+            cboxBundleContents.Items.AddRange((object[])items);
         }
 
         private void CloseAllFiles()
         {
-            _newFiles.Clear();
+            _modifiedFiles.Clear();
             _modified = false;
 
             _am.UnloadAllAssetsFiles(true);
@@ -161,19 +161,22 @@ namespace AssetsAdvancedEditor.Winforms
         {
             if (!_modified) return;
             var choice = MsgBoxUtils.ShowInfoDialog("Would you like to save the changes?");
-            if (choice == DialogResult.Yes)
+            switch (choice)
             {
-                var sfd = new SaveFileDialog
+                case DialogResult.Yes:
                 {
-                    Title = @"Save bundle file",
-                    Filter = @"All types (*.*)|*.*|Bundle file (*.unity3d)|*.unity3d"
-                };
-                if (sfd.ShowDialog() != DialogResult.OK) return;
-                SaveBundle(sfd.FileName);
-            }
-            else if (choice == DialogResult.No)
-            {
-                CloseAllFiles();
+                    var sfd = new SaveFileDialog
+                    {
+                        Title = @"Save bundle file",
+                        Filter = @"All types (*.*)|*.*|Bundle file (*.unity3d)|*.unity3d"
+                    };
+                    if (sfd.ShowDialog() != DialogResult.OK) return;
+                    SaveBundle(sfd.FileName);
+                    break;
+                }
+                case DialogResult.No:
+                    CloseAllFiles();
+                    break;
             }
         }
 
@@ -182,7 +185,7 @@ namespace AssetsAdvancedEditor.Winforms
             new About().ShowDialog();
         }
 
-        private void exportButton_Click(object sender, EventArgs e)
+        private void btnExport_Click(object sender, EventArgs e)
         {
             if (_bundleInst == null || cboxBundleContents.SelectedItem == null) return;
             var index = cboxBundleContents.SelectedIndex;
@@ -200,7 +203,7 @@ namespace AssetsAdvancedEditor.Winforms
             File.WriteAllBytes(sfd.FileName, assetData);
         }
 
-        private void importButton_Click(object sender, EventArgs e)
+        private void btnImport_Click(object sender, EventArgs e)
         {
             if (_bundleInst == null) return;
             var ofd = new OpenFileDialog
@@ -209,39 +212,43 @@ namespace AssetsAdvancedEditor.Winforms
                 Filter = @"All types (*.*)|*.*|Assets file (*.assets)|*.assets"
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
+            var i = 0;
             foreach (var file in ofd.FileNames)
             {
                 var fileName = Path.GetFileName(file);
                 var fileBytes = File.ReadAllBytes(file);
-                var replacer = AssetModifier.CreateBundleReplacer(fileName, true, fileBytes);
-                if (_newFiles.ContainsKey(fileName))
+                var isSerialized = !(file.EndsWith(".resS") || file.EndsWith(".resource"));
+                var replacer = AssetModifier.CreateBundleReplacer(fileName, isSerialized, fileBytes);
+                if (!cboxBundleContents.Items.Contains(fileName))
                 {
-                    _newFiles[fileName] = replacer;
+                    cboxBundleContents.Items.Add(fileName + " *");
                 }
                 else
                 {
-                    _newFiles.Add(fileName, replacer);
-                    cboxBundleContents.Items.Add(fileName + " *");
+                    var item = cboxBundleContents.Items[i] + " *";
+                    cboxBundleContents.Items.Remove(item);
+                    cboxBundleContents.Items.Insert(i, item);
                 }
+                _modifiedFiles[fileName] = replacer;
+                i++;
             }
             _modified = true;
         }
 
-        private void infoButton_Click(object sender, EventArgs e)
+        private void btnInfo_Click(object sender, EventArgs e)
         {
-            //when dependency loading is supported:
-            //make sure cab:// dependencies in the bundle are loaded as well
             if (_bundleInst == null || cboxBundleContents.SelectedItem == null) return;
             var index = cboxBundleContents.SelectedIndex;
 
-            var bunAssetName = _bundleInst.file.bundleInf6.dirInf[index].name;
+            var dirInf = BundleHelper.GetDirInfo(_bundleInst.file, index);
+            var bunAssetName = dirInf.name;
 
             //When we make a modification to an assets file in the bundle,
             //we replace the assets file in the manager. This way, all we
             //have to do is not reload from the bundle if our assets file
             //has been modified
             MemoryStream assetStream;
-            if (!_newFiles.ContainsKey(bunAssetName))
+            if (!_modifiedFiles.ContainsKey(bunAssetName))
             {
                 var assetData = BundleHelper.LoadAssetDataFromBundle(_bundleInst.file, index);
                 assetStream = new MemoryStream(assetData);
@@ -254,8 +261,7 @@ namespace AssetsAdvancedEditor.Winforms
 
             //warning: does not update if you import an assets file onto
             //a file that wasn't originally an assets file
-            var fileInf = BundleHelper.GetDirInfo(_bundleInst.file, index);
-            var isAssetsFile = _bundleInst.file.IsAssetsFile(_bundleInst.file.reader, fileInf);
+            var isAssetsFile = _bundleInst.file.IsAssetsFile(_bundleInst.file.reader, dirInf);
 
             if (isAssetsFile)
             {
@@ -273,6 +279,26 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            var selectedItem = cboxBundleContents.SelectedItem;
+            if (selectedItem == null) return;
+            var name = (string)selectedItem;
+            var origName = name.Replace(" *", "");
+            var isSerialized = !(origName.EndsWith(".resS") || origName.EndsWith(".resource"));
+            if (_modifiedFiles.ContainsKey(origName))
+            {
+                _modifiedFiles.Remove(origName);
+            }
+            else
+            {
+                _modifiedFiles.Add(origName, AssetModifier.CreateBundleRemover(origName, isSerialized));
+            }
+            cboxBundleContents.Items.Remove(name);
+            if (cboxBundleContents.Items.Count != 0)
+                cboxBundleContents.SelectedIndex = 0;
+        }
+
         private void AssetsViewerClosing(object sender, CancelEventArgs e)
         {
             if (sender == null) return;
@@ -282,32 +308,19 @@ namespace AssetsAdvancedEditor.Winforms
             if (window.ModifiedFiles.Count == 0) return;
             var bunDict = window.ModifiedFiles;
 
-            foreach (var (key, assetsStream) in bunDict)
+            var choice = MsgBoxUtils.ShowWarningDialog("This option is closed until the next update.\n" +
+                                                       "Do you want to save assets files?");
+            if (choice != DialogResult.Yes) return;
+            foreach (var (key, value) in bunDict)
             {
-                var assetsName = key.GetOriginalEntryName();
-                _newFiles[assetsName] = key;
-
-                //replace existing assets file in the manager
-                var inst = _am.files.FirstOrDefault(i =>
-                    string.Equals(i.name, assetsName, StringComparison.CurrentCultureIgnoreCase));
-                string assetsManagerName;
-
-                if (inst != null)
+                var sfd = new SaveFileDialog
                 {
-                    assetsManagerName = inst.name;
-                    _am.files.Remove(inst);
-                }
-                else //shouldn't happen
-                {
-                    //we always load bundles from file, so this
-                    //should always be somewhere on the disk
-                    assetsManagerName = Path.Combine(_bundleInst.path, assetsName);
-                }
-
-                if (_loader.DecompressedToFile)
-                    _am.LoadAssetsFile(assetsStream, assetsManagerName, true);
-                else
-                    _am.LoadAssetsFileFromBundle(_bundleInst, assetsName, true);
+                    Title = @"Save as...",
+                    Filter = @"All types (*.*)|*.*|Assets file (*.assets)|*.assets",
+                    FileName = key.GetEntryName()
+                };
+                if (sfd.ShowDialog() != DialogResult.OK) continue;
+                File.WriteAllBytes(sfd.FileName, value.ToArray());
             }
 
             _modified = true;

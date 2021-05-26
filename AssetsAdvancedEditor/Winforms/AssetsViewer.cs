@@ -12,15 +12,17 @@ namespace AssetsAdvancedEditor.Winforms
 {
     public partial class AssetsViewer : Form
     {
-        public AssetWorkspace Workspace { get; }
+        public AssetsWorkspace Workspace { get; }
         public AssetsManager Am { get; }
         public AssetsFileInstance MainFile { get; }
         public bool FromBundle { get; }
 
+        public AssetImporter Importer { get; }
+        public AssetExporter Exporter { get; }
+
         public string AssetsFileName { get; }
         public string AssetsRootDir { get; }
         public string UnityVersion { get; }
-        private readonly List<AssetDetailsListItem> _assetDetails;
         public Dictionary<BundleReplacer, MemoryStream> ModifiedFiles { get; private set; }
 
         //extra (todo)
@@ -34,15 +36,18 @@ namespace AssetsAdvancedEditor.Winforms
         {
             InitializeComponent();
 
-            Workspace = new AssetWorkspace(am, instance, fromBundle);
+            Workspace = new AssetsWorkspace(am, instance, fromBundle);
             Am = Workspace.Am;
             MainFile = Workspace.MainFile;
             FromBundle = Workspace.FromBundle;
+
+            Importer = Workspace.Importer;
+            Exporter = Workspace.Exporter;
+
             AssetsFileName = Workspace.AssetsFileName;
             AssetsRootDir = Workspace.AssetsRootDir;
-            UnityVersion = instance.file.typeTree.unityVersion;
+            UnityVersion = Workspace.UnityVersion;
             SetFormText();
-            _assetDetails = new List<AssetDetailsListItem>();
             ModifiedFiles = new Dictionary<BundleReplacer, MemoryStream>();
             LoadAssetsToList();
         }
@@ -73,6 +78,7 @@ namespace AssetsAdvancedEditor.Winforms
             var cldb = Am.classFile;
             var cldbType = AssetHelper.FindAssetClassByID(cldb, info.curFileType);
             var name = AssetHelper.GetAssetNameFast(thisFile, cldb, info); //handles both cldb and typetree
+            var listItemName = name;
             const string container = "";
             string type;
             var typeId = info.curFileType;
@@ -120,9 +126,9 @@ namespace AssetsAdvancedEditor.Winforms
             if (!HasName(cldb, cldbType)) 
                 name = "Unnamed asset";
 
-            _assetDetails.Add(new AssetDetailsListItem
+            Workspace.LoadedAssets.Add(new AssetDetailsListItem
             {
-                Name = name,
+                Name = listItemName,
                 Container = container,
                 Type = type,
                 TypeID = typeId,
@@ -164,27 +170,29 @@ namespace AssetsAdvancedEditor.Winforms
                 var name = listItem.Name;
                 var typeId = listItem.TypeID;
 
-                if (string.IsNullOrEmpty(listItem.Name))
+                if (string.IsNullOrEmpty(name))
                 {
                     name = "Unnamed asset";
                 }
-                else
+                else if (typeId is 0x01 or 0x72)
                 {
-                    if (typeId is 0x01 or 0x72)
-                    {
-                        name = $"{listItem.Type} {name}";
-                    }
+                    name = $"{listItem.Type} {name}";
                 }
 
-                _assetDetails.Add(listItem);
+                Workspace.LoadedAssets.Insert(0, listItem);
 
                 #region New asset
                 var cldb = Am.classFile;
                 var cldbType = AssetHelper.FindAssetClassByID(cldb, typeId);
 
+                if (!HasAnyField(cldbType))
+                {
+                    cldbType = AssetHelper.FindAssetClassByID(cldb, 0x01);
+                    name = $"{listItem.Type} {name}";
+                }
+
                 if (!HasName(cldb, cldbType))
                     name = "Unnamed asset";
-
                 var templateField = new AssetTypeTemplateField();
                 templateField.FromClassDatabase(cldb, cldbType, 0);
                 var baseField = ValueBuilder.DefaultValueFieldFromTemplate(templateField);
@@ -216,9 +224,9 @@ namespace AssetsAdvancedEditor.Winforms
 
             foreach (ListViewItem item in assetList.SelectedItems)
             {
-                var listItem = _assetDetails[item.Index];
+                var listItem = Workspace.LoadedAssets[item.Index];
                 Workspace.AddReplacer(AssetModifier.CreateAssetRemover(listItem));
-                _assetDetails.Remove(listItem);
+                Workspace.LoadedAssets.Remove(listItem);
                 assetList.Items.Remove(item);
             }
         }
@@ -235,14 +243,14 @@ namespace AssetsAdvancedEditor.Winforms
 
         private List<AssetDetailsListItem> GetSelectedListItems()
         {
-            return (from int index in assetList.SelectedIndices select _assetDetails[index]).ToList(); // probably wrong
+            return (from int index in assetList.SelectedIndices select Workspace.LoadedAssets[index]).ToList();
         }
 
-        private List<AssetTypeValueField> GetSelectedFieldsReplaced()
+        private List<AssetTypeValueField> GetSelectedFields()
         {
             try
             {
-                return GetSelectedExternalsReplaced().Select(ext => ext.instance.GetBaseField()).ToList();
+                return GetSelectedAssetData().Select(data => data.Instance.GetBaseField()).ToList();
             }
             catch
             {
@@ -252,23 +260,59 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private IEnumerable<AssetExternal> GetSelectedExternalsReplaced(bool onlyInfo = false)
+        private IEnumerable<AssetData> GetSelectedAssetData(bool onlyInfo = false)
         {
-            return from AssetDetailsListItem listItem in GetSelectedListItems()
-                let file = Workspace.LoadedFiles[listItem.FileID]
-                let assetId = new AssetID(file.path, listItem.PathID)
-                select Workspace.NewAssetDatas.ContainsKey(assetId) ?
-                    Am.GetExtAssetNewData(file, 0, listItem.PathID, Workspace.NewAssetDatas[assetId], onlyInfo) :
-                    Am.GetExtAsset(file, 0, listItem.PathID, onlyInfo);
+            return (from AssetDetailsListItem listItem in GetSelectedListItems()
+                select Workspace.GetAssetData(listItem, onlyInfo)).ToList();
         }
 
-        private void SetSelectedFieldsModified()
+        private void UpdateAssetsInfo()
         {
             var listItems = GetSelectedListItems();
             for (var i = 0; i < listItems.Count; i++)
             {
-                listItems[i].Modified = "*";
-                assetList.SelectedItems[i].SubItems[7].Text = @"*";
+                var assetData = Workspace.GetAssetData(listItems[i]);
+                var field = assetData.Instance.GetBaseField();
+                var replacer = assetData.Replacer;
+                var value = field.Get("m_Name").GetValue();
+                var name = "";
+
+                if (value != null)
+                {
+                    name = value.AsString();
+                }
+                Workspace.LoadedAssets[assetList.SelectedIndices[i]] = new AssetDetailsListItem
+                {
+                    Name = name,
+                    Type = field.GetFieldType(),
+                    TypeID = (uint)replacer.GetClassID(),
+                    FileID = replacer.GetFileID(),
+                    PathID = replacer.GetPathID(),
+                    Size = replacer.GetSize(),
+                    Modified = "*",
+                    MonoID = replacer.GetMonoScriptID()
+                };
+                var newAsset = Workspace.LoadedAssets[assetList.SelectedIndices[i]];
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = "Unnamed asset";
+                }
+                else if (newAsset.TypeID is 0x01 or 0x72)
+                {
+                    name = $"{newAsset.Type} {name}";
+                }
+                var item = new[]
+                {
+                    name,
+                    newAsset.Container,
+                    newAsset.Type,
+                    newAsset.TypeID.ToString(),
+                    newAsset.FileID.ToString(),
+                    newAsset.PathID.ToString(),
+                    newAsset.Size.ToString(),
+                    newAsset.Modified
+                };
+                assetList.Items[assetList.SelectedIndices[i]] = new ListViewItem(item);
             }
         }
 
@@ -277,32 +321,47 @@ namespace AssetsAdvancedEditor.Winforms
             var items = assetList.SelectedItems;
             for (var i = 0; i < items.Count; i++)
             {
-                _assetDetails[i].Modified = "";
+                Workspace.LoadedAssets[i].Modified = "";
                 assetList.SelectedItems[i].SubItems[7].Text = "";
             }
         }
 
         private void assetList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if (_assetDetails.Count != assetList.Items.Count) return; // shouldn't happen
-            var details = _assetDetails[e.ItemIndex];
-            boxName.Text = details.Name;
+            if (Workspace.LoadedAssets.Count != assetList.Items.Count) return; // shouldn't happen
+            var details = Workspace.LoadedAssets[e.ItemIndex];
+            var name = details.Name;
+            var cldb = Am.classFile;
+            var cldbType = AssetHelper.FindAssetClassByID(cldb, details.TypeID);
+            if (!HasName(cldb, cldbType))
+            {
+                name = "Unnamed asset";
+            }
+            else if (details.TypeID is 0x01 or 0x72)
+            {
+                name = $"{details.Type} {name}";
+            }
+            boxName.Text = name;
             boxPathID.Text = details.PathID.ToString();
             boxFileID.Text = details.FileID.ToString();
-            if (details.TypeID == 0x72)
+            if (details.TypeID != 0x72)
             {
-                boxType.Text = $@"0x{details.MonoID:X8} ({details.Type})";
-                return;
-            }
-            if (uint.TryParse(details.Type, out var typeId))
-            {
-                boxType.Text = details.TypeID == typeId ?
-                    $@"0x{details.TypeID:X8}" :
-                    $@"0x{details.TypeID:X8} ({details.Type})";
+                if (uint.TryParse(details.Type, out var typeId))
+                {
+                    boxType.Text = details.TypeID == typeId
+                        ? $@"0x{details.TypeID:X8}"
+                        : $@"0x{details.TypeID:X8} ({details.Type})";
+                }
+                else
+                {
+                    boxType.Text = $@"0x{details.TypeID:X8} ({details.Type})";
+                }
             }
             else
             {
-                boxType.Text = $@"0x{details.TypeID:X8} ({details.Type})";
+                boxType.Text = details.MonoID != ushort.MaxValue ?
+                    $@"0x{details.MonoID:X8} ({details.Type})" :
+                    $@"0x{details.TypeID:X8} ({details.Type})";
             }
         }
 
@@ -318,13 +377,12 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnViewData_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var baseFields = GetSelectedFieldsReplaced();
+            var baseFields = GetSelectedFields();
             if (baseFields == null) return;
             var cldb = Workspace.Am.classFile;
-            var listItems = GetSelectedListItems();
-            for (var i = 0; i < listItems.Count; i++)
+            for (var i = 0; i < baseFields.Count; i++)
             {
-                var cldbType = AssetHelper.FindAssetClassByID(cldb, listItems[i].TypeID);
+                var cldbType = AssetHelper.FindAssetClassByName(cldb, baseFields[i].GetFieldType());
                 if (cldbType != null)
                 {
                     if (HasAnyField(cldbType)) continue;
@@ -336,14 +394,15 @@ namespace AssetsAdvancedEditor.Winforms
                 }
                 baseFields.RemoveAt(i);
             }
-
+            if (baseFields.Count == 0) return;
             foreach (var baseField in baseFields)
-                new AssetData(Workspace, baseField).ShowDialog();
+                new AssetDataViewer(Workspace, baseField).Show();
         }
 
         private void AssetsViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (Workspace.Modified) AskSaveChanges();
+            e.Cancel = Workspace.Modified;
         }
 
         private void AskSaveChanges()
@@ -414,6 +473,11 @@ namespace AssetsAdvancedEditor.Winforms
                         FileName = file.name
                     };
                     if (sfd.ShowDialog() != DialogResult.OK) continue;
+                    if (file.path == sfd.FileName)
+                    {
+                        MsgBoxUtils.ShowErrorDialog("If you want to overwrite files go to \"File->Save\" instead of \"File->Save as...\"!");
+                        return;
+                    }
                     using var fs = File.OpenWrite(sfd.FileName);
                     using var writer = new AssetsFileWriter(fs);
                     file.file.Write(writer, 0, sortedAssetsList, 0);
@@ -425,36 +489,27 @@ namespace AssetsAdvancedEditor.Winforms
         {
             var bunDict = new Dictionary<BundleReplacer, MemoryStream>();
             var lastFileId = replacers.Max(r => r.GetFileID());
-            for (var fileId = 0; fileId < lastFileId; fileId++)
+            for (var fileId = 0; fileId <= lastFileId; fileId++)
             {
                 var id = fileId;
                 var sortedAssetsList = replacers.Where(r => r.GetFileID() == id).ToList();
                 using var ms = new MemoryStream();
                 using var writer = new AssetsFileWriter(ms);
-                if (fileId == 0)
-                {
-                    MainFile.file.Write(writer, 0, sortedAssetsList, 0);
-                    bunDict.Add(AssetModifier.CreateBundleReplacer(AssetsFileName, true, ms.ToArray()), ms);
-                }
-                else
-                {
-                    var dep = MainFile.dependencies[fileId - 1];
-                    dep.file.Write(writer, 0, sortedAssetsList, 0);
-                    bunDict.Add(AssetModifier.CreateBundleReplacer(dep.name, true, ms.ToArray()), ms);
-                }
+                var file = Workspace.LoadedFiles[fileId];
+
+                file.file.Write(writer, 0, sortedAssetsList, 0);
+                bunDict.Add(AssetModifier.CreateBundleReplacer(file.name, true, ms.ToArray()), ms);
             }
             return bunDict;
         }
 
         private void CloseFiles()
         {
-            foreach (var dep in MainFile.dependencies)
+            foreach (var file in Workspace.LoadedFiles)
             {
-                Am.files.Remove(dep);
-                dep.file.Close();
+                Am.files.Remove(file);
+                file.file.Close();
             }
-            Am.files.Remove(MainFile);
-            MainFile.file.Close();
             Workspace.Modified = false;
             Close();
         }
@@ -463,34 +518,43 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnExportRaw_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var items = GetSelectedListItems();
+            var listItems = GetSelectedListItems();
             var count = GetSelectedCount();
             if (count is 1)
             {
-                var item = items[0];
+                var listItem = listItems[0];
+                var name = listItem.Name;
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = "Unnamed asset";
+                }
                 var sfd = new SaveFileDialog
                 {
                     Title = @"Save raw asset",
                     Filter = @"Raw Unity asset (*.dat)|*.dat",
-                    FileName = $"{item.Name}-{AssetsFileName}-{item.PathID}"
+                    FileName = $"{name}-{Workspace.LoadedFiles[listItem.FileID].name}-{listItem.PathID}"
                 };
                 if (sfd.ShowDialog() != DialogResult.OK) return;
-                using var fs = File.OpenWrite(sfd.FileName);
-                new AssetExporter().ExportRawAsset(MainFile.file, item, fs);
+                Exporter.ExportRawAsset(sfd.FileName, listItem);
             }
             else
             {
-                var fd = new FolderDialog
+                var fd = new OpenFolderDialog
                 {
                     Title = "Select a folder for the raw assets"
                 };
-                if (fd.ShowDialog() != DialogResult.OK) return;
+                if (fd.ShowDialog(this) != DialogResult.OK) return;
                 for (var i = 0; i < count; i++)
                 {
-                    var item = items[i];
-                    var fileName = $"{item.Name}-{AssetsFileName}-{item.PathID}.dat";
-                    using var fs = File.OpenWrite(Path.Combine(fd.Folder, fileName));
-                    new AssetExporter().ExportRawAsset(MainFile.file, item, fs);
+                    var listItem = listItems[i];
+                    var name = listItem.Name;
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        name = "Unnamed asset";
+                    }
+                    var fileName = $"{name}-{Workspace.LoadedFiles[listItem.FileID].name}-{listItem.PathID}.dat";
+                    var path = Path.Combine(fd.Folder, fileName);
+                    Exporter.ExportRawAsset(path, listItem);
                 }
             }
         }
@@ -498,40 +562,43 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnExportDump_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var items = GetSelectedListItems();
-            var baseFields = GetSelectedFieldsReplaced();
-            if (baseFields == null) return;
+            var listItems = GetSelectedListItems();
             var count = GetSelectedCount();
             if (count is 1)
             {
-                var item = items[0];
-                var field = baseFields[0];
+                var listItem = listItems[0];
+                var name = listItem.Name;
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = "Unnamed asset";
+                }
                 var sfd = new SaveFileDialog
                 {
                     Title = @"Save dump",
                     Filter = @"UAAE text dump (*.txt)|*.txt",
-                    FileName = $"{item.Name}-{AssetsFileName}-{item.PathID}-{item.Type}"
+                    FileName = $"{name}-{Workspace.LoadedFiles[listItem.FileID].name}-{listItem.PathID}-{listItem.Type}"
                 };
                 if (sfd.ShowDialog() != DialogResult.OK) return;
-                var fs = File.OpenWrite(sfd.FileName);
-                using var writer = new StreamWriter(fs);
-                new AssetExporter().ExportDump(field, writer, DumpType.TXT);
+                Exporter.ExportDump(sfd.FileName, listItem, DumpType.TXT);
             }
             else
             {
-                var fd = new FolderDialog
+                var fd = new OpenFolderDialog
                 {
                     Title = "Select a folder for the dumps"
                 };
-                if (fd.ShowDialog() != DialogResult.OK) return;
+                if (fd.ShowDialog(this) != DialogResult.OK) return;
                 for (var i = 0; i < count; i++)
                 {
-                    var item = items[i];
-                    var field = baseFields[i];
-                    var fileName = $"{item.Name}-{AssetsFileName}-{item.PathID}-{item.Type}.txt";
-                    var fs = File.OpenWrite(Path.Combine(fd.Folder, fileName));
-                    using var writer = new StreamWriter(fs);
-                    new AssetExporter().ExportDump(field, writer, DumpType.TXT);
+                    var listItem = listItems[i];
+                    var name = listItem.Name;
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        name = "Unnamed asset";
+                    }
+                    var fileName = $"{name}-{Workspace.LoadedFiles[listItem.FileID].name}-{listItem.PathID}-{listItem.Type}.txt";
+                    var path = Path.Combine(fd.Folder, fileName);
+                    Exporter.ExportDump(path, listItem, DumpType.TXT);
                 }
             }
         }
@@ -555,10 +622,9 @@ namespace AssetsAdvancedEditor.Winforms
                 Filter = @"Raw Unity asset (*.dat)|*.dat"
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            using var fs = File.OpenRead(ofd.FileName);
-            var replacer = new AssetImporter().ImportRawAsset(item, fs);
+            var replacer = Importer.ImportRawAsset(ofd.FileName, item);
             Workspace.AddReplacer(replacer);
-            SetSelectedFieldsModified();
+            UpdateAssetsInfo();
         }
 
         private void btnImportDump_Click(object sender, EventArgs e)
@@ -580,12 +646,10 @@ namespace AssetsAdvancedEditor.Winforms
                 Filter = @"UAAE text dump (*.txt)|*.txt"
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            using var fs = File.OpenRead(ofd.FileName);
-            using var reader = new StreamReader(fs);
-            var replacer = new AssetImporter().ImportDump(Workspace, item, reader, DumpType.TXT);
+            var replacer = Importer.ImportDump(ofd.FileName, item, DumpType.TXT);
             if (replacer == null) return;
             Workspace.AddReplacer(replacer);
-            SetSelectedFieldsModified();
+            UpdateAssetsInfo();
         }
 
         private void btnEdit_Click(object sender, EventArgs e)

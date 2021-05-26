@@ -135,6 +135,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.Name = "BundleLoader";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Bundle Loader";
             this.Load += new System.EventHandler(this.BundleLoader_Load);
             this.ResumeLayout(false);

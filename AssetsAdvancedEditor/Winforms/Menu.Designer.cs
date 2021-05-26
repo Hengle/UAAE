@@ -51,7 +51,7 @@
             this.btnExport = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
             this.btnInfo = new System.Windows.Forms.Button();
-            this.chboxRemoveTypeTree = new System.Windows.Forms.CheckBox();
+            this.btnRemove = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,7 +65,7 @@
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
-            this.menuStrip.Size = new System.Drawing.Size(383, 24);
+            this.menuStrip.Size = new System.Drawing.Size(385, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -107,7 +107,6 @@
             // 
             // saveToolStripMenuItem
             // 
-            this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.saveToolStripMenuItem.Text = "&Save";
@@ -196,10 +195,10 @@
             this.lblFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFileName.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblFileName.Location = new System.Drawing.Point(14, 21);
+            this.lblFileName.Location = new System.Drawing.Point(14, 22);
             this.lblFileName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFileName.Name = "lblFileName";
-            this.lblFileName.Size = new System.Drawing.Size(355, 19);
+            this.lblFileName.Size = new System.Drawing.Size(357, 19);
             this.lblFileName.TabIndex = 1;
             this.lblFileName.Text = "No file opened.";
             this.lblFileName.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -212,82 +211,82 @@
             this.cboxBundleContents.Enabled = false;
             this.cboxBundleContents.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.cboxBundleContents.FormattingEnabled = true;
-            this.cboxBundleContents.Location = new System.Drawing.Point(14, 46);
+            this.cboxBundleContents.Location = new System.Drawing.Point(14, 47);
             this.cboxBundleContents.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.cboxBundleContents.Name = "cboxBundleContents";
-            this.cboxBundleContents.Size = new System.Drawing.Size(356, 25);
+            this.cboxBundleContents.Size = new System.Drawing.Size(358, 25);
             this.cboxBundleContents.TabIndex = 2;
             // 
             // btnExport
             // 
-            this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExport.Enabled = false;
             this.btnExport.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnExport.Location = new System.Drawing.Point(13, 100);
+            this.btnExport.Location = new System.Drawing.Point(13, 82);
             this.btnExport.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(110, 27);
+            this.btnExport.Size = new System.Drawing.Size(87, 33);
             this.btnExport.TabIndex = 3;
             this.btnExport.Text = "Export";
             this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.exportButton_Click);
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // btnImport
             // 
-            this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnImport.Enabled = false;
             this.btnImport.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnImport.Location = new System.Drawing.Point(137, 100);
+            this.btnImport.Location = new System.Drawing.Point(104, 82);
             this.btnImport.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(110, 27);
+            this.btnImport.Size = new System.Drawing.Size(87, 33);
             this.btnImport.TabIndex = 4;
             this.btnImport.Text = "Import";
             this.btnImport.UseVisualStyleBackColor = true;
-            this.btnImport.Click += new System.EventHandler(this.importButton_Click);
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
             // btnInfo
             // 
-            this.btnInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.btnInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnInfo.Enabled = false;
             this.btnInfo.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnInfo.Location = new System.Drawing.Point(261, 100);
+            this.btnInfo.Location = new System.Drawing.Point(286, 82);
             this.btnInfo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.btnInfo.Name = "btnInfo";
-            this.btnInfo.Size = new System.Drawing.Size(110, 27);
+            this.btnInfo.Size = new System.Drawing.Size(87, 33);
             this.btnInfo.TabIndex = 5;
             this.btnInfo.Text = "Info";
             this.btnInfo.UseVisualStyleBackColor = true;
-            this.btnInfo.Click += new System.EventHandler(this.infoButton_Click);
+            this.btnInfo.Click += new System.EventHandler(this.btnInfo_Click);
             // 
-            // chboxRemoveTypeTree
+            // btnRemove
             // 
-            this.chboxRemoveTypeTree.AutoSize = true;
-            this.chboxRemoveTypeTree.Enabled = false;
-            this.chboxRemoveTypeTree.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.chboxRemoveTypeTree.Location = new System.Drawing.Point(14, 75);
-            this.chboxRemoveTypeTree.Name = "chboxRemoveTypeTree";
-            this.chboxRemoveTypeTree.Size = new System.Drawing.Size(330, 24);
-            this.chboxRemoveTypeTree.TabIndex = 6;
-            this.chboxRemoveTypeTree.Text = "Remove the TypeTree (use this for UAE only)";
-            this.chboxRemoveTypeTree.UseVisualStyleBackColor = true;
+            this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRemove.Enabled = false;
+            this.btnRemove.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnRemove.Location = new System.Drawing.Point(195, 82);
+            this.btnRemove.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(87, 33);
+            this.btnRemove.TabIndex = 6;
+            this.btnRemove.Text = "Remove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
             // Menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.ClientSize = new System.Drawing.Size(383, 133);
-            this.Controls.Add(this.btnExport);
-            this.Controls.Add(this.btnImport);
+            this.ClientSize = new System.Drawing.Size(385, 125);
             this.Controls.Add(this.btnInfo);
-            this.Controls.Add(this.chboxRemoveTypeTree);
+            this.Controls.Add(this.btnRemove);
+            this.Controls.Add(this.btnImport);
+            this.Controls.Add(this.btnExport);
             this.Controls.Add(this.cboxBundleContents);
             this.Controls.Add(this.lblFileName);
             this.Controls.Add(this.menuStrip);
@@ -331,7 +330,7 @@
         private System.Windows.Forms.Button btnImport;
         private System.Windows.Forms.Button btnInfo;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.CheckBox chboxRemoveTypeTree;
+        private System.Windows.Forms.Button btnRemove;
     }
 }
 

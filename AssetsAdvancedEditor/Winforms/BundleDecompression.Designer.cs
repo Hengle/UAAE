@@ -82,7 +82,7 @@ namespace AssetsAdvancedEditor.Winforms
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "BundleDecompression";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Select a bundle decompression type";
             this.ResumeLayout(false);
 
