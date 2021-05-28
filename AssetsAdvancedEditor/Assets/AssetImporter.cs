@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 
@@ -64,6 +66,7 @@ namespace AssetsAdvancedEditor.Assets
         {
             var error = "";
             var cldb = Workspace.Am.classFile;
+            var i = 2;
             var alignStack = new Stack<bool>();
 
             var line = Reader.ReadLine();
@@ -106,21 +109,42 @@ namespace AssetsAdvancedEditor.Assets
                         type.Split()[0] + ' ' + type.Split()[1] : 
                         type.Split()[0];
 
-                    var fieldName = line[(typeName + type.Length + 1)..].Split()[0];
+                    var fieldName = line[(typeName + type.Length + 1)..].Split("=", StringSplitOptions.TrimEntries)[0];
+
                     if (cldbType != null)
                     {
-                        var valid = cldbType.fields.Any(f =>
-                            f.typeName.GetString(cldb) == type &&
-                            f.fieldName.GetString(cldb) == fieldName);
+                        var valid = (i - 1) < cldbType.fields.Count;
+                        var c = i switch
+                        {
+                            1 => "st",
+                            2 => "nd",
+                            3 => "rd",
+                            _ => "th"
+                        };
+                        if (valid)
+                        {
+                            if (type == "string")
+                            {
+                                cldbType.fields.RemoveRange(i, 3);
+                            }
+                            var field = cldbType.fields[i - 1];
 
-                        if (!valid)
-                            error += $"This asset does not contain a field \"{fieldName}\" of type \"{type}\"\n";
+                            var origTypeName = field.typeName.GetString(cldb);
+                            var origName = field.fieldName.GetString(cldb);
+                            valid = type == origTypeName && fieldName == origName;
+                            if (!valid)
+                                error += $"This asset does not contain a {i}{c} field \"{fieldName}\" of type \"{type}\".\n";
+                        }
+                        else
+                        {
+                            error += $"This asset does not contain a {i}{c} field.\n";
+                        }
                     }
 
                     var success = WriteData(type, valueStr);
 
                     if (!success)
-                        error += $"An error occurred while writing the value \"{valueStr}\" of type \"{type}\"\n";
+                        error += $"An error occurred while writing the value \"{valueStr}\" of type \"{type}\".\n";
 
                     if (align)
                         Writer.Align();
@@ -129,6 +153,7 @@ namespace AssetsAdvancedEditor.Assets
                 {
                     alignStack.Push(align);
                 }
+                i++;
             }
 
             if (error != "")

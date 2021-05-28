@@ -1,13 +1,112 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.ComponentModel;
+using System.IO;
+using System.Windows.Forms;
+using AssetsAdvancedEditor.Utils;
+using AssetsTools.NET;
+using AssetsTools.NET.Extra;
 
 namespace AssetsAdvancedEditor.Winforms
 {
     public partial class BundleDecompression : Form
     {
-        public BundleDecompression()
+        public BundleFileInstance BundleInst;
+        public BackgroundWorker Bw;
+        public BundleDecompression(BundleFileInstance bundleInst)
         {
             InitializeComponent();
-            cboxDecompType.SelectedIndex = 0;
+            BundleInst = bundleInst;
+        }
+
+        private enum AssetBundleDecompressionType
+        {
+            File,
+            Memory
+        }
+
+        private void btnOK_Click(object sender, EventArgs e)
+        {
+            if (BundleInst == null) return;
+            AssetBundleDecompressionType decompType;
+            if (rbtnFile.Checked)
+                decompType = AssetBundleDecompressionType.File;
+            else if (rbtnMemory.Checked)
+                decompType = AssetBundleDecompressionType.Memory;
+            else
+            {
+                MsgBoxUtils.ShowErrorDialog("You didn't choose any decompression type!\n" +
+                                            "Please go back and select it.\n");
+                DialogResult = DialogResult.None;
+                return;
+            }
+            try
+            {
+                Bw = new BackgroundWorker();
+                if (BundleInst.file.IsBundleDataCompressed())
+                {
+                    switch ((int)decompType)
+                    {
+                        // Decompress to File
+                        case 0:
+                        {
+                            var sfd = new SaveFileDialog
+                            {
+                                FileName = BundleInst.name + ".unpacked",
+                                Filter = @"All types (*.*)|*.*"
+                            };
+                            if (sfd.ShowDialog() != DialogResult.OK) return;
+                            Bw.DoWork += delegate { DecompressToFile(sfd.FileName); };
+                            break;
+                        }
+                        // Decompress to Memory
+                        case 1:
+                            Bw.DoWork += delegate { DecompressToMemory(); };
+                            break;
+                    }
+                }
+                else
+                {
+                    Bw.DoWork += delegate { DecompressToMemory(); };
+                }
+                Bw.RunWorkerCompleted += delegate
+                {
+                    MsgBoxUtils.ShowInfoDialog("The bundle file has been successfully unpacked!", MessageBoxButtons.OK);
+                    //Decompressed = true;
+                };
+                Bw.RunWorkerAsync();
+            }
+            catch (Exception ex)
+            {
+                MsgBoxUtils.ShowErrorDialog("Something went wrong when unpacking the bundle:\n" + ex);
+            }
+        }
+
+        private void DecompressToFile(string savePath)
+        {
+            var bundleStream = File.Open(savePath, FileMode.Create);
+            BundleInst.file.Unpack(BundleInst.file.reader, new AssetsFileWriter(bundleStream));
+
+            bundleStream.Position = 0;
+
+            var newBundle = new AssetBundleFile();
+            newBundle.Read(new AssetsFileReader(bundleStream));
+
+            BundleInst.file.reader.Close();
+            BundleInst.file = newBundle;
+        }
+
+        private void DecompressToMemory()
+        {
+            var bundleStream = new MemoryStream();
+            BundleInst.file.Unpack(BundleInst.file.reader, new AssetsFileWriter(bundleStream));
+
+            bundleStream.Position = 0;
+
+            var newBundle = new AssetBundleFile();
+            newBundle.Read(new AssetsFileReader(bundleStream));
+
+            BundleInst.file.reader.Close();
+            BundleInst.file = newBundle;
         }
     }
 }

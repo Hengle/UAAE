@@ -122,6 +122,7 @@
             this.compressToolStripMenuItem.Name = "compressToolStripMenuItem";
             this.compressToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.compressToolStripMenuItem.Text = "&Compress";
+            this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
             // 
             // modMakerToolStripMenuItem
             // 

@@ -9,6 +9,8 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 ## Features
 * Open assets/bundle files
 * Add/Remove assets
+* Export/Import/Remove/Info options (for assets files in Menu)
+* Bundle file compression/decompression
 * Data view
 * Dependency loading
 * Export/Import assets to dump/raw format (only TXT and one asset import)
@@ -57,7 +59,7 @@ This list may be incomplete!
   * Dump editor tab
   * Raw editor tab
   * Asset editor (this is where the list of plugins will be)
-* Bundle compression support
+* ~~Bundle compression support~~
 * Batch import/export assets
 * Command line support
 * Blank assets file/bundle creation

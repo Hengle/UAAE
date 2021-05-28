@@ -51,7 +51,7 @@
             this.btnDecompress.TabIndex = 1;
             this.btnDecompress.Text = "Decompress Bundle";
             this.btnDecompress.UseVisualStyleBackColor = true;
-            this.btnDecompress.Click += new System.EventHandler(this.decompressButton_Click);
+            this.btnDecompress.Click += new System.EventHandler(this.btnDecompress_Click);
             // 
             // btnCompress
             // 
@@ -67,7 +67,7 @@
             this.btnCompress.TabIndex = 2;
             this.btnCompress.Text = "Compress Bundle";
             this.btnCompress.UseVisualStyleBackColor = true;
-            this.btnCompress.Click += new System.EventHandler(this.compressButton_Click);
+            this.btnCompress.Click += new System.EventHandler(this.btnCompress_Click);
             // 
             // lblCompressionMethod
             // 
@@ -105,7 +105,7 @@
             this.btnLoad.TabIndex = 7;
             this.btnLoad.Text = "Load";
             this.btnLoad.UseVisualStyleBackColor = true;
-            this.btnLoad.Click += new System.EventHandler(this.loadButton_Click);
+            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
             // 
             // lblCompType
             // 
