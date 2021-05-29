@@ -70,6 +70,9 @@ This list may be incomplete!
 * MacOS, Linux and Mobile support
 * Implement the features that are going to be in new [UABE](https://community.7daystodie.com/topic/1871-unity-assets-bundle-extractor/?do=findComment&comment=357397)
 
+## Build
+* Visual Studio 2019 or newer
+
 ## Credits
 * [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)
 
