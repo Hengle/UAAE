@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
@@ -17,19 +15,19 @@ namespace AssetsAdvancedEditor.Assets
 
         public AssetImporter(AssetsWorkspace workspace) => Workspace = workspace;
 
-        public AssetsReplacer ImportRawAsset(string path, AssetDetailsListItem item)
+        public AssetsReplacer ImportRawAsset(string path, AssetItem item)
         {
             return AssetModifier.CreateAssetReplacer(item, File.ReadAllBytes(path));
         }
 
-        public AssetsReplacer ImportDump(string path, AssetDetailsListItem listItem, DumpType dumpType)
+        public AssetsReplacer ImportDump(string path, AssetItem item, DumpType dumpType)
         {
             using var fs = File.OpenRead(path);
             using var reader = new StreamReader(fs);
-            return ImportDump(reader, listItem, dumpType);
+            return ImportDump(reader, item, dumpType);
         }
 
-        public AssetsReplacer ImportDump(StreamReader reader, AssetDetailsListItem listItem, DumpType dumpType)
+        public AssetsReplacer ImportDump(StreamReader reader, AssetItem item, DumpType dumpType)
         {
             using var ms = new MemoryStream();
             Reader = reader;
@@ -59,7 +57,7 @@ namespace AssetsAdvancedEditor.Assets
                 MsgBoxUtils.ShowErrorDialog("Something went wrong when reading the dump file:\n" + ex);
                 return null;
             }
-            return AssetModifier.CreateAssetReplacer(listItem, ms.ToArray());
+            return AssetModifier.CreateAssetReplacer(item, ms.ToArray());
         }
 
         private void ImportTxtDumpLoop()
@@ -108,38 +106,6 @@ namespace AssetsAdvancedEditor.Assets
                     type = type.StartsWith("unsigned") ?
                         type.Split()[0] + ' ' + type.Split()[1] : 
                         type.Split()[0];
-
-                    var fieldName = line[(typeName + type.Length + 1)..].Split("=", StringSplitOptions.TrimEntries)[0];
-
-                    if (cldbType != null)
-                    {
-                        var valid = (i - 1) < cldbType.fields.Count;
-                        var c = i switch
-                        {
-                            1 => "st",
-                            2 => "nd",
-                            3 => "rd",
-                            _ => "th"
-                        };
-                        if (valid)
-                        {
-                            if (type == "string")
-                            {
-                                cldbType.fields.RemoveRange(i, 3);
-                            }
-                            var field = cldbType.fields[i - 1];
-
-                            var origTypeName = field.typeName.GetString(cldb);
-                            var origName = field.fieldName.GetString(cldb);
-                            valid = type == origTypeName && fieldName == origName;
-                            if (!valid)
-                                error += $"This asset does not contain a {i}{c} field \"{fieldName}\" of type \"{type}\".\n";
-                        }
-                        else
-                        {
-                            error += $"This asset does not contain a {i}{c} field.\n";
-                        }
-                    }
 
                     var success = WriteData(type, valueStr);
 

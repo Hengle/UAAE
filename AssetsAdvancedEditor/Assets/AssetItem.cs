@@ -1,6 +1,6 @@
 ﻿namespace AssetsAdvancedEditor.Assets
 {
-    public class AssetDetailsListItem
+    public class AssetItem
     {
         public string Name { get; set; }
         public string Container { get; set; }
@@ -12,5 +12,20 @@
         public string Modified { get; set; }
         public long Position { get; set; }
         public ushort MonoID { get; set; }
+
+        public string[] ToArray()
+        {
+            return new[]
+            {
+                Name,
+                Container,
+                Type,
+                TypeID.ToString(),
+                FileID.ToString(),
+                PathID.ToString(),
+                Size.ToString(),
+                Modified
+            };
+        }
     }
 }

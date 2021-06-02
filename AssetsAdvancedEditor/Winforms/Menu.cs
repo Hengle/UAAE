@@ -71,7 +71,10 @@ namespace AssetsAdvancedEditor.Winforms
                 case DetectedFileType.AssetsFile:
                 {
                     var file = Am.LoadAssetsFile(selectedFile, true);
-                    Am.LoadClassDatabaseFromPackage(file.file.typeTree.unityVersion);
+
+                    if (!LoadOrAskCldb(file))
+                        return;
+
                     new AssetsViewer(Am, file).ShowDialog();
                     break;
                 }
@@ -161,6 +164,23 @@ namespace AssetsAdvancedEditor.Winforms
             cboxBundleContents.Items.Clear();
 
             lblFileName.Text = @"No file opened.";
+        }
+
+        private bool LoadOrAskCldb(AssetsFileInstance file)
+        {
+            var unityVersion = file.file.typeTree.unityVersion;
+            if (Am.LoadClassDatabaseFromPackage(unityVersion) == null)
+            {
+                var version = new VersionDialog(unityVersion, Am.classPackage);
+                if (version.ShowDialog() != DialogResult.OK)
+                    return false;
+
+                if (version.SelectedCldb != null)
+                    Am.classFile = version.SelectedCldb;
+                else
+                    return false;
+            }
+            return true;
         }
 
         private void AskSaveChanges()
@@ -272,10 +292,12 @@ namespace AssetsAdvancedEditor.Winforms
             if (isAssetsFile)
             {
                 var assetMemPath = Path.Combine(BundleInst.path, bunAssetName);
-                var fileInst = Am.LoadAssetsFile(assetStream, assetMemPath, true);
-                Am.LoadClassDatabaseFromPackage(fileInst.file.typeTree.unityVersion);
+                var file = Am.LoadAssetsFile(assetStream, assetMemPath, true);
 
-                var info = new AssetsViewer(Am, fileInst, true);
+                if (!LoadOrAskCldb(file))
+                    return;
+
+                var info = new AssetsViewer(Am, file, true);
                 info.Closing += AssetsViewerClosing;
                 info.Show();
             }

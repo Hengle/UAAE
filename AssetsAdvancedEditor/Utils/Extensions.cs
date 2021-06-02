@@ -10,12 +10,12 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
-        public static AssetTypeTemplateField MakeTemplateBaseField(this AssetsManager am, AssetsFile file, AssetDetailsListItem listItem, bool forceFromCldb = false)
+        public static AssetTypeTemplateField MakeTemplateBaseField(this AssetsManager am, AssetsFile file, AssetItem item, bool forceFromCldb = false)
         {
             var hasTypeTree = file.typeTree.hasTypeTree;
             var baseField = new AssetTypeTemplateField();
-            var scriptIndex = listItem.MonoID;
-            var fixedId = AssetHelper.FixAudioID(listItem.TypeID);
+            var scriptIndex = item.MonoID;
+            var fixedId = AssetHelper.FixAudioID(item.TypeID);
 
             if (hasTypeTree && !forceFromCldb)
             {

@@ -4,14 +4,14 @@ namespace AssetsAdvancedEditor.Assets
 {
     public class AssetModifier
     {
-        public static AssetsReplacer CreateAssetReplacer(AssetDetailsListItem listItem, byte[] data)
+        public static AssetsReplacer CreateAssetReplacer(AssetItem item, byte[] data)
         {
-            return new AssetsReplacerFromMemory(listItem.FileID, listItem.PathID, (int)listItem.TypeID, listItem.MonoID, data);
+            return new AssetsReplacerFromMemory(item.FileID, item.PathID, (int)item.TypeID, item.MonoID, data);
         }
 
-        public static AssetsReplacer CreateAssetRemover(AssetDetailsListItem listItem)
+        public static AssetsReplacer CreateAssetRemover(AssetItem item)
         {
-            return new AssetsRemover(listItem.FileID, listItem.PathID, (int)listItem.TypeID, listItem.MonoID);
+            return new AssetsRemover(item.FileID, item.PathID, (int)item.TypeID, item.MonoID);
         }
 
         public static BundleReplacer CreateBundleReplacer(string name, bool isSerialized, byte[] data)

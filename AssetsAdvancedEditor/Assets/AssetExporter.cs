@@ -13,11 +13,11 @@ namespace AssetsAdvancedEditor.Assets
 
         public AssetExporter(AssetsWorkspace workspace) => Workspace = workspace;
 
-        public void ExportRawAsset(string path, AssetDetailsListItem listItem)
+        public void ExportRawAsset(string path, AssetItem item)
         {
-            var file = Workspace.LoadedFiles[listItem.FileID];
+            var file = Workspace.LoadedFiles[item.FileID];
             var br = file.file.reader;
-            var assetId = new AssetID(file.path, listItem.PathID);
+            var assetId = new AssetID(file.path, item.PathID);
             byte[] data;
             if (Workspace.NewAssetDatas.ContainsKey(assetId))
             {
@@ -25,25 +25,25 @@ namespace AssetsAdvancedEditor.Assets
             }
             else
             {
-                br.Position = listItem.Position;
-                data = br.ReadBytes((int)listItem.Size);
+                br.Position = item.Position;
+                data = br.ReadBytes((int)item.Size);
             }
             File.WriteAllBytes(path, data);
         }
 
-        public void ExportDump(string path, AssetDetailsListItem listItem, DumpType dumpType)
+        public void ExportDump(string path, AssetItem item, DumpType dumpType)
         {
             using var fs = File.OpenWrite(path);
             using var writer = new StreamWriter(fs);
-            ExportDump(writer, listItem, dumpType);
+            ExportDump(writer, item, dumpType);
         }
 
-        public void ExportDump(StreamWriter writer, AssetDetailsListItem listItem, DumpType dumpType)
+        public void ExportDump(StreamWriter writer, AssetItem item, DumpType dumpType)
         {
             Writer = writer;
             try
             {
-                var field = Workspace.GetAssetData(listItem).Instance.GetBaseField();
+                var field = Workspace.GetAssetData(item).Instance.GetBaseField();
                 switch (dumpType)
                 {
                     case DumpType.TXT:

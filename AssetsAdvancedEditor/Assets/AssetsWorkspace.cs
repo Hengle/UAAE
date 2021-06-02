@@ -14,7 +14,7 @@ namespace AssetsAdvancedEditor.Assets
         public bool FromBundle { get; }
 
         public List<AssetsFileInstance> LoadedFiles { get; }
-        public List<AssetDetailsListItem> LoadedAssets { get; }
+        public List<AssetItem> LoadedAssets { get; }
 
         public AssetImporter Importer { get; }
         public AssetExporter Exporter { get; }
@@ -34,7 +34,7 @@ namespace AssetsAdvancedEditor.Assets
             FromBundle = fromBundle;
 
             LoadedFiles = new List<AssetsFileInstance>();
-            LoadedAssets = new List<AssetDetailsListItem>();
+            LoadedAssets = new List<AssetItem>();
 
             Importer = new AssetImporter(this);
             Exporter = new AssetExporter(this);
@@ -84,30 +84,30 @@ namespace AssetsAdvancedEditor.Assets
                 NewAssetDatas.Remove(assetId);
             }
 
-            Modified = NewAssets.Any();
+            Modified = NewAssets.Count != 0;
         }
 
-        public AssetData GetAssetData(AssetDetailsListItem listItem, bool onlyGetInfo = false, bool forceFromCldb = false)
+        public AssetData GetAssetData(AssetItem item, bool onlyGetInfo = false, bool forceFromCldb = false)
         {
-            var file = LoadedFiles[listItem.FileID];
-            var assetId = new AssetID(file.path, listItem.PathID);
+            var file = LoadedFiles[item.FileID];
+            var assetId = new AssetID(file.path, item.PathID);
             AssetData data;
             if (NewAssetDatas.ContainsKey(assetId))
             {
                 data = new AssetData
                 {
-                    AssetItem = listItem,
-                    Instance = !onlyGetInfo ? GetTypeInstanceNewData(file, listItem, NewAssetDatas[assetId], forceFromCldb) : null,
+                    Item = item,
+                    Instance = !onlyGetInfo ? GetTypeInstanceNewData(file, item, NewAssetDatas[assetId], forceFromCldb) : null,
                     Replacer = NewAssets[assetId],
                     File = file
                 };
             }
             else
             {
-                var info = file.table.GetAssetInfo(listItem.PathID);
+                var info = file.table.GetAssetInfo(item.PathID);
                 data = new AssetData
                 {
-                    AssetItem = listItem,
+                    Item = item,
                     Instance = !onlyGetInfo ? Am.GetTypeInstance(file, info, forceFromCldb) : null,
                     File = file
                 };
@@ -115,10 +115,10 @@ namespace AssetsAdvancedEditor.Assets
             return data;
         }
 
-        public AssetTypeInstance GetTypeInstanceNewData(AssetsFileInstance file, AssetDetailsListItem listItem,
+        public AssetTypeInstance GetTypeInstanceNewData(AssetsFileInstance file, AssetItem item,
             MemoryStream ms, bool forceFromCldb = false)
         {
-            return new (Am.MakeTemplateBaseField(file.file, listItem, forceFromCldb), new AssetsFileReader(ms), 0);
+            return new (Am.MakeTemplateBaseField(file.file, item, forceFromCldb), new AssetsFileReader(ms), 0);
         }
     }
 }

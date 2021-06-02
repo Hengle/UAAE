@@ -10,13 +10,13 @@ namespace AssetsAdvancedEditor.Winforms
     public partial class AddAssetsDialog : Form
     {
         public AssetsWorkspace Workspace;
-        public List<AssetDetailsListItem> ListItems;
+        public List<AssetItem> items;
         private static long _nextPathId;
         public AddAssetsDialog(AssetsWorkspace workspace)
         {
             InitializeComponent();
             Workspace = workspace;
-            ListItems = new List<AssetDetailsListItem>();
+            items = new List<AssetItem>();
         }
 
         private void AddAssetDialog_Load(object sender, EventArgs e)
@@ -115,7 +115,7 @@ namespace AssetsAdvancedEditor.Winforms
             var count = Convert.ToInt32(boxCount.Text);
             for (var i = 0; i < count; i++)
             {
-                ListItems.Add(new AssetDetailsListItem
+                items.Add(new AssetItem
                 {
                     Type = type,
                     TypeID = typeId,
