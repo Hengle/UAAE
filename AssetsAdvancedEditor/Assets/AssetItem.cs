@@ -12,6 +12,7 @@
         public string Modified { get; set; }
         public long Position { get; set; }
         public ushort MonoID { get; set; }
+        public int Index { get; set; }
 
         public string[] ToArray()
         {

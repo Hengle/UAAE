@@ -1,6 +1,6 @@
 ﻿namespace AssetsAdvancedEditor.Winforms
 {
-    partial class AssetDataViewer
+    partial class AssetData
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssetDataViewer));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AssetData));
             this.tcDataView = new System.Windows.Forms.TabControl();
             this.tpTreeView = new System.Windows.Forms.TabPage();
             this.rawViewTree = new System.Windows.Forms.TreeView();

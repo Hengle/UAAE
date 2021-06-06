@@ -1,8 +1,6 @@
 ﻿using AssetsTools.NET;
-using AssetsTools.NET.Extra;
 using System.IO;
 using System.Linq;
-using AssetsAdvancedEditor.Assets;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
 using SevenZip.Compression.LZMA;
 
@@ -10,27 +8,6 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
-        public static AssetTypeTemplateField MakeTemplateBaseField(this AssetsManager am, AssetsFile file, AssetItem item, bool forceFromCldb = false)
-        {
-            var hasTypeTree = file.typeTree.hasTypeTree;
-            var baseField = new AssetTypeTemplateField();
-            var scriptIndex = item.MonoID;
-            var fixedId = AssetHelper.FixAudioID(item.TypeID);
-
-            if (hasTypeTree && !forceFromCldb)
-            {
-                baseField.From0D(
-                    scriptIndex == 0xFFFF
-                        ? AssetHelper.FindTypeTreeTypeByID(file.typeTree, fixedId)
-                        : AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, scriptIndex), 0);
-            }
-            else
-            {
-                baseField.FromClassDatabase(am.classFile, AssetHelper.FindAssetClassByID(am.classFile, fixedId), 0);
-            }
-            return baseField;
-        }
-
         public static bool IsBundleDataCompressed(this AssetBundleFile bundle)
         {
             var reader = bundle.reader;

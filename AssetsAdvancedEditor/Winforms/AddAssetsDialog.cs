@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
+using AssetsAdvancedEditor.Utils;
+using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 
 namespace AssetsAdvancedEditor.Winforms
@@ -10,126 +12,211 @@ namespace AssetsAdvancedEditor.Winforms
     public partial class AddAssetsDialog : Form
     {
         public AssetsWorkspace Workspace;
-        public List<AssetItem> items;
-        private static long _nextPathId;
+        public List<AssetItem> Items;
+        public long NextPathId;
         public AddAssetsDialog(AssetsWorkspace workspace)
         {
             InitializeComponent();
             Workspace = workspace;
-            items = new List<AssetItem>();
+            Items = new List<AssetItem>();
         }
 
         private void AddAssetDialog_Load(object sender, EventArgs e)
         {
             var i = 0;
-            foreach (var file in Workspace.LoadedFiles)
+            foreach (var fileInst in Workspace.LoadedFiles)
             {
-                cboxFileID.Items.Add($"{i} - {file.name}");
-                i++;
+                cboxFileID.Items.Add($"{i++} - {fileInst.name}");
             }
             cboxFileID.SelectedIndex = 0;
             cboxTypePreset.SelectedIndex = 0;
-            _nextPathId = GetLastPathId();
+            NextPathId = GetLastPathId();
             boxPathID.Text = GetNextPathId().ToString();
         }
 
-        private static long GetNextPathId() => ++_nextPathId;
+        private long GetNextPathId() => ++NextPathId;
 
         private long GetLastPathId()
         {
             var fileId = cboxFileID.SelectedIndex;
-            var max = Workspace.LoadedFiles[fileId].table.assetFileInfo.Max(i => i.index);
+            var lastId = Workspace.LoadedFiles[fileId].table.assetFileInfo.Max(i => i.index);
 
-            if (Workspace.NewAssets.Count == 0) return max;
+            if (Workspace.ModifiedAssets.Count == 0)
+                return lastId;
 
-            var max2 = Workspace.NewAssets
-                .Where(i => i.Value.GetFileID() == fileId)
+            var newAssetsLastId = Workspace.ModifiedAssets
+                .Where(i => i.Value.Replacer.GetFileID() == fileId)
                 .Max(j => j.Key.pathID);
-            return max > max2 ? max : max2;
+            return lastId > newAssetsLastId ? lastId : newAssetsLastId;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
             var cldb = Workspace.Am.classFile;
-            var typeTree = Workspace.LoadedFiles[cboxFileID.SelectedIndex].file.typeTree;
-            string type;
-            if (uint.TryParse(boxTypeNameOrID.Text, out var typeId))
+            var fileInst = Workspace.LoadedFiles[cboxFileID.SelectedIndex];
+            AssetTypeTemplateField templateField;
+
+            var fileId = cboxFileID.SelectedIndex;
+            if (!long.TryParse(boxPathID.Text, out var pathId))
             {
-                var cldbType = AssetHelper.FindAssetClassByID(cldb, typeId);
-                var hasTypeTree = typeTree.hasTypeTree;
-                if (hasTypeTree)
+                MsgBoxUtils.ShowErrorDialog("Path ID is invalid!");
+                return;
+            }
+            var type = boxTypeNameOrID.Text;
+            int typeId;
+            var createBlankAsset = chboxCreateBlankAssets.Checked;
+
+            if (fileInst.file.typeTree.hasTypeTree)
+            {
+                if (!TryParseTypeTree(fileInst, type, createBlankAsset, out templateField, out typeId))
                 {
-                    var ttType = AssetHelper.FindTypeTreeTypeByID(typeTree, typeId);
-                    if (ttType == null)
+                    if (!TryParseClassDatabase(type, createBlankAsset, out templateField, out typeId))
                     {
-                        type = $"0x{typeId:X8}";
+                        MsgBoxUtils.ShowErrorDialog("Class type is invalid!");
+                        return;
                     }
-                    else if (ttType.typeFieldsEx.Length != 0)
-                    {
-                        type = ttType.typeFieldsEx[0].GetTypeString(ttType.stringTable);
-                    }
-                    else
-                    {
-                        type = cldbType != null ?
-                            cldbType.name.GetString(cldb) : $"0x{typeId:X8}";
-                    }
-                }
-                else
-                {
-                    type = cldbType != null ?
-                        cldbType.name.GetString(cldb) : $"0x{typeId:X8}";
+
+                    //has typetree but had to lookup to cldb
+                    //we need to add a new typetree entry because this is
+                    //probably not a type that existed in this bundle
+                    fileInst.file.typeTree.unity5Types.Add(C2T5.Cldb2TypeTree(cldb, typeId));
                 }
             }
             else
             {
-                type = boxTypeNameOrID.Text;
-                var cldbType = AssetHelper.FindAssetClassByName(cldb, type);
-                var hasTypeTree = typeTree.hasTypeTree;
-                if (hasTypeTree)
+                if (!TryParseClassDatabase(type, createBlankAsset, out templateField, out typeId))
                 {
-                    var ttType = AssetHelper.FindTypeTreeTypeByName(typeTree, type);
-                    if (ttType != null)
-                    {
-                        typeId = (uint)ttType.classId;
-                    }
-                    else
-                    {
-                        if (cldbType != null)
-                        {
-                            typeId = (uint)cldbType.classId;
-                        }
-                    }
-                }
-                else
-                {
-                    if (cldbType != null)
-                    {
-                        typeId = (uint)cldbType.classId;
-                    }
+                    MsgBoxUtils.ShowErrorDialog("Class type is invalid!");
+                    return;
                 }
             }
-            var fileId = cboxFileID.SelectedIndex;
-            var pathId = Convert.ToInt64(boxPathID.Text);
+
             var monoSelected = cboxTypePreset.SelectedIndex == 1;
-            var monoId = typeId == 0x72 && monoSelected ? Convert.ToUInt16(boxMonoID.Text) : ushort.MaxValue;
-            var count = Convert.ToInt32(boxCount.Text);
+
+            ushort monoId;
+            if (typeId != 0x72 || !monoSelected)
+            {
+                monoId = ushort.MaxValue;
+            }
+            else
+            {
+                if (!ushort.TryParse(boxMonoID.Text, out monoId))
+                {
+                    MsgBoxUtils.ShowErrorDialog("Mono ID is invalid!");
+                    return;
+                }
+            }
+
+            if (!int.TryParse(boxCount.Text, out var count))
+            {
+                MsgBoxUtils.ShowErrorDialog("The count of assets being created is invalid!");
+                return;
+            }
+
+            var replacers = new List<AssetsReplacer>();
+            byte[] assetBytes;
+            if (createBlankAsset)
+            {
+                var baseField = ValueBuilder.DefaultValueFieldFromTemplate(templateField);
+                assetBytes = baseField.WriteToByteArray();
+            }
+            else
+            {
+                assetBytes = Array.Empty<byte>();
+            }
             for (var i = 0; i < count; i++)
             {
-                items.Add(new AssetItem
+                var item = new AssetItem
                 {
                     Type = type,
-                    TypeID = typeId,
+                    TypeID = (uint)typeId,
                     FileID = fileId,
                     PathID = pathId + i,
                     Modified = "*",
                     MonoID = monoId
-                });
+                };
+                Items.Add(item);
+                replacers.Add(AssetModifier.CreateAssetReplacer(item, assetBytes));
             }
+            Workspace.AddReplacers(replacers);
+            DialogResult = DialogResult.OK;
+        }
+
+        private bool TryParseClassDatabase(string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
+        {
+            templateField = null;
+
+            var cldb = Workspace.Am.classFile;
+            ClassDatabaseType cldbType;
+            bool needsTypeId;
+            if (int.TryParse(type, out typeId))
+            {
+                cldbType = AssetHelper.FindAssetClassByID(cldb, (uint)typeId);
+                needsTypeId = false;
+            }
+            else
+            {
+                cldbType = AssetHelper.FindAssetClassByName(cldb, type);
+                needsTypeId = true;
+            }
+
+            if (cldbType == null)
+            {
+                return false;
+            }
+
+            if (needsTypeId)
+            {
+                typeId = cldbType.classId;
+            }
+
+            if (createBlankAsset)
+            {
+                templateField = new AssetTypeTemplateField();
+                templateField.FromClassDatabase(cldb, cldbType, 0);
+            }
+            return true;
+        }
+
+        private bool TryParseTypeTree(AssetsFileInstance fileInst, string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
+        {
+            templateField = null;
+
+            var tt = fileInst.file.typeTree;
+            Type_0D ttType;
+            bool needsTypeId;
+            if (int.TryParse(type, out typeId))
+            {
+                ttType = AssetHelper.FindTypeTreeTypeByID(tt, (uint)typeId);
+                needsTypeId = false;
+            }
+            else
+            {
+                ttType = AssetHelper.FindTypeTreeTypeByName(tt, type);
+                needsTypeId = true;
+            }
+
+            if (ttType == null)
+            {
+                return false;
+            }
+
+            if (needsTypeId)
+            {
+                typeId = ttType.classId;
+            }
+
+            if (createBlankAsset)
+            {
+                templateField = new AssetTypeTemplateField();
+                templateField.From0D(ttType, 0);
+            }
+            return true;
         }
 
         private void cboxFileID_SelectedIndexChanged(object sender, EventArgs e)
         {
-            _nextPathId = GetLastPathId();
+            NextPathId = GetLastPathId();
             boxPathID.Text = GetNextPathId().ToString();
         }
 

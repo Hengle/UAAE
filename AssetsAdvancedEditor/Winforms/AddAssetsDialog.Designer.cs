@@ -44,6 +44,8 @@ namespace AssetsAdvancedEditor.Winforms
             this.boxCount = new System.Windows.Forms.TextBox();
             this.lblCount = new System.Windows.Forms.Label();
             this.cboxMonoTypes = new System.Windows.Forms.ComboBox();
+            this.chboxCreateBlankAssets = new System.Windows.Forms.CheckBox();
+            this.lblCreateBlankAssets = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // cboxTypePreset
@@ -130,7 +132,7 @@ namespace AssetsAdvancedEditor.Winforms
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(226, 194);
+            this.btnCancel.Location = new System.Drawing.Point(227, 212);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(76, 23);
             this.btnCancel.TabIndex = 9;
@@ -139,8 +141,7 @@ namespace AssetsAdvancedEditor.Winforms
             // 
             // btnOK
             // 
-            this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(105, 194);
+            this.btnOK.Location = new System.Drawing.Point(120, 212);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(76, 23);
             this.btnOK.TabIndex = 8;
@@ -173,6 +174,24 @@ namespace AssetsAdvancedEditor.Winforms
             this.cboxMonoTypes.Size = new System.Drawing.Size(201, 23);
             this.cboxMonoTypes.TabIndex = 12;
             // 
+            // chboxCreateBlankAssets
+            // 
+            this.chboxCreateBlankAssets.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chboxCreateBlankAssets.Location = new System.Drawing.Point(120, 181);
+            this.chboxCreateBlankAssets.Name = "chboxCreateBlankAssets";
+            this.chboxCreateBlankAssets.Size = new System.Drawing.Size(23, 23);
+            this.chboxCreateBlankAssets.TabIndex = 13;
+            this.chboxCreateBlankAssets.UseVisualStyleBackColor = true;
+            // 
+            // lblCreateBlankAssets
+            // 
+            this.lblCreateBlankAssets.AutoSize = true;
+            this.lblCreateBlankAssets.Location = new System.Drawing.Point(12, 185);
+            this.lblCreateBlankAssets.Name = "lblCreateBlankAssets";
+            this.lblCreateBlankAssets.Size = new System.Drawing.Size(102, 15);
+            this.lblCreateBlankAssets.TabIndex = 14;
+            this.lblCreateBlankAssets.Text = "Create blank asset";
+            // 
             // AddAssetsDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -180,7 +199,9 @@ namespace AssetsAdvancedEditor.Winforms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(314, 229);
+            this.ClientSize = new System.Drawing.Size(314, 247);
+            this.Controls.Add(this.lblCreateBlankAssets);
+            this.Controls.Add(this.chboxCreateBlankAssets);
             this.Controls.Add(this.boxCount);
             this.Controls.Add(this.lblCount);
             this.Controls.Add(this.btnCancel);
@@ -222,5 +243,7 @@ namespace AssetsAdvancedEditor.Winforms
         private System.Windows.Forms.TextBox boxCount;
         private System.Windows.Forms.Label lblCount;
         private System.Windows.Forms.ComboBox cboxMonoTypes;
+        private System.Windows.Forms.CheckBox chboxCreateBlankAssets;
+        private System.Windows.Forms.Label lblCreateBlankAssets;
     }
 }

@@ -70,12 +70,12 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 case DetectedFileType.AssetsFile:
                 {
-                    var file = Am.LoadAssetsFile(selectedFile, true);
+                    var fileInst = Am.LoadAssetsFile(selectedFile, true);
 
-                    if (!LoadOrAskCldb(file))
+                    if (!LoadOrAskCldb(fileInst))
                         return;
 
-                    new AssetsViewer(Am, file).ShowDialog();
+                    new AssetsViewer(Am, fileInst).ShowDialog();
                     break;
                 }
                 case DetectedFileType.BundleFile:
@@ -166,9 +166,9 @@ namespace AssetsAdvancedEditor.Winforms
             lblFileName.Text = @"No file opened.";
         }
 
-        private bool LoadOrAskCldb(AssetsFileInstance file)
+        private bool LoadOrAskCldb(AssetsFileInstance fileInst)
         {
-            var unityVersion = file.file.typeTree.unityVersion;
+            var unityVersion = fileInst.file.typeTree.unityVersion;
             if (Am.LoadClassDatabaseFromPackage(unityVersion) == null)
             {
                 var version = new VersionDialog(unityVersion, Am.classPackage);
@@ -242,7 +242,7 @@ namespace AssetsAdvancedEditor.Winforms
             foreach (var file in ofd.FileNames)
             {
                 var fileName = Path.GetFileName(file);
-                var fileBytes = File.ReadAllBytes(file);
+                var fileBytes = File.ReadAllBytes(fileName);
                 var isSerialized = !(file.EndsWith(".resS") || file.EndsWith(".resource"));
                 var replacer = AssetModifier.CreateBundleReplacer(fileName, isSerialized, fileBytes);
                 if (!cboxBundleContents.Items.Contains(fileName))
@@ -292,12 +292,12 @@ namespace AssetsAdvancedEditor.Winforms
             if (isAssetsFile)
             {
                 var assetMemPath = Path.Combine(BundleInst.path, bunAssetName);
-                var file = Am.LoadAssetsFile(assetStream, assetMemPath, true);
+                var fileInst = Am.LoadAssetsFile(assetStream, assetMemPath, true);
 
-                if (!LoadOrAskCldb(file))
+                if (!LoadOrAskCldb(fileInst))
                     return;
 
-                var info = new AssetsViewer(Am, file, true);
+                var info = new AssetsViewer(Am, fileInst, true);
                 info.Closing += AssetsViewerClosing;
                 info.Show();
             }

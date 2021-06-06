@@ -13,6 +13,7 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 * Bundle file compression/decompression
 * Data view
 * Dependency loading
+* Monobehaviour deserialization in data view
 * Export/Import assets to dump/raw format (only TXT and one asset import)
 * Save modified assets files and bundle file
 ## Todo
@@ -32,7 +33,7 @@ This list may be incomplete!
   * Add container option
   * Edit container option
   * Remove container option
-* Monobehaviour deserialization in data view (including il2cpp technology)
+* ~~Monobehaviour deserialization in data view~~ (including il2cpp technology)
 * Asset list searching
   * By name
   * Binary content

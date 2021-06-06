@@ -15,13 +15,13 @@ namespace AssetsAdvancedEditor.Assets
 
         public void ExportRawAsset(string path, AssetItem item)
         {
-            var file = Workspace.LoadedFiles[item.FileID];
-            var br = file.file.reader;
-            var assetId = new AssetID(file.path, item.PathID);
+            var fileInst = Workspace.LoadedFiles[item.FileID];
+            var assetId = new AssetID(fileInst.path, item.PathID);
+            var br = fileInst.file.reader;
             byte[] data;
-            if (Workspace.NewAssetDatas.ContainsKey(assetId))
+            if (Workspace.ModifiedAssets.ContainsKey(assetId))
             {
-                data = Workspace.NewAssetDatas[assetId].ToArray();
+                data = Workspace.ModifiedAssets[assetId].Data.ToArray();
             }
             else
             {
@@ -43,7 +43,7 @@ namespace AssetsAdvancedEditor.Assets
             Writer = writer;
             try
             {
-                var field = Workspace.GetAssetData(item).Instance.GetBaseField();
+                var field = Workspace.GetBaseField(item);
                 switch (dumpType)
                 {
                     case DumpType.TXT:
