@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Winforms;
 
 namespace AssetsAdvancedEditor
@@ -23,13 +24,13 @@ namespace AssetsAdvancedEditor
             }
             if (args.Length > 0)
             {
-                // todo
+                CommandLineParser.Parse(args);
             }
             else
             {
                 if (usesConsole)
                 {
-                    // todo
+                    CommandLineParser.PrintHelp();
                 }
             }
             Application.SetHighDpiMode(HighDpiMode.SystemAware);

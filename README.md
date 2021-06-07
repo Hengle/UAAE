@@ -16,6 +16,8 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 * Monobehaviour deserialization in data view
 * Export/Import assets to dump/raw format (only TXT and one asset import)
 * Save modified assets files and bundle file
+* Command line support (beta)
+* Plugin support (no plugins yet)
 ## Todo
 This list may be incomplete!
 * Advanced error checking (with logging)
@@ -44,7 +46,7 @@ This list may be incomplete!
 * Dump export/import in
   * JSON format
   * XML format
-* Plugin support
+* ~~Plugin support~~
 * Plugins
   * Texture plugin
   * TextAsset plugin
@@ -62,7 +64,7 @@ This list may be incomplete!
   * Asset editor (this is where the list of plugins will be)
 * ~~Bundle compression support~~
 * Batch import/export assets
-* Command line support
+* ~~Command line support~~
 * Blank assets file/bundle creation
 * Blank ResS/Resource file creation
 * Blank MonoScript creation
