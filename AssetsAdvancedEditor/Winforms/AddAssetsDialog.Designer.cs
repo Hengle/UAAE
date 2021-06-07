@@ -176,10 +176,10 @@ namespace AssetsAdvancedEditor.Winforms
             // 
             // chboxCreateBlankAssets
             // 
-            this.chboxCreateBlankAssets.Appearance = System.Windows.Forms.Appearance.Button;
-            this.chboxCreateBlankAssets.Location = new System.Drawing.Point(120, 181);
+            this.chboxCreateBlankAssets.AutoSize = true;
+            this.chboxCreateBlankAssets.Location = new System.Drawing.Point(118, 186);
             this.chboxCreateBlankAssets.Name = "chboxCreateBlankAssets";
-            this.chboxCreateBlankAssets.Size = new System.Drawing.Size(23, 23);
+            this.chboxCreateBlankAssets.Size = new System.Drawing.Size(15, 14);
             this.chboxCreateBlankAssets.TabIndex = 13;
             this.chboxCreateBlankAssets.UseVisualStyleBackColor = true;
             // 

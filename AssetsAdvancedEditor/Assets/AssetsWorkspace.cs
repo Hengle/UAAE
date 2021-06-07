@@ -87,7 +87,6 @@ namespace AssetsAdvancedEditor.Assets
                 ModifiedAssets.Add(assetId, LoadedAssets[assetId]);
                 LoadedAssets.Remove(assetId);
             }
-
             Modified = true;
         }
 
@@ -118,7 +117,6 @@ namespace AssetsAdvancedEditor.Assets
                     LoadedAssets.Remove(assetId);
                 }
             }
-
             Modified = true;
         }
 

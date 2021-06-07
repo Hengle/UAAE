@@ -125,7 +125,7 @@ namespace AssetsAdvancedEditor.Winforms
 
             if (typeId == 0x72)
             {
-                monoId = (ushort) (0xFFFFFFFF - info.curFileTypeOrIndex);
+                monoId = (ushort)(0xFFFFFFFF - info.curFileTypeOrIndex);
             }
 
             var item = new AssetItem
@@ -255,20 +255,22 @@ namespace AssetsAdvancedEditor.Winforms
                 var cont = Workspace.GetAssetContainer(oldItem.FileID, oldItem.PathID);
                 var field = cont.TypeInstance.GetBaseField();
                 var replacer = cont.Replacer;
-                var value = field.Get("m_Name").GetValue();
+                var nameValue = field.Get("m_Name").GetValue();
                 var name = "";
+                var type = field.GetFieldType();
+                var classId = (uint) replacer.GetClassID();
                 var index = assetList.SelectedIndices[i];
 
-                if (value != null)
+                if (nameValue != null)
                 {
-                    name = value.AsString();
+                    name = nameValue.AsString();
                 }
 
                 var item = new AssetItem
                 {
                     Name = name,
-                    Type = field.GetFieldType(),
-                    TypeID = (uint)replacer.GetClassID(),
+                    Type = type,
+                    TypeID = classId,
                     FileID = replacer.GetFileID(),
                     PathID = replacer.GetPathID(),
                     Size = replacer.GetSize(),
@@ -379,7 +381,7 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void AssetsViewer_KeyDown(object sender, KeyEventArgs e)
         {
-            // todo, in the next update
+            // todo
             switch (e.KeyCode)
             {
                 case Keys.Y when e.Control:
