@@ -58,29 +58,19 @@ namespace AssetsAdvancedEditor.Assets
             UnityVersion = MainInstance.file.typeTree.unityVersion;
         }
 
-        public void AddReplacer(AssetsReplacer replacer, MemoryStream previewStream = null)
+        public void AddContainer(AssetContainer cont)
         {
+            var replacer = cont.Replacer;
+            if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 
             if (ModifiedAssets.ContainsKey(assetId))
-                RemoveReplacer(ModifiedAssets[assetId].Replacer);
-
-            if (previewStream == null)
-            {
-                var newStream = new MemoryStream();
-                var newWriter = new AssetsFileWriter(newStream);
-                replacer.Write(newWriter);
-                newStream.Position = 0;
-                previewStream = newStream;
-            }
+                RemoveContainer(cont);
 
             if (replacer is not AssetsRemover)
             {
-                var cont = new AssetContainer(previewStream, LoadedAssets[assetId].Item, replacer, forInstance);
-
                 ModifiedAssets[assetId] = cont;
-                LoadedAssets[assetId] = cont;
             }
             else
             {
@@ -90,25 +80,19 @@ namespace AssetsAdvancedEditor.Assets
             Modified = true;
         }
 
-        public void AddReplacers(List<AssetsReplacer> replacers)
+        public void AddContainers(List<AssetContainer> conts)
         {
-            foreach (var replacer in replacers)
+            foreach (var cont in conts)
             {
+                var replacer = cont.Replacer;
                 var forInstance = LoadedFiles[replacer.GetFileID()];
                 var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 
                 if (ModifiedAssets.ContainsKey(assetId))
-                    RemoveReplacer(ModifiedAssets[assetId].Replacer);
-
-                var newStream = new MemoryStream();
-                var newWriter = new AssetsFileWriter(newStream);
-                replacer.Write(newWriter);
-                newStream.Position = 0;
+                    RemoveContainer(cont);
 
                 if (replacer is not AssetsRemover)
                 {
-                    var cont = new AssetContainer(newStream, LoadedAssets[assetId].Item, replacer, forInstance);
-
                     ModifiedAssets[assetId] = cont;
                 }
                 else
@@ -120,8 +104,9 @@ namespace AssetsAdvancedEditor.Assets
             Modified = true;
         }
 
-        public void RemoveReplacer(AssetsReplacer replacer, bool closePreviewStream = true)
+        public void RemoveContainer(AssetContainer cont, bool closePreviewStream = true)
         {
+            var replacer = cont.Replacer;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 
@@ -135,10 +120,11 @@ namespace AssetsAdvancedEditor.Assets
             Modified = ModifiedAssets.Count != 0;
         }
 
-        public void RemoveReplacers(List<AssetsReplacer> replacers)
+        public void RemoveContainers(List<AssetContainer> conts)
         {
-            foreach (var replacer in replacers)
+            foreach (var cont in conts)
             {
+                var replacer = cont.Replacer;
                 var forInstance = LoadedFiles[replacer.GetFileID()];
                 var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 

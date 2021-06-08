@@ -37,5 +37,19 @@ namespace AssetsAdvancedEditor.Assets
             TypeInstance = typeInst;
             Data = ms;
         }
+
+        public AssetContainer(AssetItem item, AssetsReplacer replacer, AssetsFileInstance fileInst, AssetTypeInstance typeInst = null)
+        {
+            var ms = new MemoryStream();
+            var writer = new AssetsFileWriter(ms);
+            replacer.Write(writer);
+            ms.Position = 0;
+            FileReader = new AssetsFileReader(ms);
+            Item = item;
+            Replacer = replacer;
+            FileInstance = fileInst;
+            TypeInstance = typeInst;
+            Data = ms;
+        }
     }
 }

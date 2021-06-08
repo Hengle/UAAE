@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
@@ -113,7 +114,7 @@ namespace AssetsAdvancedEditor.Winforms
                 return;
             }
 
-            var replacers = new List<AssetsReplacer>();
+            var conts = new List<AssetContainer>();
             byte[] assetBytes;
             if (createBlankAsset)
             {
@@ -136,9 +137,10 @@ namespace AssetsAdvancedEditor.Winforms
                     MonoID = monoId
                 };
                 Items.Add(item);
-                replacers.Add(AssetModifier.CreateAssetReplacer(item, assetBytes));
+                var cont = new AssetContainer(new MemoryStream(assetBytes), item, AssetModifier.CreateAssetReplacer(item, assetBytes), fileInst);
+                conts.Add(cont);
             }
-            Workspace.AddReplacers(replacers);
+            Workspace.AddContainers(conts);
             DialogResult = DialogResult.OK;
         }
 

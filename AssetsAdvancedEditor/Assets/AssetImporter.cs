@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using AssetsAdvancedEditor.Utils;
@@ -107,7 +108,7 @@ namespace AssetsAdvancedEditor.Assets
                         type.Split()[0] + ' ' + type.Split()[1] : 
                         type.Split()[0];
 
-                    var success = WriteData(type, valueStr);
+                    var success = WriteData(valueStr);
 
                     if (!success)
                         error += $"An error occurred while writing the value \"{valueStr}\" of type \"{type}\".\n";
@@ -126,61 +127,56 @@ namespace AssetsAdvancedEditor.Assets
                 throw new Exception(error);
         }
 
-        private bool WriteData(string type, string value)
+        private bool WriteData(object value)
         {
             try
             {
-                var valueType = AssetTypeValueField.GetValueTypeByTypeName(type);
-                switch (valueType)
+                switch (value)
                 {
-                    case EnumValueTypes.Bool:
-                        Writer.Write(bool.Parse(value));
+                    case bool asBool:
+                        Writer.Write(asBool);
                         break;
-                    case EnumValueTypes.Int8:
-                        Writer.Write(sbyte.Parse(value));
+                    case sbyte asInt8:
+                        Writer.Write(asInt8);
                         break;
-                    case EnumValueTypes.UInt8:
-                        Writer.Write(byte.Parse(value));
+                    case byte asUInt8:
+                        Writer.Write(asUInt8);
                         break;
-                    case EnumValueTypes.Int16:
-                        Writer.Write(short.Parse(value));
+                    case short asInt16:
+                        Writer.Write(asInt16);
                         break;
-                    case EnumValueTypes.UInt16:
-                        Writer.Write(ushort.Parse(value));
+                    case ushort asUInt16:
+                        Writer.Write(asUInt16);
                         break;
-                    case EnumValueTypes.Int32:
-                        Writer.Write(int.Parse(value));
+                    case int asInt32:
+                        Writer.Write(asInt32);
                         break;
-                    case EnumValueTypes.UInt32:
-                        Writer.Write(uint.Parse(value));
+                    case uint asUInt32:
+                        Writer.Write(asUInt32);
                         break;
-                    case EnumValueTypes.Int64:
-                        Writer.Write(long.Parse(value));
+                    case long asInt64:
+                        Writer.Write(asInt64);
                         break;
-                    case EnumValueTypes.UInt64:
-                        Writer.Write(ulong.Parse(value));
+                    case ulong asUInt64:
+                        Writer.Write(asUInt64);
                         break;
-                    case EnumValueTypes.Float:
-                        Writer.Write(float.Parse(value));
+                    case float asFloat:
+                        Writer.Write(asFloat);
                         break;
-                    case EnumValueTypes.Double:
-                        Writer.Write(double.Parse(value));
+                    case double asDouble:
+                        Writer.Write(asDouble);
                         break;
-                    case EnumValueTypes.String:
-                    {
-                        var firstQuote = value.IndexOf('"');
-                        var lastQuote = value.LastIndexOf('"');
-                        var valueStrFix = value[(firstQuote + 1)..(lastQuote - firstQuote)];
-                        valueStrFix = valueStrFix
-                            .Replace("\\r", "\r")
-                            .Replace("\\n", "\n");
-                        Writer.WriteCountStringInt32(valueStrFix);
-                        break;
-                    }
-                    case EnumValueTypes.None:
-                    case EnumValueTypes.Array:
-                    case EnumValueTypes.ByteArray:
-                        return false;
+                    case string asString:
+                        {
+                            var firstQuote = asString.IndexOf('"');
+                            var lastQuote = asString.LastIndexOf('"');
+                            var valueStrFix = asString[(firstQuote + 1)..(lastQuote - firstQuote)];
+                            valueStrFix = valueStrFix
+                                .Replace("\\r", "\r")
+                                .Replace("\\n", "\n");
+                            Writer.WriteCountStringInt32(valueStrFix);
+                            break;
+                        }
                     default:
                         return false;
                 }
