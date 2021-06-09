@@ -42,11 +42,11 @@ namespace AssetsAdvancedEditor.Winforms
             var fileId = cboxFileID.SelectedIndex;
             var lastId = Workspace.LoadedFiles[fileId].table.assetFileInfo.Max(i => i.index);
 
-            if (Workspace.ModifiedAssets.Count == 0)
+            if (Workspace.NewAssets.Count == 0)
                 return lastId;
 
-            var newAssetsLastId = Workspace.ModifiedAssets
-                .Where(i => i.Value.Replacer.GetFileID() == fileId)
+            var newAssetsLastId = Workspace.NewAssets
+                .Where(i => i.Value.GetFileID() == fileId)
                 .Max(j => j.Key.pathID);
             return lastId > newAssetsLastId ? lastId : newAssetsLastId;
         }
@@ -69,9 +69,9 @@ namespace AssetsAdvancedEditor.Winforms
 
             if (fileInst.file.typeTree.hasTypeTree)
             {
-                if (!TryParseTypeTree(fileInst, type, createBlankAsset, out templateField, out typeId))
+                if (!TryParseTypeTree(fileInst, ref type, createBlankAsset, out templateField, out typeId))
                 {
-                    if (!TryParseClassDatabase(type, createBlankAsset, out templateField, out typeId))
+                    if (!TryParseClassDatabase(ref type, createBlankAsset, out templateField, out typeId))
                     {
                         MsgBoxUtils.ShowErrorDialog("Class type is invalid!");
                         return;
@@ -85,7 +85,7 @@ namespace AssetsAdvancedEditor.Winforms
             }
             else
             {
-                if (!TryParseClassDatabase(type, createBlankAsset, out templateField, out typeId))
+                if (!TryParseClassDatabase(ref type, createBlankAsset, out templateField, out typeId))
                 {
                     MsgBoxUtils.ShowErrorDialog("Class type is invalid!");
                     return;
@@ -114,7 +114,6 @@ namespace AssetsAdvancedEditor.Winforms
                 return;
             }
 
-            var conts = new List<AssetContainer>();
             byte[] assetBytes;
             if (createBlankAsset)
             {
@@ -133,18 +132,17 @@ namespace AssetsAdvancedEditor.Winforms
                     TypeID = (uint)typeId,
                     FileID = fileId,
                     PathID = pathId + i,
+                    Size = assetBytes.Length,
                     Modified = "*",
                     MonoID = monoId
                 };
                 Items.Add(item);
-                var cont = new AssetContainer(new MemoryStream(assetBytes), item, AssetModifier.CreateAssetReplacer(item, assetBytes), fileInst);
-                conts.Add(cont);
+                Workspace.AddReplacer(AssetModifier.CreateAssetReplacer(item, assetBytes), new MemoryStream(assetBytes));
             }
-            Workspace.AddContainers(conts);
             DialogResult = DialogResult.OK;
         }
 
-        private bool TryParseClassDatabase(string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
+        private bool TryParseClassDatabase(ref string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
         {
             templateField = null;
 
@@ -175,12 +173,18 @@ namespace AssetsAdvancedEditor.Winforms
             if (createBlankAsset)
             {
                 templateField = new AssetTypeTemplateField();
+                if (cldbType.fields.Count == 0)
+                {
+                    typeId = 0x01;
+                    cldbType = AssetHelper.FindAssetClassByID(cldb, 0x01);
+                }
+                type = cldbType.name.GetString(cldb);
                 templateField.FromClassDatabase(cldb, cldbType, 0);
             }
             return true;
         }
 
-        private bool TryParseTypeTree(AssetsFileInstance fileInst, string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
+        private static bool TryParseTypeTree(AssetsFileInstance fileInst, ref string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
         {
             templateField = null;
 
@@ -211,6 +215,12 @@ namespace AssetsAdvancedEditor.Winforms
             if (createBlankAsset)
             {
                 templateField = new AssetTypeTemplateField();
+                if (ttType.typeFieldsExCount == 0)
+                {
+                    typeId = 0x01;
+                    ttType = AssetHelper.FindTypeTreeTypeByID(tt, 0x01);
+                }
+                type = ttType.typeFieldsEx[0].GetTypeString(ttType.stringTable);
                 templateField.From0D(ttType, 0);
             }
             return true;

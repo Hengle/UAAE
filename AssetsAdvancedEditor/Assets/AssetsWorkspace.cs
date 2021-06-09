@@ -17,8 +17,7 @@ namespace AssetsAdvancedEditor.Assets
         public bool FromBundle { get; }
 
         public List<AssetsFileInstance> LoadedFiles { get; }
-        public Dictionary<AssetID, AssetContainer> LoadedAssets { get; }
-        public List<AssetItem> AssetItems { get; }
+        public List<AssetItem> LoadedAssets { get; }
 
         public Dictionary<string, AssetsFileInstance> LoadedFileLookup { get; }
         public Dictionary<string, AssemblyDefinition> LoadedAssemblies { get; }
@@ -26,7 +25,8 @@ namespace AssetsAdvancedEditor.Assets
         public AssetImporter Importer { get; }
         public AssetExporter Exporter { get; }
 
-        public Dictionary<AssetID, AssetContainer> ModifiedAssets { get; }
+        public Dictionary<AssetID, AssetsReplacer> NewAssets { get; }
+        public Dictionary<AssetID, Stream> NewAssetDatas { get; }
 
         public bool Modified { get; set; }
         public string AssetsFileName { get; }
@@ -40,8 +40,7 @@ namespace AssetsAdvancedEditor.Assets
             FromBundle = fromBundle;
 
             LoadedFiles = new List<AssetsFileInstance>();
-            LoadedAssets = new Dictionary<AssetID, AssetContainer>();
-            AssetItems = new List<AssetItem>();
+            LoadedAssets = new List<AssetItem>();
 
             LoadedFileLookup = new Dictionary<string, AssetsFileInstance>();
             LoadedAssemblies = new Dictionary<string, AssemblyDefinition>();
@@ -49,7 +48,8 @@ namespace AssetsAdvancedEditor.Assets
             Importer = new AssetImporter(this);
             Exporter = new AssetExporter(this);
 
-            ModifiedAssets = new Dictionary<AssetID, AssetContainer>();
+            NewAssets = new Dictionary<AssetID, AssetsReplacer>();
+            NewAssetDatas = new Dictionary<AssetID, Stream>();
 
             Modified = false;
 
@@ -58,109 +58,69 @@ namespace AssetsAdvancedEditor.Assets
             UnityVersion = MainInstance.file.typeTree.unityVersion;
         }
 
-        public void AddContainer(AssetContainer cont)
+        public void AddReplacer(AssetsReplacer replacer, MemoryStream previewStream = null)
         {
-            var replacer = cont.Replacer;
             if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 
-            if (ModifiedAssets.ContainsKey(assetId))
-                RemoveContainer(cont);
+            if (NewAssets.ContainsKey(assetId))
+                RemoveReplacer(replacer);
 
-            if (replacer is not AssetsRemover)
+            NewAssets[assetId] = replacer;
+
+            if (previewStream == null)
             {
-                ModifiedAssets[assetId] = cont;
+                var newStream = new MemoryStream();
+                var newWriter = new AssetsFileWriter(newStream);
+                replacer.Write(newWriter);
+                newStream.Position = 0;
+                previewStream = newStream;
             }
-            else
-            {
-                ModifiedAssets.Add(assetId, LoadedAssets[assetId]);
-                LoadedAssets.Remove(assetId);
-            }
+
+            NewAssetDatas[assetId] = previewStream;
+
             Modified = true;
         }
 
-        public void AddContainers(List<AssetContainer> conts)
+        public void RemoveReplacer(AssetsReplacer replacer, bool closePreviewStream = true)
         {
-            foreach (var cont in conts)
-            {
-                var replacer = cont.Replacer;
-                var forInstance = LoadedFiles[replacer.GetFileID()];
-                var assetId = new AssetID(forInstance.path, replacer.GetPathID());
-
-                if (ModifiedAssets.ContainsKey(assetId))
-                    RemoveContainer(cont);
-
-                if (replacer is not AssetsRemover)
-                {
-                    ModifiedAssets[assetId] = cont;
-                }
-                else
-                {
-                    ModifiedAssets.Add(assetId, LoadedAssets[assetId]);
-                    LoadedAssets.Remove(assetId);
-                }
-            }
-            Modified = true;
-        }
-
-        public void RemoveContainer(AssetContainer cont, bool closePreviewStream = true)
-        {
-            var replacer = cont.Replacer;
+            if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 
-            ModifiedAssets.Remove(assetId);
-            if (ModifiedAssets.ContainsKey(assetId))
+            NewAssets.Remove(assetId);
+            if (NewAssetDatas.ContainsKey(assetId))
             {
                 if (closePreviewStream)
-                    ModifiedAssets[assetId].Data.Close();
-                ModifiedAssets.Remove(assetId);
+                    NewAssetDatas[assetId].Close();
+                NewAssetDatas.Remove(assetId);
             }
-            Modified = ModifiedAssets.Count != 0;
-        }
 
-        public void RemoveContainers(List<AssetContainer> conts)
-        {
-            foreach (var cont in conts)
-            {
-                var replacer = cont.Replacer;
-                var forInstance = LoadedFiles[replacer.GetFileID()];
-                var assetId = new AssetID(forInstance.path, replacer.GetPathID());
-
-                if (ModifiedAssets.ContainsKey(assetId))
-                {
-                    ModifiedAssets.Remove(assetId);
-                }
-            }
-            Modified = ModifiedAssets.Count != 0;
+            Modified = NewAssets.Count != 0;
         }
 
         public AssetContainer GetAssetContainer(int fileId, long pathId, bool onlyGetInfo = false, bool forceFromCldb = false)
         {
             var fileInst = LoadedFiles[fileId];
             var assetId = new AssetID(fileInst.path, pathId);
+            var item = LoadedAssets.FirstOrDefault(i => i.FileID == fileId && i.PathID == pathId);
+            if (item == null)
+                return null;
+
             AssetContainer cont;
-            if (ModifiedAssets.ContainsKey(assetId))
+            if (NewAssetDatas.ContainsKey(assetId))
             {
-                cont = ModifiedAssets[assetId];
-
-                if (onlyGetInfo || cont.HasInstance)
-                    return cont;
-
-                var templateField = GetTemplateField(cont.Item, forceFromCldb);
-                var typeInst = new AssetTypeInstance(templateField, cont.FileReader, 0);
-                cont.TypeInstance = typeInst;
+                var reader = new AssetsFileReader(NewAssetDatas[assetId]);
+                var templateField = GetTemplateField(item, forceFromCldb);
+                var typeInst = new AssetTypeInstance(templateField, reader, 0);
+                cont = new AssetContainer(reader, item, fileInst, typeInst);
             }
             else
             {
                 var info = fileInst.table.GetAssetInfo(pathId);
-                cont = LoadedAssets[assetId];
-
-                if (onlyGetInfo || cont.HasInstance)
-                    return cont;
-
-                cont.TypeInstance = Am.GetTypeInstance(fileInst, info, forceFromCldb);
+                var typeInst = Am.GetTypeInstance(fileInst, info, forceFromCldb);
+                cont = new AssetContainer(item, fileInst, typeInst);
             }
             return cont;
         }
@@ -311,10 +271,9 @@ namespace AssetsAdvancedEditor.Assets
 
         public void ClearModified()
         {
-            foreach (var (assetId, cont) in LoadedAssets)
+            foreach (var item in LoadedAssets)
             {
-                cont.Item.Modified = "";
-                LoadedAssets[assetId] = cont;
+                item.Modified = "";
             }
         }
     }

@@ -177,6 +177,8 @@ namespace AssetsAdvancedEditor.Winforms
             // chboxCreateBlankAssets
             // 
             this.chboxCreateBlankAssets.AutoSize = true;
+            this.chboxCreateBlankAssets.Checked = true;
+            this.chboxCreateBlankAssets.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chboxCreateBlankAssets.Location = new System.Drawing.Point(118, 186);
             this.chboxCreateBlankAssets.Name = "chboxCreateBlankAssets";
             this.chboxCreateBlankAssets.Size = new System.Drawing.Size(15, 14);

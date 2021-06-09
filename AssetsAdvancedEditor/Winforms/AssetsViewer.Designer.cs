@@ -467,12 +467,12 @@
             // nameColumn
             // 
             this.nameColumn.Text = "Name";
-            this.nameColumn.Width = 185;
+            this.nameColumn.Width = 195;
             // 
             // containerColumn
             // 
             this.containerColumn.Text = "Container";
-            this.containerColumn.Width = 110;
+            this.containerColumn.Width = 100;
             // 
             // typeColumn
             // 

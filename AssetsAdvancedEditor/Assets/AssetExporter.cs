@@ -15,19 +15,10 @@ namespace AssetsAdvancedEditor.Assets
 
         public void ExportRawAsset(string path, AssetItem item)
         {
-            var fileInst = Workspace.LoadedFiles[item.FileID];
-            var assetId = new AssetID(fileInst.path, item.PathID);
-            var br = fileInst.file.reader;
-            byte[] data;
-            if (Workspace.ModifiedAssets.ContainsKey(assetId))
-            {
-                data = Workspace.ModifiedAssets[assetId].Data.ToArray();
-            }
-            else
-            {
-                br.Position = item.Position;
-                data = br.ReadBytes((int)item.Size);
-            }
+            var cont = Workspace.GetAssetContainer(item.FileID, item.PathID);
+            var br = cont.FileReader;
+            br.Position = item.Position;
+            var data = br.ReadBytes((int)item.Size);
             File.WriteAllBytes(path, data);
         }
 
@@ -77,6 +68,14 @@ namespace AssetsAdvancedEditor.Assets
             if (template.valueType == EnumValueTypes.String)
                 align = "1";
 
+            //mainly to handle enum fields not having the int type name
+            if (template.valueType != EnumValueTypes.None &&
+                template.valueType != EnumValueTypes.Array &&
+                template.valueType != EnumValueTypes.ByteArray)
+            {
+                typeName = CorrectTypeName(template.valueType);
+            }
+
             if (isArray)
             {
                 var sizeTemplate = template.children[0];
@@ -120,6 +119,26 @@ namespace AssetsAdvancedEditor.Assets
                     RecurseTextDump(field.children[i], depth + 1);
                 }
             }
+        }
+
+        private static string CorrectTypeName(EnumValueTypes valueType)
+        {
+            return valueType switch
+            {
+                EnumValueTypes.Bool => "bool",
+                EnumValueTypes.UInt8 => "UInt8",
+                EnumValueTypes.Int8 => "SInt8",
+                EnumValueTypes.UInt16 => "UInt16",
+                EnumValueTypes.Int16 => "Int16",
+                EnumValueTypes.UInt32 => "unsigned int",
+                EnumValueTypes.Int32 => "int",
+                EnumValueTypes.UInt64 => "UInt64",
+                EnumValueTypes.Int64 => "SInt64",
+                EnumValueTypes.Float => "float",
+                EnumValueTypes.Double => "double",
+                EnumValueTypes.String => "string",
+                _ => "UnknownBaseType"
+            };
         }
 
         private void RecurseXmlDump()
