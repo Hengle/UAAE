@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using AssetsAdvancedEditor.Utils;
@@ -13,6 +12,7 @@ namespace AssetsAdvancedEditor.Assets
         public AssetsWorkspace Workspace;
         public StreamReader Reader;
         public AssetsFileWriter Writer;
+        public string Path;
 
         public AssetImporter(AssetsWorkspace workspace) => Workspace = workspace;
 
@@ -23,15 +23,8 @@ namespace AssetsAdvancedEditor.Assets
 
         public AssetsReplacer ImportDump(string path, AssetItem item, DumpType dumpType)
         {
-            using var fs = File.OpenRead(path);
-            using var reader = new StreamReader(fs);
-            return ImportDump(reader, item, dumpType);
-        }
-
-        public AssetsReplacer ImportDump(StreamReader reader, AssetItem item, DumpType dumpType)
-        {
+            Path = path;
             using var ms = new MemoryStream();
-            Reader = reader;
             Writer = new AssetsFileWriter(ms)
             {
                 bigEndian = false
@@ -41,8 +34,13 @@ namespace AssetsAdvancedEditor.Assets
                 switch (dumpType)
                 {
                     case DumpType.TXT:
+                    {
+                        using var fs = File.OpenRead(path);
+                        using var reader = new StreamReader(fs);
+                        Reader = reader;
                         ImportTxtDumpLoop();
                         break;
+                    }
                     case DumpType.XML:
                         ImportXmlDumpLoop();
                         break;
@@ -65,7 +63,6 @@ namespace AssetsAdvancedEditor.Assets
         {
             var error = "";
             var cldb = Workspace.Am.classFile;
-            var i = 2;
             var alignStack = new Stack<bool>();
 
             var line = Reader.ReadLine();
@@ -120,7 +117,6 @@ namespace AssetsAdvancedEditor.Assets
                 {
                     alignStack.Push(align);
                 }
-                i++;
             }
 
             if (error != "")

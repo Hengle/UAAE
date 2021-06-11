@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Xml;
 using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
-using AssetsTools.NET.Extra;
 
 namespace AssetsAdvancedEditor.Assets
 {
@@ -10,11 +10,14 @@ namespace AssetsAdvancedEditor.Assets
     {
         public AssetsWorkspace Workspace;
         public StreamWriter Writer;
+        public string Path;
+        public XmlDocument Doc;
 
         public AssetExporter(AssetsWorkspace workspace) => Workspace = workspace;
 
         public void ExportRawAsset(string path, AssetItem item)
         {
+            Path = path;
             var cont = Workspace.GetAssetContainer(item.FileID, item.PathID);
             var br = cont.FileReader;
             br.Position = item.Position;
@@ -24,25 +27,32 @@ namespace AssetsAdvancedEditor.Assets
 
         public void ExportDump(string path, AssetItem item, DumpType dumpType)
         {
-            using var fs = File.OpenWrite(path);
-            using var writer = new StreamWriter(fs);
-            ExportDump(writer, item, dumpType);
+            ExportDump(path, Workspace.GetBaseField(item), dumpType);
         }
 
-        public void ExportDump(StreamWriter writer, AssetItem item, DumpType dumpType)
+        public void ExportDump(string path, AssetTypeValueField field, DumpType dumpType)
         {
-            Writer = writer;
+            Path = path;
             try
             {
-                var field = Workspace.GetBaseField(item);
                 switch (dumpType)
                 {
                     case DumpType.TXT:
+                    {
+                        using var fs = File.OpenWrite(path);
+                        using var writer = new StreamWriter(fs);
+                        Writer = writer;
                         RecurseTextDump(field);
                         break;
+                    }
                     case DumpType.XML:
-                        RecurseXmlDump();
+                    {
+                        Doc = new XmlDocument();
+                        var result = RecurseXmlDump(field);
+                        Doc.AppendChild(result);
+                        Doc.Save(Path);
                         break;
+                    }
                     case DumpType.JSON:
                         RecurseJsonDump();
                         break;
@@ -52,7 +62,7 @@ namespace AssetsAdvancedEditor.Assets
             }
             catch (Exception ex)
             {
-                MsgBoxUtils.ShowErrorDialog("Something went wrong when writing the dump file.\n" + ex);
+                MsgBoxUtils.ShowErrorDialog($"Something went wrong when writing the {dumpType} dump file.\n" + ex);
             }
         }
 
@@ -141,9 +151,85 @@ namespace AssetsAdvancedEditor.Assets
             };
         }
 
-        private void RecurseXmlDump()
+        private XmlNode RecurseXmlDump(AssetTypeValueField field)
         {
-            // todo
+            var template = field.GetTemplateField();
+            var align = template.align ? "True" : "False";
+            var typeName = template.type;
+            var fieldName = template.name;
+            var isArray = template.isArray;
+
+            //string's field isn't aligned but its array is
+            if (template.valueType == EnumValueTypes.String)
+                align = "True";
+
+            //mainly to handle enum fields not having the int type name
+            if (template.valueType != EnumValueTypes.None &&
+                template.valueType != EnumValueTypes.Array &&
+                template.valueType != EnumValueTypes.ByteArray)
+            {
+                typeName = template.valueType.ToString();
+            }
+
+            var hasValue = field.GetValue() != null;
+            var nodeName = hasValue ? field.GetValue().GetValueType().ToString() : "Object";
+            var e = Doc.CreateElement(isArray ? "Array" : nodeName);
+            e.SetAttribute("align", align);
+
+            if (!hasValue)
+            {
+                e.SetAttribute("typeName", typeName);
+            }
+            e.SetAttribute("fieldName", fieldName);
+
+            if (isArray)
+            {
+                var sizeTemplate = template.children[0];
+                var sizeAlign = sizeTemplate.align ? "True" : "False";
+                var sizeTypeName = sizeTemplate.type;
+                var sizeFieldName = sizeTemplate.name;
+                var size = field.GetValue().AsArray().size;
+                e.SetAttribute("size", size.ToString());
+                e.SetAttribute("sizeAlign", sizeAlign);
+                e.SetAttribute("sizeTypeName", sizeTypeName);
+                e.SetAttribute("sizeFieldName", sizeFieldName);
+                for (var i = 0; i < field.childrenCount; i++)
+                {
+                    var result = RecurseXmlDump(field.children[i]);
+                    e.AppendChild(result);
+                }
+            }
+            else
+            {
+                var value = "";
+                if (field.GetValue() != null)
+                {
+                    var evt = field.GetValue().GetValueType();
+                    if (evt == EnumValueTypes.String)
+                    {
+                        //only replace \ with \\ but not " with \" lol
+                        //you just have to find the last "
+                        var fixedStr = field.GetValue().AsString()
+                            .Replace("\\", "\\\\")
+                            .Replace("\r", "\\r")
+                            .Replace("\n", "\\n");
+                        value = fixedStr;
+                    }
+                    else if (1 <= (int)evt && (int)evt <= 12)
+                    {
+                        value = field.GetValue().AsString();
+                    }
+                    var text = Doc.CreateTextNode(value);
+                    e.AppendChild(text);
+                }
+
+                for (var i = 0; i < field.childrenCount; i++)
+                {
+                    var result = RecurseXmlDump(field.children[i]);
+                    e.AppendChild(result);
+                }
+            }
+            return e;
         }
 
         private void RecurseJsonDump()

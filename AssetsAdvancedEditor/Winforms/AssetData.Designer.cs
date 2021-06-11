@@ -33,8 +33,7 @@
             this.tpTreeView = new System.Windows.Forms.TabPage();
             this.rawViewTree = new System.Windows.Forms.TreeView();
             this.tpDumpView = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
-            this.prettifiedViewTree = new System.Windows.Forms.TreeView();
+            this.tboxDumpView = new System.Windows.Forms.TextBox();
             this.btnCloseDown = new System.Windows.Forms.Button();
             this.btnOpenDown = new System.Windows.Forms.Button();
             this.btnCloseAll = new System.Windows.Forms.Button();
@@ -83,8 +82,7 @@
             // 
             // tpDumpView
             // 
-            this.tpDumpView.Controls.Add(this.label1);
-            this.tpDumpView.Controls.Add(this.prettifiedViewTree);
+            this.tpDumpView.Controls.Add(this.tboxDumpView);
             this.tpDumpView.Location = new System.Drawing.Point(4, 24);
             this.tpDumpView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tpDumpView.Name = "tpDumpView";
@@ -94,28 +92,16 @@
             this.tpDumpView.Text = "Dump View";
             this.tpDumpView.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // tboxDumpView
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.Location = new System.Drawing.Point(7, 3);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(383, 15);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "This feature is not implemented yet.";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // prettifiedViewTree
-            // 
-            this.prettifiedViewTree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.prettifiedViewTree.Location = new System.Drawing.Point(7, 22);
-            this.prettifiedViewTree.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.prettifiedViewTree.Name = "prettifiedViewTree";
-            this.prettifiedViewTree.Size = new System.Drawing.Size(382, 371);
-            this.prettifiedViewTree.TabIndex = 1;
+            this.tboxDumpView.BackColor = System.Drawing.SystemColors.Window;
+            this.tboxDumpView.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.tboxDumpView.Location = new System.Drawing.Point(0, 0);
+            this.tboxDumpView.Multiline = true;
+            this.tboxDumpView.Name = "tboxDumpView";
+            this.tboxDumpView.ReadOnly = true;
+            this.tboxDumpView.Size = new System.Drawing.Size(398, 402);
+            this.tboxDumpView.TabIndex = 0;
             // 
             // btnCloseDown
             // 
@@ -187,9 +173,11 @@
             this.Name = "AssetData";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Asset Data";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AssetData_FormClosed);
             this.tcDataView.ResumeLayout(false);
             this.tpTreeView.ResumeLayout(false);
             this.tpDumpView.ResumeLayout(false);
+            this.tpDumpView.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -200,11 +188,10 @@
         private System.Windows.Forms.TabPage tpTreeView;
         private System.Windows.Forms.TabPage tpDumpView;
         private System.Windows.Forms.TreeView rawViewTree;
-        private System.Windows.Forms.TreeView prettifiedViewTree;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnCloseDown;
         private System.Windows.Forms.Button btnOpenDown;
         private System.Windows.Forms.Button btnCloseAll;
         private System.Windows.Forms.Button btnOpenAll;
+        private System.Windows.Forms.TextBox tboxDumpView;
     }
 }

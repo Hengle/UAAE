@@ -12,9 +12,14 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 * Export/Import/Remove/Info options (for assets files in Menu)
 * Bundle file compression/decompression
 * Data view
+  * Monobehaviour deserialization
+  * Tabs
+    * Dump view tab
 * Dependency loading
-* Monobehaviour deserialization in data view
-* Export/Import assets to dump/raw format (only TXT and one asset import)
+* Raw export/import (one asset import)
+* Dump export/import in
+  * TXT format
+  * XML format **(export only)**
 * Save modified assets files and bundle file
 * Command line support (beta)
 * Plugin support (no plugins yet)
@@ -28,7 +33,7 @@ This list may be incomplete!
   * Save map to file
 * [view asset] option in data view
 * Tabs in data view
-  * Dump view tab
+  * ~~Dump view tab~~
   * Raw view tab
   * Preview tab
 * Container data view
@@ -45,7 +50,7 @@ This list may be incomplete!
 * Asset preview option
 * Dump export/import in
   * JSON format
-  * XML format
+  * ~~XML format~~
 * ~~Plugin support~~
 * Plugins
   * Texture plugin

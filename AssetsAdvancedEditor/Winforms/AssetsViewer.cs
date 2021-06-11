@@ -570,11 +570,17 @@ namespace AssetsAdvancedEditor.Winforms
                 var sfd = new SaveFileDialog
                 {
                     Title = @"Save dump",
-                    Filter = @"UAAE text dump (*.txt)|*.txt",
+                    Filter = @"UAAE text dump (*.txt)|*.txt|UAAE xml dump (*.xml)|*.xml",
                     FileName = $"{name}-{Workspace.LoadedFiles[item.FileID].name}-{item.PathID}-{item.Type}"
                 };
                 if (sfd.ShowDialog() != DialogResult.OK) return;
-                Exporter.ExportDump(sfd.FileName, item, DumpType.TXT);
+                var dumpType = sfd.FilterIndex switch
+                {
+                    1 => DumpType.TXT,
+                    2 => DumpType.XML,
+                    _ => DumpType.TXT
+                };
+                Exporter.ExportDump(sfd.FileName, item, dumpType);
             }
             else
             {
@@ -638,7 +644,7 @@ namespace AssetsAdvancedEditor.Winforms
             var ofd = new OpenFileDialog
             {
                 Title = @"Import dump",
-                Filter = @"UAAE text dump (*.txt)|*.txt"
+                Filter = @"UAAE text dump (*.txt)|*.xml"
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
             var replacer = Importer.ImportDump(ofd.FileName, item, DumpType.TXT);
