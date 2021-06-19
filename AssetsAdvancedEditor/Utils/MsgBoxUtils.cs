@@ -10,6 +10,11 @@ namespace AssetsAdvancedEditor.Utils
             return MessageBox.Show(message, @"ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        public static DialogResult ShowErrorDialog(IWin32Window owner, string message)
+        {
+            return MessageBox.Show(owner, message, @"ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
         public static DialogResult ShowErrorDialog(string message, string caption, [Optional] MessageBoxButtons? buttons)
         {
             if (string.IsNullOrEmpty(caption))

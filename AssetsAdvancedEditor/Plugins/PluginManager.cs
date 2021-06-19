@@ -9,34 +9,29 @@ namespace AssetsAdvancedEditor.Plugins
 {
     public class PluginManager
     {
-        public List<PluginInfo> LoadedPlugins;
+        private AssetsManager Am { get; }
+        private List<PluginInfo> LoadedPlugins { get; }
 
-        public PluginManager()
+        public PluginManager(AssetsManager am)
         {
             LoadedPlugins = new List<PluginInfo>();
+            Am = am;
         }
 
         public bool LoadPlugin(string path)
         {
-            try
+            var asm = Assembly.LoadFrom(path);
+            foreach (var type in asm.GetTypes())
             {
-                var asm = Assembly.LoadFrom(path);
-                foreach (var type in asm.GetTypes())
-                {
-                    if (!typeof(IPlugin).IsAssignableFrom(type)) continue;
-                    var typeInst = Activator.CreateInstance(type);
-                    if (typeInst == null)
-                        return false;
+                if (!typeof(IPlugin).IsAssignableFrom(type)) continue;
+                var typeInst = Activator.CreateInstance(type);
+                if (typeInst == null)
+                    return false;
 
-                    var plugInst = (IPlugin)typeInst;
-                    var plugInf = plugInst.Init();
-                    LoadedPlugins.Add(plugInf);
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
+                var plugInst = (IPlugin)typeInst;
+                var plugInf = plugInst.Init();
+                LoadedPlugins.Add(plugInf);
+                return true;
             }
             return false;
         }
@@ -50,14 +45,14 @@ namespace AssetsAdvancedEditor.Plugins
             }
         }
 
-        public List<PluginMenuInfo> GetSupportedPlugins(AssetsManager am, List<AssetContainer> selectedAssets)
+        public List<PluginMenuInfo> GetSupportedPlugins(List<AssetContainer> selectedAssets)
         {
             var menuInfos = new List<PluginMenuInfo>();
             foreach (var pluginInf in LoadedPlugins)
             {
                 foreach (var option in pluginInf.Options)
                 {
-                    var supported = option.IsValidForPlugin(am, selectedAssets);
+                    var supported = option.IsValidForPlugin(Am, selectedAssets);
                     if (!supported) continue;
                     var menuInf = new PluginMenuInfo(pluginInf, option);
                     menuInfos.Add(menuInf);

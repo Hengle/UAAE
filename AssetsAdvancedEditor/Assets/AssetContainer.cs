@@ -1,5 +1,4 @@
-﻿using System.IO;
-using AssetsTools.NET;
+﻿using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 
 namespace AssetsAdvancedEditor.Assets
@@ -9,10 +8,10 @@ namespace AssetsAdvancedEditor.Assets
     // UABE's way of showing what export an asset is connected to.
     public class AssetContainer
     {
-        public AssetItem Item;
-        public AssetsFileInstance FileInstance;
-        public AssetTypeInstance TypeInstance;
-        public AssetsFileReader FileReader;
+        public AssetItem Item { get; }
+        public AssetsFileInstance FileInstance { get; }
+        public AssetTypeInstance TypeInstance { get; }
+        public AssetsFileReader FileReader { get; }
         public AssetID AssetId => new (FileInstance.path, Item.PathID);
         public bool HasInstance => TypeInstance != null;
 
@@ -31,6 +30,14 @@ namespace AssetsAdvancedEditor.Assets
             FileReader = reader;
             Item = item;
             FileInstance = fileInst;
+            TypeInstance = typeInst;
+        }
+
+        public AssetContainer(AssetContainer container, AssetTypeInstance typeInst)
+        {
+            Item = container.Item;
+            FileReader = container.FileReader;
+            FileInstance = container.FileInstance;
             TypeInstance = typeInst;
         }
     }

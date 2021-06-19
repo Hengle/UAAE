@@ -15,14 +15,18 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
   * Monobehaviour deserialization
   * Tabs
     * Dump view tab
+* Edit button
+  * Asset editor (plugins)
 * Dependency loading
 * Raw export/import (one asset import)
-* Dump export/import in
+* Dump export/import in (only one asset import)
   * TXT format
   * XML format **(export only)**
 * Save modified assets files and bundle file
 * Command line support (beta)
-* Plugin support (no plugins yet)
+* Plugin support
+* Plugins
+  * Texture plugin
 ## Todo
 This list may be incomplete!
 * Advanced error checking (with logging)
@@ -53,20 +57,20 @@ This list may be incomplete!
   * ~~XML format~~
 * ~~Plugin support~~
 * Plugins
-  * Texture plugin
+  * ~~Texture plugin~~ (including sprite editor)
   * TextAsset plugin
   * Audio plugin (including Wwise)
-  * Mesh plugin
-  * MovieTexture plugin
+  * Video plugin
+  * Mesh plugin (FBX)
+  * TerrainData plugin
   * Prefab/Scene plugin **(custom)** *
-  * Sprite editor plugin **(custom)** *
 * ModInstaller and ModMaker
 * Cldb/Tpk editor
 * Undo/Redo option
 * Edit button
   * Dump editor tab
   * Raw editor tab
-  * Asset editor (this is where the list of plugins will be)
+  * ~~Asset editor (plugins)~~
 * ~~Bundle compression support~~
 * Batch import/export assets
 * ~~Command line support~~

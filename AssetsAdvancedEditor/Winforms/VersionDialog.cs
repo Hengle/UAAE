@@ -15,7 +15,7 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 lboxVersionList.Items.Add(new ClassFileInfo(cldb));
             }
-            lblInfo.Text = $@"There is no type database for {unityVersion}";
+            lblInfo.Text = $@"There is no type database for {unityVersion}.";
         }
 
         private void btnOK_Click(object sender, EventArgs e)

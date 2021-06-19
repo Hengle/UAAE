@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
@@ -42,8 +43,11 @@ namespace AssetsAdvancedEditor.Assets
                         break;
                     }
                     case DumpType.XML:
+                    {
                         ImportXmlDumpLoop();
+                        File.WriteAllBytes(path + ".dat", ms.ToArray());
                         break;
+                    }
                     case DumpType.JSON:
                         ImportJsonDumpLoop();
                         break;

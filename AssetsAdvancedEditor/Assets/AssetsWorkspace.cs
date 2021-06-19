@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using AssetsAdvancedEditor.Plugins;
 using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
@@ -13,6 +14,7 @@ namespace AssetsAdvancedEditor.Assets
     public class AssetsWorkspace
     {
         public AssetsManager Am { get; }
+        public PluginManager Pm { get; }
         public AssetsFileInstance MainInstance { get; }
         public bool FromBundle { get; }
 
@@ -36,6 +38,8 @@ namespace AssetsAdvancedEditor.Assets
         public AssetsWorkspace(AssetsManager am, AssetsFileInstance file, bool fromBundle = false)
         {
             Am = am;
+            Pm = new PluginManager(am);
+            Pm.LoadPluginsInDirectory("Plugins");
             MainInstance = file;
             FromBundle = fromBundle;
 
@@ -150,10 +154,7 @@ namespace AssetsAdvancedEditor.Assets
 
             if (hasTypeTree && !forceFromCldb)
             {
-                baseField.From0D(
-                    scriptIndex == 0xFFFF
-                        ? AssetHelper.FindTypeTreeTypeByID(file.typeTree, fixedId)
-                        : AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, scriptIndex), 0);
+                baseField.From0D(AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, scriptIndex), 0);
             }
             else
             {

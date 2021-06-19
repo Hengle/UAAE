@@ -47,7 +47,7 @@ namespace AssetsAdvancedEditor.Utils
         /// <summary>
         ///  Initializes an instance of <see cref="OpenFolderDialog"/> class.
         /// </summary>
-        internal OpenFolderDialog() => Reset();
+        public OpenFolderDialog() => Reset();
 
         /// <summary>
         ///  Resets all dialog box options to their default values.

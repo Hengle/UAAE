@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
+using AssetsAdvancedEditor.Plugins;
 using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
@@ -14,6 +15,7 @@ namespace AssetsAdvancedEditor.Winforms
     {
         public AssetsWorkspace Workspace { get; }
         public AssetsManager Am { get; }
+        public PluginManager Pm { get; }
         public AssetsFileInstance MainFile { get; }
         public bool FromBundle { get; }
 
@@ -25,7 +27,6 @@ namespace AssetsAdvancedEditor.Winforms
         public string UnityVersion { get; }
 
         public Dictionary<BundleReplacer, MemoryStream> ModifiedFiles { get; private set; }
-
         //private Stack<List<int>> UndoList { get; }
         //private Stack<List<int>> RedoList { get; }
 
@@ -42,6 +43,7 @@ namespace AssetsAdvancedEditor.Winforms
 
             Workspace = new AssetsWorkspace(am, instance, fromBundle);
             Am = Workspace.Am;
+            Pm = Workspace.Pm;
             MainFile = Workspace.MainInstance;
             FromBundle = Workspace.FromBundle;
 
@@ -53,7 +55,6 @@ namespace AssetsAdvancedEditor.Winforms
             UnityVersion = Workspace.UnityVersion;
 
             ModifiedFiles = new Dictionary<BundleReplacer, MemoryStream>();
-
             //UndoList = new Stack<List<int>>();
             //RedoList = new Stack<List<int>>();
 
@@ -231,7 +232,7 @@ namespace AssetsAdvancedEditor.Winforms
         {
             try
             {
-                return GetSelectedAssetContainers().Select(cont => Workspace.GetBaseField(cont)).ToList();
+                return GetSelectedAssets().Select(cont => Workspace.GetBaseField(cont)).ToList();
             }
             catch
             {
@@ -241,9 +242,9 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private IEnumerable<AssetContainer> GetSelectedAssetContainers(bool onlyInfo = false)
+        private List<AssetContainer> GetSelectedAssets(bool onlyInfo = false)
         {
-            return GetSelectedAssetItems().Select(item => Workspace.GetAssetContainer(item.FileID, item.PathID, onlyInfo));
+            return GetSelectedAssetItems().Select(item => Workspace.GetAssetContainer(item.FileID, item.PathID, onlyInfo)).ToList();
         }
 
         private void UpdateAssetsInfo()
@@ -644,10 +645,16 @@ namespace AssetsAdvancedEditor.Winforms
             var ofd = new OpenFileDialog
             {
                 Title = @"Import dump",
-                Filter = @"UAAE text dump (*.txt)|*.xml"
+                Filter = @"UAAE text dump (*.txt)|*.txt|UAAE xml dump (*.xml)|*.xml"
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            var replacer = Importer.ImportDump(ofd.FileName, item, DumpType.TXT);
+            var dumpType = ofd.FilterIndex switch
+            {
+                1 => DumpType.TXT,
+                2 => DumpType.XML,
+                _ => DumpType.TXT
+            };
+            var replacer = Importer.ImportDump(ofd.FileName, item, dumpType);
             if (replacer == null) return;
             Workspace.AddReplacer(replacer);
             UpdateAssetsInfo();
@@ -655,8 +662,10 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            //if (FailIfNothingSelected()) return;
-            // todo
+            if (FailIfNothingSelected()) return;
+            var conts = GetSelectedAssets();
+            var editDialog = new EditDialog(this, Workspace, conts);
+            editDialog.ShowDialog(this);
         }
         #endregion
 

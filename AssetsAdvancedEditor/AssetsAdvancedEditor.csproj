@@ -14,18 +14,23 @@
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <DebugType>full</DebugType>
+    <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AssetsTools.NET" Version="2.0.9" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="Mono.Cecil" Version="0.11.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Plugins\Plugins.csproj" />
-  </ItemGroup>
+  <Target Name="UAAEAfterBuild" AfterTargets="AfterBuild" Condition="'$(SolutionDir)' != '*Undefined*'">
+    <MakeDir Directories="$(OutputPath)Plugins" ContinueOnError="true" />
+  </Target>
+  
+  <Target Name="UAAEAfterPublish" AfterTargets="Publish" Condition="'$(SolutionDir)' != '*Undefined*'">
+    <MakeDir Directories="$(PublishDir)Plugins" ContinueOnError="true" />
+  </Target>
 
 </Project>

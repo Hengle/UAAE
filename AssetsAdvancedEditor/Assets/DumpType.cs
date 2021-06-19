@@ -3,7 +3,7 @@
     public enum DumpType
     {
         TXT,
-		XML,
+        XML,
         JSON
     }
 }
