@@ -40,5 +40,13 @@ namespace AssetsAdvancedEditor.Assets
             FileInstance = container.FileInstance;
             TypeInstance = typeInst;
         }
+
+        public AssetContainer(AssetContainer container, AssetItem item)
+        {
+            Item = item;
+            FileReader = container.FileReader;
+            FileInstance = container.FileInstance;
+            TypeInstance = container.TypeInstance;
+        }
     }
 }

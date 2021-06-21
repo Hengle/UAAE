@@ -20,6 +20,7 @@ namespace AssetsAdvancedEditor.Assets
 
         public List<AssetsFileInstance> LoadedFiles { get; }
         public List<AssetItem> LoadedAssets { get; }
+        public Dictionary<AssetID, AssetContainer> LoadedContainers { get; }
 
         public Dictionary<string, AssetsFileInstance> LoadedFileLookup { get; }
         public Dictionary<string, AssemblyDefinition> LoadedAssemblies { get; }
@@ -35,6 +36,9 @@ namespace AssetsAdvancedEditor.Assets
         public string AssetsRootDir { get; }
         public string UnityVersion { get; }
 
+        public delegate void AssetsWorkspaceItemUpdateEvent(ref AssetContainer cont);
+        public event AssetsWorkspaceItemUpdateEvent ItemUpdated;
+
         public AssetsWorkspace(AssetsManager am, AssetsFileInstance file, bool fromBundle = false)
         {
             Am = am;
@@ -45,6 +49,7 @@ namespace AssetsAdvancedEditor.Assets
 
             LoadedFiles = new List<AssetsFileInstance>();
             LoadedAssets = new List<AssetItem>();
+            LoadedContainers = new Dictionary<AssetID, AssetContainer>();
 
             LoadedFileLookup = new Dictionary<string, AssetsFileInstance>();
             LoadedAssemblies = new Dictionary<string, AssemblyDefinition>();
@@ -67,6 +72,7 @@ namespace AssetsAdvancedEditor.Assets
             if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
+            var item = LoadedAssets.FirstOrDefault(i => i.FileID == replacer.GetFileID() && i.PathID == replacer.GetPathID());
 
             if (NewAssets.ContainsKey(assetId))
                 RemoveReplacer(replacer);
@@ -83,6 +89,17 @@ namespace AssetsAdvancedEditor.Assets
             }
 
             NewAssetDatas[assetId] = previewStream;
+
+            if (replacer is AssetsRemover)
+            {
+                LoadedContainers.Remove(assetId);
+            }
+            else
+            {
+                var cont = MakeAssetContainer(item, NewAssetDatas[assetId]);
+                ItemUpdated?.Invoke(ref cont);
+                LoadedContainers[assetId] = cont;
+            }
 
             Modified = true;
         }
@@ -104,36 +121,54 @@ namespace AssetsAdvancedEditor.Assets
             Modified = NewAssets.Count != 0;
         }
 
-        public AssetContainer GetAssetContainer(int fileId, long pathId, bool onlyGetInfo = false, bool forceFromCldb = false)
+        //Existing assets
+        public AssetContainer MakeAssetContainer(AssetItem item, bool forceFromCldb = false)
         {
-            var fileInst = LoadedFiles[fileId];
-            var assetId = new AssetID(fileInst.path, pathId);
-            var item = LoadedAssets.FirstOrDefault(i => i.FileID == fileId && i.PathID == pathId);
-            if (item == null)
+            var fileInst = LoadedFiles[item.FileID];
+            var reader = fileInst.file.reader;
+            var templateField = GetTemplateField(item, forceFromCldb);
+            var typeInst = new AssetTypeInstance(templateField, reader, item.Position);
+            return new AssetContainer(item, fileInst, typeInst);
+        }
+
+        //Newly created assets
+        public AssetContainer MakeAssetContainer(AssetItem item, Stream ms, bool forceFromCldb = false)
+        {
+            var fileInst = LoadedFiles[item.FileID];
+            using var reader = new AssetsFileReader(ms);
+            var templateField = GetTemplateField(item, forceFromCldb);
+            var typeInst = new AssetTypeInstance(templateField, reader, 0);
+            return new AssetContainer(reader, item, fileInst, typeInst);
+        }
+
+        public AssetContainer GetAssetContainer(AssetItem item)
+        {
+            var fileInst = LoadedFiles[item.FileID];
+            var assetId = new AssetID(fileInst.path, item.PathID);
+
+            if (!LoadedContainers.TryGetValue(assetId, out var cont))
                 return null;
 
-            AssetContainer cont;
-            if (NewAssetDatas.ContainsKey(assetId))
-            {
-                var reader = new AssetsFileReader(NewAssetDatas[assetId]);
-                var templateField = GetTemplateField(item, forceFromCldb);
-                var typeInst = new AssetTypeInstance(templateField, reader, 0);
-                cont = new AssetContainer(reader, item, fileInst, typeInst);
-            }
-            else
-            {
-                var info = fileInst.table.GetAssetInfo(pathId);
-                var typeInst = Am.GetTypeInstance(fileInst, info, forceFromCldb);
-                cont = new AssetContainer(item, fileInst, typeInst);
-            }
+            if (cont.HasInstance)
+                return cont;
+
+            var newData = NewAssetDatas.ContainsKey(assetId);
+            cont = newData ? MakeAssetContainer(item, NewAssetDatas[assetId]) : MakeAssetContainer(item);
+            LoadedContainers[assetId] = cont;
             return cont;
         }
 
-        public AssetContainer GetAssetContainer(AssetTypeValueField pptrField, bool onlyGetInfo = false, bool forceFromCldb = false)
+        public AssetContainer GetAssetContainer(int fileId, long pathId)
+        {
+            var item = LoadedAssets.FirstOrDefault(i => i.FileID == fileId && i.PathID == pathId);
+            return item != null ? GetAssetContainer(item) : null;
+        }
+
+        public AssetContainer GetAssetContainer(AssetTypeValueField pptrField)
         {
             var fileId = pptrField.Get("m_FileID").GetValue().AsInt();
             var pathId = pptrField.Get("m_PathID").GetValue().AsInt64();
-            return GetAssetContainer(fileId, pathId, onlyGetInfo, forceFromCldb);
+            return GetAssetContainer(fileId, pathId);
         }
 
         public void GenerateAssetsFileLookup()
@@ -165,7 +200,7 @@ namespace AssetsAdvancedEditor.Assets
 
         public AssetTypeValueField GetBaseField(AssetItem item)
         {
-            var cont = GetAssetContainer(item.FileID, item.PathID);
+            var cont = GetAssetContainer(item);
             var fileInst = cont.FileInstance;
             if (item.TypeID == 0x72)
             {

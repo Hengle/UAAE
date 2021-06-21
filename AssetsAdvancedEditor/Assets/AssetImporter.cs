@@ -45,7 +45,6 @@ namespace AssetsAdvancedEditor.Assets
                     case DumpType.XML:
                     {
                         ImportXmlDumpLoop();
-                        File.WriteAllBytes(path + ".dat", ms.ToArray());
                         break;
                     }
                     case DumpType.JSON:

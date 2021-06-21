@@ -42,6 +42,7 @@ namespace AssetsAdvancedEditor.Winforms
             InitializeComponent();
 
             Workspace = new AssetsWorkspace(am, instance, fromBundle);
+            Workspace.ItemUpdated += UpdateAssetInfo;
             Am = Workspace.Am;
             Pm = Workspace.Pm;
             MainFile = Workspace.MainInstance;
@@ -77,9 +78,9 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 dep.file.reader.bigEndian = false;
                 dep.table.GenerateQuickLookupTree();
+                Workspace.LoadedFiles.Add(dep);
                 foreach (var inf in dep.table.assetFileInfo)
                     AddAssetItem(dep, inf, id);
-                Workspace.LoadedFiles.Add(dep);
                 id++;
             }
             Workspace.GenerateAssetsFileLookup();
@@ -98,7 +99,6 @@ namespace AssetsAdvancedEditor.Winforms
             var size = (int)info.curFileSize;
             const string modified = "";
             ushort monoId = 0xFFFF;
-            var index = assetList.Items.Count;
 
             var hasTypeTree = thisFile.typeTree.hasTypeTree;
             if (hasTypeTree)
@@ -140,8 +140,7 @@ namespace AssetsAdvancedEditor.Winforms
                 Size = size,
                 Modified = modified,
                 Position = info.absoluteFilePos,
-                MonoID = monoId,
-                Index = index
+                MonoID = monoId
             };
 
             if (string.IsNullOrEmpty(name) || !HasName(cldb, cldbType))
@@ -153,6 +152,8 @@ namespace AssetsAdvancedEditor.Winforms
             }
 
             Workspace.LoadedAssets.Add(item);
+            var assetId = new AssetID(fileInst.path, item.PathID);
+            Workspace.LoadedContainers[assetId] = Workspace.MakeAssetContainer(item);
             var data = item.ToArray();
             data[0] = name;
             assetList.Items.Add(new ListViewItem(data));
@@ -208,7 +209,7 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 var item = Workspace.LoadedAssets[listItem.Index];
                 Workspace.AddReplacer(AssetModifier.CreateAssetRemover(item));
-                    assetList.Items.Remove(listItem);
+                assetList.Items.Remove(listItem);
                 Workspace.LoadedAssets.Remove(item);
             }
         }
@@ -242,59 +243,54 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private List<AssetContainer> GetSelectedAssets(bool onlyInfo = false)
+        private List<AssetContainer> GetSelectedAssets()
         {
-            return GetSelectedAssetItems().Select(item => Workspace.GetAssetContainer(item.FileID, item.PathID, onlyInfo)).ToList();
+            return GetSelectedAssetItems().Select(item => Workspace.GetAssetContainer(item)).ToList();
         }
 
-        private void UpdateAssetsInfo()
+        private void UpdateAssetInfo(ref AssetContainer cont)
         {
-            var items = GetSelectedAssetItems();
-            for (var i = 0; i < items.Count; i++)
+            var replacer = Workspace.NewAssets[cont.AssetId];
+            var classId = (uint)replacer.GetClassID();
+            var index = assetList.Items[assetList.SelectedIndices[0]].Index; // todo, rework this
+            var item = new AssetItem
             {
-                var oldItem = items[i];
-                var cont = Workspace.GetAssetContainer(oldItem.FileID, oldItem.PathID);
-                var field = Workspace.GetBaseField(cont);
-                var replacer = Workspace.NewAssets[cont.AssetId];
-                var nameValue = field.Get("m_Name").GetValue();
-                var name = "";
-                var type = field.GetFieldType();
-                var classId = (uint)replacer.GetClassID();
-                var index = assetList.SelectedIndices[i];
+                TypeID = classId,
+                FileID = replacer.GetFileID(),
+                PathID = replacer.GetPathID(),
+                Size = replacer.GetSize(),
+                Modified = "*",
+                MonoID = replacer.GetMonoScriptID()
+            };
+            var field = Workspace.GetBaseField(cont);
+            var nameValue = field.Get("m_Name").GetValue();
+            var name = "";
+            var type = field.GetFieldType();
 
-                if (nameValue != null)
-                {
-                    name = nameValue.AsString();
-                }
-
-                var item = new AssetItem
-                {
-                    Name = name,
-                    Type = type,
-                    TypeID = classId,
-                    FileID = replacer.GetFileID(),
-                    PathID = replacer.GetPathID(),
-                    Size = replacer.GetSize(),
-                    Modified = "*",
-                    MonoID = replacer.GetMonoScriptID(),
-                    Index = index
-                };
-                Workspace.LoadedAssets[index] = item;
-                if (string.IsNullOrEmpty(name))
-                {
-                    name = "Unnamed asset";
-                }
-                else if (item.TypeID is 0x01 or 0x72)
-                {
-                    name = $"{item.Type} {name}";
-                }
-                var data = item.ToArray();
-                data[0] = name;
-                assetList.Items[index] = new ListViewItem(data)
-                {
-                    Selected = true
-                };
+            if (nameValue != null)
+            {
+                name = nameValue.AsString();
             }
+
+            item.Name = name;
+            item.Type = type;
+
+            Workspace.LoadedAssets[index] = item;
+            cont = new AssetContainer(cont, item);
+            if (string.IsNullOrEmpty(name))
+            {
+                name = "Unnamed asset";
+            }
+            else if (item.TypeID is 0x01 or 0x72)
+            {
+                name = $"{item.Type} {name}";
+            }
+            var data = item.ToArray();
+            data[0] = name;
+            assetList.Items[index] = new ListViewItem(data)
+            {
+                Selected = true
+            };
             assetList.Select();
         }
 
@@ -626,7 +622,6 @@ namespace AssetsAdvancedEditor.Winforms
             if (ofd.ShowDialog() != DialogResult.OK) return;
             var replacer = Importer.ImportRawAsset(ofd.FileName, item);
             Workspace.AddReplacer(replacer);
-            UpdateAssetsInfo();
         }
 
         private void btnImportDump_Click(object sender, EventArgs e)
@@ -657,7 +652,6 @@ namespace AssetsAdvancedEditor.Winforms
             var replacer = Importer.ImportDump(ofd.FileName, item, dumpType);
             if (replacer == null) return;
             Workspace.AddReplacer(replacer);
-            UpdateAssetsInfo();
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
