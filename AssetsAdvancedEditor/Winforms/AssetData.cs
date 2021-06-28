@@ -26,7 +26,7 @@ namespace AssetsAdvancedEditor.Winforms
             RecursiveTreeLoad(BaseField, rawViewTree.Nodes[0]);
         }
 
-        private void RecursiveTreeLoad(AssetTypeValueField assetField, TreeNode node)
+        private static void RecursiveTreeLoad(AssetTypeValueField assetField, TreeNode node)
         {
             if (assetField.childrenCount <= 0) return;
             foreach (var children in assetField.children)
@@ -62,7 +62,7 @@ namespace AssetsAdvancedEditor.Winforms
             var filePath = Path.GetTempFileName();
             new AssetExporter(Workspace).ExportDump(filePath, BaseField, DumpType.TXT);
             TempPath = filePath;
-            tboxDumpView.Lines = File.ReadAllLines(filePath);
+            boxDumpView.Lines = File.ReadAllLines(filePath);
         }
 
         private void openAll_Click(object sender, EventArgs e) => rawViewTree?.ExpandAll();

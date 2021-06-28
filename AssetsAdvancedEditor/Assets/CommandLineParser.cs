@@ -28,6 +28,12 @@ namespace AssetsAdvancedEditor.Assets
                 case "batchexport":
                     BatchExport(args);
                     break;
+                case "compress":
+                    Compress(args);
+                    break;
+                case "decompress":
+                    Decompress(args);
+                    break;
                 default:
                     PrintError();
                     break;
@@ -37,18 +43,66 @@ namespace AssetsAdvancedEditor.Assets
         private static string GetMainFileName(IReadOnlyList<string> args)
         {
             for (var i = 1; i < args.Count; i++)
+            {
                 if (!args[i].StartsWith("-"))
                     return args[i];
+            }
+            return string.Empty;
+        }
+        
+        private static string GetDestFileName(IReadOnlyList<string> args)
+        {
+            for (var i = 2; i < args.Count; i++)
+            {
+                if (!args[i].StartsWith("-"))
+                    return args[i];
+            }
             return string.Empty;
         }
 
-        private static string GetFlags(IReadOnlyList<string> args)
+        private static HashSet<string> GetFlags(IReadOnlyList<string> args)
         {
-            var flags = string.Empty;
+            var flags = new HashSet<string>();
             for (var i = 1; i < args.Count; i++)
+            {
                 if (args[i].StartsWith("-"))
-                    flags += args[i];
+                    flags.Add(args[i]);
+            }
             return flags;
+        }
+        
+        private static HashSet<string> GetAllFilesFromBatchFile(string filePath)
+        {
+            var lines = File.ReadAllLines(filePath);
+            var allPaths = new HashSet<string>();
+            foreach (var line in lines)
+            {
+                if (line.StartsWith(" +DIR "))
+                {
+                    var dirName = line[6..].Trim();
+                    var files = Directory.GetFiles(dirName, "*", SearchOption.AllDirectories);
+                    foreach (var file in files)
+                        allPaths.Add(file);
+                }
+                else if (line.StartsWith(" -DIR "))
+                {
+                    var dirName = line[6..].Trim();
+                    var files = Directory.GetFiles(dirName, "*", SearchOption.AllDirectories);
+                    foreach (var file in files)
+                        allPaths.Remove(file);
+                }
+                else if (line.StartsWith(" +FILE "))
+                {
+                    var fileName = line[7..].Trim();
+                    allPaths.Add(fileName);
+                }
+                else if (line.StartsWith(" -FILE "))
+                {
+                    var fileName = line[7..].Trim();
+                    allPaths.Remove(fileName);
+                }
+            }
+            return allPaths;
         }
 
         public static void PrintError()
@@ -62,17 +116,18 @@ namespace AssetsAdvancedEditor.Assets
             Console.WriteLine(@"Unity Assets Advanced Editor");
             Console.Beep();
             Console.WriteLine(@"[WARNING] Command line support is under development!");
-            Console.WriteLine(@"[WARNING] There is a high chance that something could go wrong.");
-            Console.WriteLine(@"[WARNING] Use at your own risk.\n");
+            Console.WriteLine(@"[WARNING] There is a high chance that something could go wrong");
+            Console.WriteLine(@"[WARNING] Use at your own risk");
             Console.WriteLine(@"  UAAE batchexport <batch file>");
             Console.WriteLine(@"  UAAE batchimport <batch file>");
-            Console.WriteLine(@"  UAAE importaemip <aemip file> <directory>");
-            Console.WriteLine(@"  UAAE exportaemip <aemip file> <directory>");
-            Console.WriteLine(@"Import/export arguments:");
+            Console.WriteLine(@"  UAAE applyemip <aemip file> <directory>");
+            Console.WriteLine(@"  UAAE compress <compression type> <bundle file> <output path>");
+            Console.WriteLine(@"  UAAE decompress <bundle file> <output path>");
+            Console.WriteLine(@"Import/Export arguments:");
             Console.WriteLine(@"  -keepnames writes out to the exact file name in the bundle.");
             Console.WriteLine(@"      Normally, file names are prepended with the bundle's name.");
             Console.WriteLine(@"      Note: these names are not compatible with batchimport.");
-            Console.WriteLine(@"  -kd keep .decomp files. When UABEA opens compressed bundles,");
+            Console.WriteLine(@"  -kd keep .decomp files. When UAAE opens compressed bundles,");
             Console.WriteLine(@"      they are decompressed into .decomp files. If you want to");
             Console.WriteLine(@"      decompress bundles, you can use this flag to keep them");
             Console.WriteLine(@"      without deleting them.");
@@ -84,19 +139,7 @@ namespace AssetsAdvancedEditor.Assets
             Console.WriteLine(@"  +FILE C:/somefolder/bundles/resources.assets");
         }
 
-        private static string GetNextBackup(string affectedFilePath)
-        {
-            for (var i = 0; i < 10000; i++)
-            {
-                var bakName = $"{affectedFilePath}.bak{i.ToString().PadLeft(4, '0')}";
-                if (!File.Exists(bakName)) return bakName;
-            }
-
-            Console.WriteLine(@"Too many backups, exiting for your safety.");
-            return null;
-        }
-
-        private static void BatchExport(string[] args)
+        private static void BatchExport(IReadOnlyList<string> args)
         {
             var mainFileName = GetMainFileName(args);
             var flags = GetFlags(args);
@@ -137,7 +180,7 @@ namespace AssetsAdvancedEditor.Assets
             }
         }
 
-        private static void BatchImport(string[] args)
+        private static void BatchImport(IReadOnlyList<string> args)
         {
             var mainFileName = GetMainFileName(args);
             var flags = GetFlags(args);
@@ -209,11 +252,48 @@ namespace AssetsAdvancedEditor.Assets
             }
         }
 
+        private static void Compress(IReadOnlyList<string> args)
+        {
+            var mainFileName = GetMainFileName(args);
+            var flags = GetFlags(args);
+            var compType = AssetBundleCompressionType.LZ4;
+            if (flags.Contains("-lz4"))
+                compType = AssetBundleCompressionType.LZ4;
+            else if (flags.Contains("-lzma"))
+                compType = AssetBundleCompressionType.LZMA;
+            
+            var destFileName = GetDestFileName(args);
+            if (destFileName == string.Empty)
+                destFileName = mainFileName + ".packed";
+
+            CompressBundle(mainFileName, destFileName, compType);
+            Console.WriteLine(@"Done.");
+        }
+
+        private static void CompressBundle(string file, string compFile, AssetBundleCompressionType compType)
+        {
+            var bun = DecompressBundle(file, null);
+            var fs = File.OpenWrite(compFile);
+            using var writer = new AssetsFileWriter(fs);
+            bun.Pack(bun.reader, writer, compType);
+        }
+
+        private static void Decompress(IReadOnlyList<string> args)
+        {
+            var mainFileName = GetMainFileName(args);
+            var destFileName = GetDestFileName(args);
+            if (destFileName == string.Empty)
+                destFileName = mainFileName + ".unpacked";
+
+            DecompressBundle(mainFileName, destFileName);
+            Console.WriteLine(@"Done.");
+        }
+
         private static AssetBundleFile DecompressBundle(string file, string decompFile)
         {
             var bun = new AssetBundleFile();
 
-            var fs = (Stream) File.OpenRead(file);
+            var fs = (Stream)File.OpenRead(file);
             var reader = new AssetsFileReader(fs);
 
             bun.Read(reader, true);
@@ -238,39 +318,6 @@ namespace AssetsAdvancedEditor.Assets
             }
 
             return bun;
-        }
-
-        private static List<string> GetAllFilesFromBatchFile(string filePath)
-        {
-            var lines = File.ReadAllLines(filePath);
-            var allPaths = new List<string>();
-            foreach (var line in lines)
-                if (line.StartsWith(" +DIR "))
-                {
-                    var dirName = line[6..].Trim();
-                    var files = Directory.GetFiles(dirName, "*", SearchOption.AllDirectories);
-                    foreach (var file in files)
-                        allPaths.Add(file);
-                }
-                else if (line.StartsWith(" -DIR "))
-                {
-                    var dirName = line[6..].Trim();
-                    var files = Directory.GetFiles(dirName, "*", SearchOption.AllDirectories);
-                    foreach (var file in files)
-                        allPaths.Remove(file);
-                }
-                else if (line.StartsWith(" +FILE "))
-                {
-                    var fileName = line[7..].Trim();
-                    allPaths.Add(fileName);
-                }
-                else if (line.StartsWith(" -FILE "))
-                {
-                    var fileName = line[7..].Trim();
-                    allPaths.Remove(fileName);
-                }
-
-            return allPaths;
         }
     }
 }

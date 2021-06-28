@@ -1,6 +1,7 @@
 ﻿using AssetsTools.NET;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
 using SevenZip.Compression.LZMA;
 
@@ -8,6 +9,15 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
+        public static bool WildcardMatches(string test, string pattern, bool caseSensitive = true)
+        {
+            RegexOptions options = 0;
+            if (!caseSensitive)
+                options |= RegexOptions.IgnoreCase;
+
+            return Regex.IsMatch(test, "^" + Regex.Escape(pattern).Replace("\\*", ".*") + "$", options);
+        }
+
         public static bool IsBundleDataCompressed(this AssetBundleFile bundle)
         {
             var reader = bundle.reader;

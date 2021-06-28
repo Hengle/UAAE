@@ -30,15 +30,15 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menu));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPackageFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuClose = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSave = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.compressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modMakerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createStandaloneexeInstallerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuModMaker = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuCreateStandaloneexeInstaller = new System.Windows.Forms.ToolStripMenuItem();
             this.createPackageFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,7 +59,7 @@
             // 
             this.menuStrip.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
+            this.MenuFile,
             this.optionsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
@@ -69,20 +69,20 @@
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip";
             // 
-            // fileToolStripMenuItem
+            // MenuFile
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.loadPackageFileToolStripMenuItem,
-            this.closeToolStripMenuItem,
-            this.saveToolStripMenuItem,
+            this.MenuClose,
+            this.MenuSave,
             this.toolStripSeparator1,
             this.compressToolStripMenuItem,
-            this.modMakerToolStripMenuItem,
+            this.MenuModMaker,
             this.exitToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
+            this.MenuFile.Name = "MenuFile";
+            this.MenuFile.Size = new System.Drawing.Size(37, 20);
+            this.MenuFile.Text = "&File";
             // 
             // openToolStripMenuItem
             // 
@@ -98,19 +98,19 @@
             this.loadPackageFileToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.loadPackageFileToolStripMenuItem.Text = "&Load Package File";
             // 
-            // closeToolStripMenuItem
+            // MenuClose
             // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.closeToolStripMenuItem.Text = "&Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            this.MenuClose.Name = "MenuClose";
+            this.MenuClose.Size = new System.Drawing.Size(168, 22);
+            this.MenuClose.Text = "&Close";
+            this.MenuClose.Click += new System.EventHandler(this.MenuClose_Click);
             // 
-            // saveToolStripMenuItem
+            // MenuSave
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.saveToolStripMenuItem.Text = "&Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.MenuSave.Name = "MenuSave";
+            this.MenuSave.Size = new System.Drawing.Size(168, 22);
+            this.MenuSave.Text = "&Save";
+            this.MenuSave.Click += new System.EventHandler(this.MenuSave_Click);
             // 
             // toolStripSeparator1
             // 
@@ -124,21 +124,21 @@
             this.compressToolStripMenuItem.Text = "&Compress";
             this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
             // 
-            // modMakerToolStripMenuItem
+            // MenuModMaker
             // 
-            this.modMakerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createStandaloneexeInstallerToolStripMenuItem,
+            this.MenuModMaker.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuCreateStandaloneexeInstaller,
             this.createPackageFileToolStripMenuItem});
-            this.modMakerToolStripMenuItem.Enabled = false;
-            this.modMakerToolStripMenuItem.Name = "modMakerToolStripMenuItem";
-            this.modMakerToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.modMakerToolStripMenuItem.Text = "Mod Maker";
+            this.MenuModMaker.Enabled = false;
+            this.MenuModMaker.Name = "MenuModMaker";
+            this.MenuModMaker.Size = new System.Drawing.Size(168, 22);
+            this.MenuModMaker.Text = "Mod Maker";
             // 
-            // createStandaloneexeInstallerToolStripMenuItem
+            // MenuCreateStandaloneexeInstaller
             // 
-            this.createStandaloneexeInstallerToolStripMenuItem.Name = "createStandaloneexeInstallerToolStripMenuItem";
-            this.createStandaloneexeInstallerToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.createStandaloneexeInstallerToolStripMenuItem.Text = "Create standalone .exe installer";
+            this.MenuCreateStandaloneexeInstaller.Name = "MenuCreateStandaloneexeInstaller";
+            this.MenuCreateStandaloneexeInstaller.Size = new System.Drawing.Size(237, 22);
+            this.MenuCreateStandaloneexeInstaller.Text = "Create standalone .exe installer";
             // 
             // createPackageFileToolStripMenuItem
             // 
@@ -310,15 +310,15 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuFile;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadPackageFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuClose;
+        private System.Windows.Forms.ToolStripMenuItem MenuSave;
         private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modMakerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createStandaloneexeInstallerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuModMaker;
+        private System.Windows.Forms.ToolStripMenuItem MenuCreateStandaloneexeInstaller;
         private System.Windows.Forms.ToolStripMenuItem createPackageFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;

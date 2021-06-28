@@ -47,26 +47,26 @@
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modMakerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createStandaloneexeInstallerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createInstallerPackageFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.searchByNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.byNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.binaryContentSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.monobehaviourSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.transformSearchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.continueSearchF3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.goToAssetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.dependenciesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.assetPreviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.getScriptInformationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuModMaker = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuCreateStandaloneexeInstaller = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuCreateInstallerPackageFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuClose = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuView = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSearch = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSearchByName = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuBinaryContentSearch = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuMonobehaviourSearch = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuTransformSearch = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuContinueSearchF3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuGoToAsset = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuDependencies = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuWindow = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuAssetPreview = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuTools = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuGetScriptInformation = new System.Windows.Forms.ToolStripMenuItem();
             this.assetList = new System.Windows.Forms.ListView();
             this.nameColumn = new System.Windows.Forms.ColumnHeader();
             this.containerColumn = new System.Windows.Forms.ColumnHeader();
@@ -277,9 +277,9 @@
             // 
             this.menuStrip1.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.viewToolStripMenuItem,
-            this.toolsToolStripMenuItem});
+            this.MenuFile,
+            this.MenuView,
+            this.MenuTools});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
@@ -287,157 +287,159 @@
             this.menuStrip1.TabIndex = 18;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // fileToolStripMenuItem
+            // MenuFile
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
-            this.modMakerToolStripMenuItem,
-            this.closeToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            this.MenuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuSave,
+            this.MenuSaveAs,
+            this.MenuModMaker,
+            this.MenuClose});
+            this.MenuFile.Name = "MenuFile";
+            this.MenuFile.Size = new System.Drawing.Size(37, 20);
+            this.MenuFile.Text = "File";
             // 
-            // saveToolStripMenuItem
+            // MenuSave
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            this.MenuSave.Name = "MenuSave";
+            this.MenuSave.Size = new System.Drawing.Size(135, 22);
+            this.MenuSave.Text = "Save";
+            this.MenuSave.Click += new System.EventHandler(this.MenuSave_Click);
             // 
-            // saveAsToolStripMenuItem
+            // MenuSaveAs
             // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.saveAsToolStripMenuItem.Text = "Save as...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            this.MenuSaveAs.Name = "MenuSaveAs";
+            this.MenuSaveAs.Size = new System.Drawing.Size(135, 22);
+            this.MenuSaveAs.Text = "Save as...";
+            this.MenuSaveAs.Click += new System.EventHandler(this.MenuSaveAs_Click);
             // 
-            // modMakerToolStripMenuItem
+            // MenuModMaker
             // 
-            this.modMakerToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createStandaloneexeInstallerToolStripMenuItem,
-            this.createInstallerPackageFileToolStripMenuItem});
-            this.modMakerToolStripMenuItem.Enabled = false;
-            this.modMakerToolStripMenuItem.Name = "modMakerToolStripMenuItem";
-            this.modMakerToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.modMakerToolStripMenuItem.Text = "Mod Maker";
+            this.MenuModMaker.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuCreateStandaloneexeInstaller,
+            this.MenuCreateInstallerPackageFile});
+            this.MenuModMaker.Enabled = false;
+            this.MenuModMaker.Name = "MenuModMaker";
+            this.MenuModMaker.Size = new System.Drawing.Size(135, 22);
+            this.MenuModMaker.Text = "Mod Maker";
             // 
-            // createStandaloneexeInstallerToolStripMenuItem
+            // MenuCreateStandaloneexeInstaller
             // 
-            this.createStandaloneexeInstallerToolStripMenuItem.Name = "createStandaloneexeInstallerToolStripMenuItem";
-            this.createStandaloneexeInstallerToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.createStandaloneexeInstallerToolStripMenuItem.Text = "Create standalone .exe installer";
+            this.MenuCreateStandaloneexeInstaller.Name = "MenuCreateStandaloneexeInstaller";
+            this.MenuCreateStandaloneexeInstaller.Size = new System.Drawing.Size(237, 22);
+            this.MenuCreateStandaloneexeInstaller.Text = "Create standalone .exe installer";
             // 
-            // createInstallerPackageFileToolStripMenuItem
+            // MenuCreateInstallerPackageFile
             // 
-            this.createInstallerPackageFileToolStripMenuItem.Name = "createInstallerPackageFileToolStripMenuItem";
-            this.createInstallerPackageFileToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.createInstallerPackageFileToolStripMenuItem.Text = "Create installer package file";
+            this.MenuCreateInstallerPackageFile.Name = "MenuCreateInstallerPackageFile";
+            this.MenuCreateInstallerPackageFile.Size = new System.Drawing.Size(237, 22);
+            this.MenuCreateInstallerPackageFile.Text = "Create installer package file";
             // 
-            // closeToolStripMenuItem
+            // MenuClose
             // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            this.MenuClose.Name = "MenuClose";
+            this.MenuClose.Size = new System.Drawing.Size(135, 22);
+            this.MenuClose.Text = "Close";
+            this.MenuClose.Click += new System.EventHandler(this.MenuClose_Click);
             // 
-            // viewToolStripMenuItem
+            // MenuView
             // 
-            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.searchByNameToolStripMenuItem,
-            this.continueSearchF3ToolStripMenuItem,
-            this.goToAssetToolStripMenuItem,
-            this.dependenciesToolStripMenuItem,
-            this.windowToolStripMenuItem});
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.viewToolStripMenuItem.Text = "View";
+            this.MenuView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuSearch,
+            this.MenuContinueSearchF3,
+            this.MenuGoToAsset,
+            this.MenuDependencies,
+            this.MenuWindow});
+            this.MenuView.Name = "MenuView";
+            this.MenuView.Size = new System.Drawing.Size(44, 20);
+            this.MenuView.Text = "View";
             // 
-            // searchByNameToolStripMenuItem
+            // MenuSearch
             // 
-            this.searchByNameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.byNameToolStripMenuItem,
-            this.binaryContentSearchToolStripMenuItem,
-            this.monobehaviourSearchToolStripMenuItem,
-            this.transformSearchToolStripMenuItem});
-            this.searchByNameToolStripMenuItem.Name = "searchByNameToolStripMenuItem";
-            this.searchByNameToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.searchByNameToolStripMenuItem.Text = "Search...";
+            this.MenuSearch.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuSearchByName,
+            this.MenuBinaryContentSearch,
+            this.MenuMonobehaviourSearch,
+            this.MenuTransformSearch});
+            this.MenuSearch.Name = "MenuSearch";
+            this.MenuSearch.Size = new System.Drawing.Size(183, 22);
+            this.MenuSearch.Text = "Search...";
             // 
-            // byNameToolStripMenuItem
+            // MenuSearchByName
             // 
-            this.byNameToolStripMenuItem.Name = "byNameToolStripMenuItem";
-            this.byNameToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.byNameToolStripMenuItem.Text = "Asset by name";
-            this.byNameToolStripMenuItem.Click += new System.EventHandler(this.byNameToolStripMenuItem_Click);
+            this.MenuSearchByName.Name = "MenuSearchByName";
+            this.MenuSearchByName.Size = new System.Drawing.Size(197, 22);
+            this.MenuSearchByName.Text = "Asset by name";
+            this.MenuSearchByName.Click += new System.EventHandler(this.MenuSearchByName_Click);
             // 
-            // binaryContentSearchToolStripMenuItem
+            // MenuBinaryContentSearch
             // 
-            this.binaryContentSearchToolStripMenuItem.Name = "binaryContentSearchToolStripMenuItem";
-            this.binaryContentSearchToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.binaryContentSearchToolStripMenuItem.Text = "Content Search";
-            this.binaryContentSearchToolStripMenuItem.Click += new System.EventHandler(this.binaryContentSearchToolStripMenuItem_Click);
+            this.MenuBinaryContentSearch.Name = "MenuBinaryContentSearch";
+            this.MenuBinaryContentSearch.Size = new System.Drawing.Size(197, 22);
+            this.MenuBinaryContentSearch.Text = "Content Search";
+            this.MenuBinaryContentSearch.Click += new System.EventHandler(this.MenuBinaryContentSearch_Click);
             // 
-            // monobehaviourSearchToolStripMenuItem
+            // MenuMonobehaviourSearch
             // 
-            this.monobehaviourSearchToolStripMenuItem.Name = "monobehaviourSearchToolStripMenuItem";
-            this.monobehaviourSearchToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.monobehaviourSearchToolStripMenuItem.Text = "Monobehaviour Search";
-            this.monobehaviourSearchToolStripMenuItem.Click += new System.EventHandler(this.monobehaviourSearchToolStripMenuItem_Click);
+            this.MenuMonobehaviourSearch.Name = "MenuMonobehaviourSearch";
+            this.MenuMonobehaviourSearch.Size = new System.Drawing.Size(197, 22);
+            this.MenuMonobehaviourSearch.Text = "Monobehaviour Search";
+            this.MenuMonobehaviourSearch.Click += new System.EventHandler(this.MenuMonobehaviourSearch_Click);
             // 
-            // transformSearchToolStripMenuItem
+            // MenuTransformSearch
             // 
-            this.transformSearchToolStripMenuItem.Name = "transformSearchToolStripMenuItem";
-            this.transformSearchToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.transformSearchToolStripMenuItem.Text = "Transform Search";
-            this.transformSearchToolStripMenuItem.Click += new System.EventHandler(this.transformSearchToolStripMenuItem_Click);
+            this.MenuTransformSearch.Name = "MenuTransformSearch";
+            this.MenuTransformSearch.Size = new System.Drawing.Size(197, 22);
+            this.MenuTransformSearch.Text = "Transform Search";
+            this.MenuTransformSearch.Click += new System.EventHandler(this.MenuTransformSearch_Click);
             // 
-            // continueSearchF3ToolStripMenuItem
+            // MenuContinueSearchF3
             // 
-            this.continueSearchF3ToolStripMenuItem.Name = "continueSearchF3ToolStripMenuItem";
-            this.continueSearchF3ToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.continueSearchF3ToolStripMenuItem.Text = "Continue search (F3)";
+            this.MenuContinueSearchF3.Name = "MenuContinueSearchF3";
+            this.MenuContinueSearchF3.Size = new System.Drawing.Size(183, 22);
+            this.MenuContinueSearchF3.Text = "Continue search (F3)";
+            this.MenuContinueSearchF3.Click += new System.EventHandler(this.MenuContinueSearchF3_Click);
             // 
-            // goToAssetToolStripMenuItem
+            // MenuGoToAsset
             // 
-            this.goToAssetToolStripMenuItem.Name = "goToAssetToolStripMenuItem";
-            this.goToAssetToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.goToAssetToolStripMenuItem.Text = "Go to asset";
+            this.MenuGoToAsset.Name = "MenuGoToAsset";
+            this.MenuGoToAsset.Size = new System.Drawing.Size(183, 22);
+            this.MenuGoToAsset.Text = "Go to asset";
+            this.MenuGoToAsset.Click += new System.EventHandler(this.MenuGoToAsset_Click);
             // 
-            // dependenciesToolStripMenuItem
+            // MenuDependencies
             // 
-            this.dependenciesToolStripMenuItem.Name = "dependenciesToolStripMenuItem";
-            this.dependenciesToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.dependenciesToolStripMenuItem.Text = "Dependencies";
-            this.dependenciesToolStripMenuItem.Click += new System.EventHandler(this.dependenciesToolStripMenuItem_Click);
+            this.MenuDependencies.Name = "MenuDependencies";
+            this.MenuDependencies.Size = new System.Drawing.Size(183, 22);
+            this.MenuDependencies.Text = "Dependencies";
+            this.MenuDependencies.Click += new System.EventHandler(this.MenuDependencies_Click);
             // 
-            // windowToolStripMenuItem
+            // MenuWindow
             // 
-            this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.assetPreviewToolStripMenuItem});
-            this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
-            this.windowToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.windowToolStripMenuItem.Text = "Window";
+            this.MenuWindow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuAssetPreview});
+            this.MenuWindow.Name = "MenuWindow";
+            this.MenuWindow.Size = new System.Drawing.Size(183, 22);
+            this.MenuWindow.Text = "Window";
             // 
-            // assetPreviewToolStripMenuItem
+            // MenuAssetPreview
             // 
-            this.assetPreviewToolStripMenuItem.Name = "assetPreviewToolStripMenuItem";
-            this.assetPreviewToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.assetPreviewToolStripMenuItem.Text = "Asset Preview";
+            this.MenuAssetPreview.Name = "MenuAssetPreview";
+            this.MenuAssetPreview.Size = new System.Drawing.Size(146, 22);
+            this.MenuAssetPreview.Text = "Asset Preview";
             // 
-            // toolsToolStripMenuItem
+            // MenuTools
             // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.getScriptInformationToolStripMenuItem});
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            this.MenuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuGetScriptInformation});
+            this.MenuTools.Name = "MenuTools";
+            this.MenuTools.Size = new System.Drawing.Size(46, 20);
+            this.MenuTools.Text = "Tools";
             // 
-            // getScriptInformationToolStripMenuItem
+            // MenuGetScriptInformation
             // 
-            this.getScriptInformationToolStripMenuItem.Name = "getScriptInformationToolStripMenuItem";
-            this.getScriptInformationToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.getScriptInformationToolStripMenuItem.Text = "Get script information";
+            this.MenuGetScriptInformation.Name = "MenuGetScriptInformation";
+            this.MenuGetScriptInformation.Size = new System.Drawing.Size(190, 22);
+            this.MenuGetScriptInformation.Text = "Get script information";
             // 
             // assetList
             // 
@@ -563,20 +565,20 @@
         private System.Windows.Forms.Button btnRemove;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modMakerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createStandaloneexeInstallerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem createInstallerPackageFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem searchByNameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem continueSearchF3ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem goToAssetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem dependenciesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem assetPreviewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuFile;
+        private System.Windows.Forms.ToolStripMenuItem MenuSave;
+        private System.Windows.Forms.ToolStripMenuItem MenuSaveAs;
+        private System.Windows.Forms.ToolStripMenuItem MenuModMaker;
+        private System.Windows.Forms.ToolStripMenuItem MenuCreateStandaloneexeInstaller;
+        private System.Windows.Forms.ToolStripMenuItem MenuCreateInstallerPackageFile;
+        private System.Windows.Forms.ToolStripMenuItem MenuClose;
+        private System.Windows.Forms.ToolStripMenuItem MenuView;
+        private System.Windows.Forms.ToolStripMenuItem MenuSearch;
+        private System.Windows.Forms.ToolStripMenuItem MenuContinueSearchF3;
+        private System.Windows.Forms.ToolStripMenuItem MenuGoToAsset;
+        private System.Windows.Forms.ToolStripMenuItem MenuDependencies;
+        private System.Windows.Forms.ToolStripMenuItem MenuWindow;
+        private System.Windows.Forms.ToolStripMenuItem MenuAssetPreview;
         private System.Windows.Forms.ListView assetList;
         private System.Windows.Forms.ColumnHeader nameColumn;
         private System.Windows.Forms.ColumnHeader typeColumn;
@@ -584,13 +586,13 @@
         private System.Windows.Forms.ColumnHeader pathIDColumn;
         private System.Windows.Forms.ColumnHeader sizeColumn;
         private System.Windows.Forms.ColumnHeader modifiedColumn;
-        private System.Windows.Forms.ToolStripMenuItem byNameToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem binaryContentSearchToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem monobehaviourSearchToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem transformSearchToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuSearchByName;
+        private System.Windows.Forms.ToolStripMenuItem MenuBinaryContentSearch;
+        private System.Windows.Forms.ToolStripMenuItem MenuMonobehaviourSearch;
+        private System.Windows.Forms.ToolStripMenuItem MenuTransformSearch;
         private System.Windows.Forms.ColumnHeader typeIDColumn;
-        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem getScriptInformationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuTools;
+        private System.Windows.Forms.ToolStripMenuItem MenuGetScriptInformation;
         private System.Windows.Forms.ColumnHeader containerColumn;
     }
 }

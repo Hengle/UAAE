@@ -1,15 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace AssetsAdvancedEditor
+namespace AssetsAdvancedEditor.Winforms
 {
     public partial class About : Form
     {
-        public About()
-        {
-            InitializeComponent();
-        }
+        public About() => InitializeComponent();
 
         private void firstLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -21,11 +17,15 @@ namespace AssetsAdvancedEditor
             openLink("https://community.7daystodie.com/profile/418-derpopo");
         }
 
-        private void openLink(string url)
+        private static void openLink(string url)
         {
             var proc = new Process
             {
-                StartInfo = {UseShellExecute = true, FileName = url}
+                StartInfo =
+                {
+                    UseShellExecute = true,
+                    FileName = url
+                }
             };
             proc.Start();
         }

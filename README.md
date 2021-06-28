@@ -17,6 +17,9 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
     * Dump view tab
 * Edit button
   * Asset editor (plugins)
+* Asset list searching
+  * By name
+* Go to asset option
 * Dependency loading
 * Raw export/import (one asset import)
 * Dump export/import in (only one asset import)
@@ -46,11 +49,11 @@ This list may be incomplete!
   * Remove container option
 * ~~Monobehaviour deserialization in data view~~ (including il2cpp technology)
 * Asset list searching
-  * By name
+  * ~~By name~~
   * Binary content
   * Monobehaviour
   * Transform
-* Go to asset option
+* ~~Go to asset option~~
 * Asset preview option
 * Dump export/import in
   * JSON format
@@ -60,9 +63,10 @@ This list may be incomplete!
   * ~~Texture plugin~~ (including sprite editor)
   * TextAsset plugin
   * Audio plugin (including Wwise)
-  * Video plugin
+  * MovieTexture plugin
   * Mesh plugin (FBX)
   * TerrainData plugin
+  * Font plugin **(custom)** *
   * Prefab/Scene plugin **(custom)** *
 * ModInstaller and ModMaker
 * Cldb/Tpk editor

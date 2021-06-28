@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Plugins;
 using AssetsAdvancedEditor.Utils;
+using AssetsAdvancedEditor.Winforms.AssetSearch;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
 
@@ -29,6 +30,14 @@ namespace AssetsAdvancedEditor.Winforms
         public Dictionary<BundleReplacer, MemoryStream> ModifiedFiles { get; private set; }
         //private Stack<List<int>> UndoList { get; }
         //private Stack<List<int>> RedoList { get; }
+
+        //Searching
+        private string searchText;
+        private int searchStart;
+        private bool searchDown;
+        private bool searchCaseSensitive;
+        private bool searchStartAtSelection;
+        private bool searching;
 
         //extra (todo)
         //AssetNameSearch assetNameSearch;
@@ -379,9 +388,11 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void AssetsViewer_KeyDown(object sender, KeyEventArgs e)
         {
-            // todo
             switch (e.KeyCode)
             {
+                case Keys.F3:
+                    NextSearch();
+                    break;
                 case Keys.Y when e.Control:
                     //Redo();
                     break;
@@ -690,37 +701,137 @@ namespace AssetsAdvancedEditor.Winforms
 
         private int GetSelectedCount() => assetList.SelectedItems.Count;
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e) => SaveFiles(true);
+        private void MenuSave_Click(object sender, EventArgs e) => SaveFiles(true);
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) => SaveFiles();
+        private void MenuSaveAs_Click(object sender, EventArgs e) => SaveFiles();
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuClose_Click(object sender, EventArgs e)
         {
             if (Workspace.Modified) AskSaveChanges();
             else CloseFiles();
         }
 
-        private void byNameToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuSearchByName_Click(object sender, EventArgs e)
+        {
+            var dialog = new AssetNameSearch();
+            dialog.ShowDialog();
+            if (dialog.ok)
+            {
+                searchStart = 0;
+                if (dialog.startAtSelection)
+                {
+                    var selIndices = new List<int>();
+                    foreach (int selIndex in assetList.SelectedIndices)
+                    {
+                        assetList.Items[selIndex].Selected = false;
+                        selIndices.Add(selIndex);
+                    }
+                    searchStart = selIndices.Count != 0 ? selIndices[^1] : 0;
+                }
+                searchText = dialog.text;
+                searchDown = dialog.isDown;
+                searchCaseSensitive = dialog.caseSensitive;
+                searchStartAtSelection = dialog.startAtSelection;
+                searching = true;
+                NextSearch();
+            }
+        }
+
+        private void MenuContinueSearchF3_Click(object sender, EventArgs e) => NextSearch();
+
+        private void NextSearch()
+        {
+            var foundResult = false;
+            if (searching)
+            {
+                var items = assetList.Items;
+                if (searchDown)
+                {
+                    for (var i = searchStart; i < items.Count; i++)
+                    {
+                        var name = items[i].SubItems[0].Text;
+
+                        if (!Extensions.WildcardMatches(name, searchText, searchCaseSensitive))
+                            continue;
+
+                        assetList.Items[i].Selected = true;
+                        assetList.EnsureVisible(i);
+                        searchStart = i + 1;
+                        foundResult = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    for (var i = searchStart; i >= 0; i--)
+                    {
+                        var name = items[i].SubItems[0].Text;
+
+                        if (!Extensions.WildcardMatches(name, searchText, searchCaseSensitive))
+                            continue;
+
+                        assetList.Items[i].Selected = true;
+                        assetList.EnsureVisible(i);
+                        searchStart = i - 1;
+                        foundResult = true;
+                        break;
+                    }
+                }
+                assetList.Select();
+            }
+
+            if (foundResult)
+                return;
+
+            MsgBoxUtils.ShowInfoDialog("Can't find any assets that match.", MessageBoxButtons.OK);
+
+            searchText = "";
+            searchStart = 0;
+            searchDown = false;
+            searching = false;
+        }
+
+        private void MenuGoToAsset_Click(object sender, EventArgs e)
+        {
+            var dialog = new GoToAssetDialog(Workspace);
+            if (dialog.ShowDialog() != DialogResult.OK) return;
+            var foundResult = false;
+            for (var i = 0; i < assetList.Items.Count; i++)
+            {
+                var item = Workspace.LoadedAssets[i];
+
+                if (item.FileID != dialog.FileID || item.PathID != dialog.PathID)
+                    continue;
+
+                assetList.Items[i].Selected = true;
+                assetList.EnsureVisible(i);
+                foundResult = true;
+                break;
+            }
+            if (!foundResult)
+            {
+                MsgBoxUtils.ShowInfoDialog("Asset not found.", MessageBoxButtons.OK);
+                return;
+            }
+            assetList.Select();
+        }
+
+        private void MenuBinaryContentSearch_Click(object sender, EventArgs e)
         {
             // todo
         }
 
-        private void binaryContentSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuMonobehaviourSearch_Click(object sender, EventArgs e)
         {
             // todo
         }
 
-        private void monobehaviourSearchToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuTransformSearch_Click(object sender, EventArgs e)
         {
             // todo
         }
 
-        private void transformSearchToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            // todo
-        }
-
-        private void dependenciesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuDependencies_Click(object sender, EventArgs e)
         {
             // todo
         }

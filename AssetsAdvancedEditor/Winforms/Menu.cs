@@ -88,13 +88,13 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuClose_Click(object sender, EventArgs e)
         {
             if (Modified) AskSaveChanges();
             else CloseAllFiles();
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuSave_Click(object sender, EventArgs e)
         {
             var sfd = new SaveFileDialog
             {

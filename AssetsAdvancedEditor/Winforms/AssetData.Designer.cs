@@ -33,7 +33,7 @@
             this.tpTreeView = new System.Windows.Forms.TabPage();
             this.rawViewTree = new System.Windows.Forms.TreeView();
             this.tpDumpView = new System.Windows.Forms.TabPage();
-            this.tboxDumpView = new System.Windows.Forms.TextBox();
+            this.boxDumpView = new System.Windows.Forms.TextBox();
             this.btnCloseDown = new System.Windows.Forms.Button();
             this.btnOpenDown = new System.Windows.Forms.Button();
             this.btnCloseAll = new System.Windows.Forms.Button();
@@ -82,7 +82,7 @@
             // 
             // tpDumpView
             // 
-            this.tpDumpView.Controls.Add(this.tboxDumpView);
+            this.tpDumpView.Controls.Add(this.boxDumpView);
             this.tpDumpView.Location = new System.Drawing.Point(4, 24);
             this.tpDumpView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tpDumpView.Name = "tpDumpView";
@@ -92,16 +92,16 @@
             this.tpDumpView.Text = "Dump View";
             this.tpDumpView.UseVisualStyleBackColor = true;
             // 
-            // tboxDumpView
+            // boxDumpView
             // 
-            this.tboxDumpView.BackColor = System.Drawing.SystemColors.Window;
-            this.tboxDumpView.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.tboxDumpView.Location = new System.Drawing.Point(0, 0);
-            this.tboxDumpView.Multiline = true;
-            this.tboxDumpView.Name = "tboxDumpView";
-            this.tboxDumpView.ReadOnly = true;
-            this.tboxDumpView.Size = new System.Drawing.Size(398, 402);
-            this.tboxDumpView.TabIndex = 0;
+            this.boxDumpView.BackColor = System.Drawing.SystemColors.Window;
+            this.boxDumpView.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.boxDumpView.Location = new System.Drawing.Point(0, 0);
+            this.boxDumpView.Multiline = true;
+            this.boxDumpView.Name = "boxDumpView";
+            this.boxDumpView.ReadOnly = true;
+            this.boxDumpView.Size = new System.Drawing.Size(398, 402);
+            this.boxDumpView.TabIndex = 0;
             // 
             // btnCloseDown
             // 
@@ -192,6 +192,6 @@
         private System.Windows.Forms.Button btnOpenDown;
         private System.Windows.Forms.Button btnCloseAll;
         private System.Windows.Forms.Button btnOpenAll;
-        private System.Windows.Forms.TextBox tboxDumpView;
+        private System.Windows.Forms.TextBox boxDumpView;
     }
 }
