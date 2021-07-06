@@ -257,35 +257,9 @@ namespace AssetsAdvancedEditor.Winforms
             return GetSelectedAssetItems().Select(item => Workspace.GetAssetContainer(item)).ToList();
         }
 
-        private void UpdateAssetInfo(ref AssetContainer cont)
+        private void UpdateAssetInfo(AssetItem item, int index)
         {
-            var replacer = Workspace.NewAssets[cont.AssetId];
-            var classId = (uint)replacer.GetClassID();
-            var index = assetList.Items[assetList.SelectedIndices[0]].Index; // todo, rework this
-            var item = new AssetItem
-            {
-                TypeID = classId,
-                FileID = replacer.GetFileID(),
-                PathID = replacer.GetPathID(),
-                Size = replacer.GetSize(),
-                Modified = "*",
-                MonoID = replacer.GetMonoScriptID()
-            };
-            var field = Workspace.GetBaseField(cont);
-            var nameValue = field.Get("m_Name").GetValue();
-            var name = "";
-            var type = field.GetFieldType();
-
-            if (nameValue != null)
-            {
-                name = nameValue.AsString();
-            }
-
-            item.Name = name;
-            item.Type = type;
-
-            Workspace.LoadedAssets[index] = item;
-            cont = new AssetContainer(cont, item);
+            var name = item.Name;
             if (string.IsNullOrEmpty(name))
             {
                 name = "Unnamed asset";
@@ -294,9 +268,9 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 name = $"{item.Type} {name}";
             }
-            var data = item.ToArray();
-            data[0] = name;
-            assetList.Items[index] = new ListViewItem(data)
+			
+            item.Name = name;
+            assetList.Items[index] = new ListViewItem(item.ToArray())
             {
                 Selected = true
             };
@@ -307,7 +281,6 @@ namespace AssetsAdvancedEditor.Winforms
         {
             for (var i = 0; i < assetList.Items.Count; i++)
             {
-                Workspace.LoadedAssets[i].Modified = "";
                 assetList.Items[i].SubItems[7].Text = "";
             }
             Workspace.ClearModified();

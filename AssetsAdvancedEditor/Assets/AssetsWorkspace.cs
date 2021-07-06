@@ -36,7 +36,7 @@ namespace AssetsAdvancedEditor.Assets
         public string AssetsRootDir { get; }
         public string UnityVersion { get; }
 
-        public delegate void AssetsWorkspaceItemUpdateEvent(ref AssetContainer cont);
+        public delegate void AssetsWorkspaceItemUpdateEvent(AssetItem item, int index);
         public event AssetsWorkspaceItemUpdateEvent ItemUpdated;
 
         public AssetsWorkspace(AssetsManager am, AssetsFileInstance file, bool fromBundle = false)
@@ -72,7 +72,8 @@ namespace AssetsAdvancedEditor.Assets
             if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
-            var item = LoadedAssets.FirstOrDefault(i => i.FileID == replacer.GetFileID() && i.PathID == replacer.GetPathID());
+			var index = LoadedAssets.FindIndex(i => i.FileID == replacer.GetFileID() && i.PathID == replacer.GetPathID());
+            var item = LoadedAssets[index];
 
             if (NewAssets.ContainsKey(assetId))
                 RemoveReplacer(replacer);
@@ -97,8 +98,7 @@ namespace AssetsAdvancedEditor.Assets
             else
             {
                 var cont = MakeAssetContainer(item, NewAssetDatas[assetId]);
-                ItemUpdated?.Invoke(ref cont);
-                LoadedContainers[assetId] = cont;
+                UpdateAssetInfo(cont, assetId, index);
             }
 
             Modified = true;
@@ -120,6 +120,37 @@ namespace AssetsAdvancedEditor.Assets
 
             Modified = NewAssets.Count != 0;
         }
+		
+		private void UpdateAssetInfo(AssetContainer cont, AssetID assetId, int index)
+		{
+			var field = GetBaseField(cont);
+			var replacer = NewAssets[assetId];
+            var classId = (uint)replacer.GetClassID();
+            var nameValue = field.Get("m_Name").GetValue();
+            var name = "";
+            var type = field.GetFieldType();
+
+            if (nameValue != null)
+            {
+                name = nameValue.AsString();
+            }
+
+            var item = new AssetItem
+            {
+				Name = name,
+				Type = type,
+                TypeID = classId,
+                FileID = replacer.GetFileID(),
+                PathID = replacer.GetPathID(),
+                Size = replacer.GetSize(),
+                Modified = "*",
+                MonoID = replacer.GetMonoScriptID()
+            };
+
+            LoadedAssets[index] = item;
+            LoadedContainers[assetId] = new AssetContainer(cont, item);
+			ItemUpdated?.Invoke(item, index);
+		}
 
         //Existing assets
         public AssetContainer MakeAssetContainer(AssetItem item, bool forceFromCldb = false)
