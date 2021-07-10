@@ -9,7 +9,7 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 ## Features
 * Open assets/bundle files
 * Add/Remove assets
-* Export/Import/Remove/Info options (for assets files in Menu)
+* Bundle file options Export/Import/Remove/Info for assets files
 * Bundle file compression/decompression
 * Data view
   * Monobehaviour deserialization
@@ -21,8 +21,8 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
   * By name
 * Go to asset option
 * Dependency loading
-* Raw export/import (one asset import)
-* Dump export/import in (only one asset import)
+* Raw export/import
+* Dump export/import in
   * TXT format
   * XML format **(export only)**
 * Save modified assets files and bundle file
@@ -30,6 +30,7 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 * Plugin support
 * Plugins
   * Texture plugin
+
 ## Todo
 This list may be incomplete!
 * Advanced error checking (with logging)
@@ -76,7 +77,7 @@ This list may be incomplete!
   * Raw editor tab
   * ~~Asset editor (plugins)~~
 * ~~Bundle compression support~~
-* Batch import/export assets
+* ~~Batch import/export assets~~
 * ~~Command line support~~
 * Blank assets file/bundle creation
 * Blank ResS/Resource file creation
@@ -86,8 +87,13 @@ This list may be incomplete!
 * MacOS, Linux and Mobile support
 * Implement the features that are going to be in new [UABE](https://community.7daystodie.com/topic/1871-unity-assets-bundle-extractor/?do=findComment&comment=357397)
 
+## Download
+* You can download [latest build]() (newer but unstable) or [latest release]() (older and missing bug fixes or new features)
+
 ## Build
-* Visual Studio 2019 or newer
+* Install Visual Studio 2019 or newer
+* Build the solution. Here's a [guide](https://docs.microsoft.com/en-us/visualstudio/ide/walkthrough-building-an-application?view=vs-2019) on how to do it
+* Download the release [files](https://github.com/Igor55x/UAAE/releases/download/v2/ReleaseFiles.zip) and copy them into the program folder. Also copy all built plugins into the "Plugins" folder and all other libraries into the root folder
 
 ## Credits
 * [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)

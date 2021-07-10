@@ -2,6 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using AssetsAdvancedEditor.Assets;
+using AssetsTools.NET.Extra;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
 using SevenZip.Compression.LZMA;
 
@@ -9,6 +12,118 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
+        public static void GetUAAENameFast(AssetsWorkspace workspace, AssetItem item, out string type, out string name)
+        {
+            var file = workspace.LoadedFiles[item.FileID].file;
+            var cldb = workspace.Am.classFile;
+            var classId = item.TypeID;
+            var cldbType = AssetHelper.FindAssetClassByID(cldb, classId);
+            var reader = file.reader;
+
+            if (file.typeTree.hasTypeTree)
+            {
+                var ttType = classId == 0x72 ?
+                    AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, item.MonoID) :
+                    AssetHelper.FindTypeTreeTypeByID(file.typeTree, classId);
+
+
+                type = ttType.typeFieldsEx[0].GetTypeString(ttType.stringTable);
+                switch (ttType.typeFieldsEx.Length)
+                {
+                    case > 1 when ttType.typeFieldsEx[1].GetNameString(ttType.stringTable) == "m_Name":
+                    {
+                        reader.Position = item.Position;
+                        name = reader.ReadCountStringInt32();
+                        if (name != "") return;
+                        break;
+                    }
+                    default:
+                        switch (type)
+                        {
+                            case "GameObject":
+                            {
+                                reader.Position = item.Position;
+                                var size = reader.ReadInt32();
+                                var componentSize = file.header.format > 0x10 ? 0x0c : 0x10;
+                                reader.Position += size * componentSize;
+                                reader.Position += 0x04;
+                                name = reader.ReadCountStringInt32();
+                                name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                                return;
+                            }
+                            case "MonoBehaviour":
+                                reader.Position = item.Position;
+                                reader.Position += 0x1c;
+                                name = reader.ReadCountStringInt32();
+                                name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                                return;
+                        }
+                        break;
+                }
+                name = "Unnamed asset";
+                return;
+            }
+
+            if (cldbType == null)
+            {
+                type = $"0x{classId:X8}";
+                name = "Unnamed asset";
+                return;
+            }
+
+            type = cldbType.name.GetString(cldb);
+            switch (cldbType.fields.Count)
+            {
+                case 0:
+                    name = "Unnamed asset";
+                    return;
+                case > 1 when cldbType.fields[1].fieldName.GetString(cldb) == "m_Name":
+                {
+                    reader.Position = item.Position;
+                    name = reader.ReadCountStringInt32();
+                    if (name != "") return;
+                    break;
+                }
+                default:
+                    switch (type)
+                    {
+                        case "GameObject":
+                        {
+                            reader.Position = item.Position;
+                            var size = reader.ReadInt32();
+                            var componentSize = file.header.format > 0x10 ? 0x0c : 0x10;
+                            reader.Position += size * componentSize;
+                            reader.Position += 0x04;
+                            name = reader.ReadCountStringInt32();
+                            name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                            return;
+                        }
+                        case "MonoBehaviour":
+                        {
+                            reader.Position = item.Position;
+                            reader.Position += 0x1c;
+                            name = reader.ReadCountStringInt32();
+                            name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                            return;
+                        }
+                    }
+                    break;
+            }
+            name = "Unnamed asset";
+        }
+
+        public static ListViewItem.ListViewSubItem Get(this ListViewItem.ListViewSubItemCollection subItems, string text)
+        {
+            foreach (ListViewItem.ListViewSubItem subItem in subItems)
+            {
+                if (subItem.Text == text)
+                {
+                    return subItem;
+                }
+            }
+            return null;
+        }
+
         public static bool WildcardMatches(string test, string pattern, bool caseSensitive = true)
         {
             RegexOptions options = 0;
