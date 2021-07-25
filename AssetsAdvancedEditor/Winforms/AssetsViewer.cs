@@ -735,10 +735,10 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            var addAssetsDialog = new AddAssetsDialog(Workspace);
-            if (addAssetsDialog.ShowDialog() != DialogResult.OK) return;
+            var dialog = new AddAssets(Workspace);
+            if (dialog.ShowDialog() != DialogResult.OK) return;
 
-            AddAssetItems(addAssetsDialog.Items);
+            AddAssetItems(dialog.Items);
         }
 
         private void btnRemove_Click(object sender, EventArgs e)

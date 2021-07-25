@@ -10,12 +10,12 @@ using AssetsTools.NET.Extra;
 
 namespace AssetsAdvancedEditor.Winforms
 {
-    public partial class AddAssetsDialog : Form
+    public partial class AddAssets : Form
     {
         public AssetsWorkspace Workspace;
         public List<AssetItem> Items;
         public long NextPathId;
-        public AddAssetsDialog(AssetsWorkspace workspace)
+        public AddAssets(AssetsWorkspace workspace)
         {
             InitializeComponent();
             Workspace = workspace;

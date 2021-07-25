@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Plugins;
@@ -49,9 +51,10 @@ namespace Texture.Options
                 return false;
 
             var dir = ofd.Folder;
-
+            var errorBuilder = new StringBuilder();
             foreach (var cont in selectedAssets)
             {
+                var errorAssetName = $"{Path.GetFileName(cont.FileInstance.path)}/{cont.AssetId.pathID}";
                 var texBaseField = cont.TypeInstance.GetBaseField();
                 var texFile = TextureFile.ReadTextureFile(texBaseField);
 
@@ -64,17 +67,32 @@ namespace Texture.Options
                 //bundle resS
                 if (!TextureHelper.GetResSTexture(texFile, cont))
                 {
-                    MsgBoxUtils.ShowErrorDialog(owner, ".resS was detected but no file was found in bundle!");
-                    return false;
+                    var resSName = Path.GetFileName(texFile.m_StreamData.path);
+                    errorBuilder.AppendLine($"[{errorAssetName}]: resS was detected but {resSName} was not found in bundle");
+                    continue;
                 }
 
                 var data = TextureHelper.GetRawTextureBytes(texFile, cont.FileInstance);
 
+                if (data == null)
+                {
+                    var resSName = Path.GetFileName(texFile.m_StreamData.path);
+                    errorBuilder.AppendLine($"[{errorAssetName}]: resS was detected but {resSName} was not found on disk");
+                    continue;
+                }
+
                 var success = TextureManager.ExportTexture(data, file, texFile.m_Width, texFile.m_Height, (TextureFormat)texFile.m_TextureFormat);
                 if (success) continue;
-                MsgBoxUtils.ShowErrorDialog(owner, $"Failed to decode texture\n({(TextureFormat)texFile.m_TextureFormat})");
-                return false;
+                errorBuilder.AppendLine($"[{errorAssetName}]: Failed to decode texture with '{(TextureFormat)texFile.m_TextureFormat}' format");
             }
+
+            if (errorBuilder.Length > 0)
+            {
+                var firstLines = errorBuilder.ToString().Split('\n').Take(20).ToArray();
+                var firstLinesStr = string.Join('\n', firstLines);
+                MsgBoxUtils.ShowErrorDialog("Some errors occurred while exporting", firstLinesStr);
+            }
+
             return true;
         }
 
@@ -92,20 +110,29 @@ namespace Texture.Options
                 return false;
 
             var file = sfd.FileName;
+            var errorAssetName = $"{Path.GetFileName(selectedAsset.FileInstance.path)}/{selectedAsset.AssetId.pathID}";
 
             //bundle resS
             if (!TextureHelper.GetResSTexture(texFile, selectedAsset))
             {
-                MsgBoxUtils.ShowErrorDialog(owner, ".resS was detected but no file was found in bundle!");
+                var resSName = Path.GetFileName(texFile.m_StreamData.path);
+                MsgBoxUtils.ShowErrorDialog($"[{errorAssetName}]: resS was detected but {resSName} was not found in bundle");
                 return false;
             }
 
             var data = TextureHelper.GetRawTextureBytes(texFile, selectedAsset.FileInstance);
 
+            if (data == null)
+            {
+                var resSName = Path.GetFileName(texFile.m_StreamData.path);
+                MsgBoxUtils.ShowErrorDialog($"[{errorAssetName}]: resS was detected but {resSName} was not found on disk");
+                return false;
+            }
+
             var success = TextureManager.ExportTexture(data, file, texFile.m_Width, texFile.m_Height, (TextureFormat)texFile.m_TextureFormat);
             if (!success)
             {
-                MsgBoxUtils.ShowErrorDialog(owner, $"Failed to decode texture\n({(TextureFormat)texFile.m_TextureFormat})");
+                MsgBoxUtils.ShowErrorDialog(owner, $"[{errorAssetName}]: Failed to decode texture with '{(TextureFormat)texFile.m_TextureFormat}' format");
             }
             return success;
         }

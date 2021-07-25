@@ -4,17 +4,17 @@ using AssetsTools.NET.Extra;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using Size = System.Drawing.Size;
 
 namespace Texture
 {
     public class TextureManager
     {
-        public static byte[] ImportTexture(string file, TextureFormat format, out int width, out int height)
+        public static byte[] ImportTexture(string file, TextureFormat format, out Size imgSize)
         {
             byte[] decData;
             using var image = Image.Load<Rgba32>(file);
-            width = image.Width;
-            height = image.Height;
+            imgSize = new Size(image.Width, image.Height);
 
             image.Mutate(i => i.Flip(FlipMode.Vertical));
             if (image.TryGetSinglePixelSpan(out var pixelSpan))
@@ -26,7 +26,7 @@ namespace Texture
                 return null; //rip
             }
 
-            var encData = EncodeTexture(decData, width, height, format);
+            var encData = EncodeTexture(decData, image.Width, image.Height, format);
             return encData;
         }
 

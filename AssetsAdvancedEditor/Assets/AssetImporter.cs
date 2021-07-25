@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using AssetsAdvancedEditor.Utils;
 using AssetsTools.NET;
 using AssetsTools.NET.Extra;
@@ -172,6 +171,7 @@ namespace AssetsAdvancedEditor.Assets
                             var lastQuote = value.LastIndexOf('"');
                             var valueStrFix = value[(firstQuote + 1)..(lastQuote - firstQuote)];
                             valueStrFix = valueStrFix
+                                .Replace("\\\\", "\\")
                                 .Replace("\\r", "\r")
                                 .Replace("\\n", "\n");
                             Writer.WriteCountStringInt32(valueStrFix);

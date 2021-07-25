@@ -1,7 +1,7 @@
 ﻿
 namespace AssetsAdvancedEditor.Winforms
 {
-    partial class AddAssetsDialog
+    partial class AddAssets
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace AssetsAdvancedEditor.Winforms
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddAssetsDialog));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddAssets));
             this.cboxTypePreset = new System.Windows.Forms.ComboBox();
             this.lblFileID = new System.Windows.Forms.Label();
             this.lblPathID = new System.Windows.Forms.Label();
