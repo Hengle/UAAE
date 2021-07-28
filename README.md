@@ -88,7 +88,7 @@ This list may be incomplete!
 * Implement the features that are going to be in new [UABE](https://community.7daystodie.com/topic/1871-unity-assets-bundle-extractor/?do=findComment&comment=357397)
 
 ## Download
-* You can download [latest build]() (newer but unstable) or [latest release]() (older and missing bug fixes or new features)
+* You can download [latest build](https://nightly.link/Igor55x/UAAE/workflows/dotnet-desktop/master/UAAE-Windows.zip) (newer but unstable) or [latest release](https://github.com/Igor55x/UAAE/releases) (older and missing bug fixes or new features)
 
 ## Build
 * Install Visual Studio 2019 or newer
