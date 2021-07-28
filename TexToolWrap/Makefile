@@ -1,11 +1,11 @@
-all: libTexToolWrap.so
+all: libtextoolwrap.so
 
 clean:
 	rm -f textoolwrap.o
-	rm -f libTexToolWrap.so
+	rm -f libtextoolwrap.so
 
-TexToolWrap.o: textoolwrap.cpp
+textoolwrap.o: textoolwrap.cpp
 	$(CXX) -c -fpic -o textoolwrap.o textoolwrap.cpp
 
-libTexToolWrap.so: textoolwrap.o
-	$(CXX) -shared -o libTexToolWrap.so TexToolWrap.o -LPVRTexLib/Linux_x86_64 -lPVRTexLib -Lispc/linux64 -lispc_texcomp -Wl,-rpath,"\$$ORIGIN"
+libtextoolwrap.so: textoolwrap.o
+	$(CXX) -shared -o libtextoolwrap.so textoolwrap.o -LPVRTexLib/Linux_x86_64 -lPVRTexLib -LIspc/linux64 -lispc_texcomp -LCrunch/linux64 -lcrnlib -Wl,-rpath,"\$$ORIGIN"

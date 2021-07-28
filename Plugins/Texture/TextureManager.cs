@@ -54,8 +54,36 @@ namespace Texture
             switch (format)
             {
                 case TextureFormat.RGB9e5Float: //pls don't use (what is this?)
+                    return null; // todo
                 case TextureFormat.DXT1Crunched:
                 case TextureFormat.DXT5Crunched:
+                {
+                    var dest = TextureWrapper.DecodeByCrunchUnity(data, (int)format, width, height);
+
+                    if (dest == null)
+                        return null;
+
+                    if (format == TextureFormat.DXT1Crunched)
+                    {
+                        var dxt1 = DXTDecoders.ReadDXT1(dest, width, height);
+                        for (var i = 0; i < dxt1.Length; i += 4)
+                        {
+                            var temp = dxt1[i];
+                            dxt1[i] = dxt1[i + 2];
+                            dxt1[i + 2] = temp;
+                        }
+                        return dxt1;
+                    }
+
+                    var dxt5 = DXTDecoders.ReadDXT5(dest, width, height);
+                    for (var i = 0; i < dxt5.Length; i += 4)
+                    {
+                        var temp = dxt5[i];
+                        dxt5[i] = dxt5[i + 2];
+                        dxt5[i + 2] = temp;
+                    }
+                    return dxt5;
+                }
                 case TextureFormat.ETC_RGB4Crunched:
                 case TextureFormat.ETC2_RGBA8Crunched:
                     return null; // todo
@@ -107,6 +135,7 @@ namespace Texture
                     return dest;
                 }
                 case TextureFormat.DXT1:
+                {
                     var dxt1 = DXTDecoders.ReadDXT1(data, width, height);
                     for (var i = 0; i < dxt1.Length; i += 4)
                     {
@@ -115,7 +144,9 @@ namespace Texture
                         dxt1[i + 2] = temp;
                     }
                     return dxt1;
+                }
                 case TextureFormat.DXT5:
+                {
                     var dxt5 = DXTDecoders.ReadDXT5(data, width, height);
                     for (var i = 0; i < dxt5.Length; i += 4)
                     {
@@ -124,7 +155,9 @@ namespace Texture
                         dxt5[i + 2] = temp;
                     }
                     return dxt5;
+                }
                 case TextureFormat.BC7:
+                {
                     var bc7 = BC7Decoder.ReadBC7(data, width, height);
                     for (var i = 0; i < bc7.Length; i += 4)
                     {
@@ -133,6 +166,7 @@ namespace Texture
                         bc7[i + 2] = temp;
                     }
                     return bc7;
+                }
                 case TextureFormat.BC6H:
                 case TextureFormat.BC4:
                 case TextureFormat.BC5:
@@ -147,8 +181,13 @@ namespace Texture
             switch (format)
             {
                 case TextureFormat.RGB9e5Float: //pls don't use (what is this?)
+                    return null; // todo
                 case TextureFormat.DXT1Crunched:
                 case TextureFormat.DXT5Crunched:
+                {
+                    var dest = TextureWrapper.EncodeByCrunchUnity(data, (int)format, quality, 1, width, height);
+                    return dest;
+                }
                 case TextureFormat.ETC_RGB4Crunched:
                 case TextureFormat.ETC2_RGBA8Crunched:
                     return null; // todo

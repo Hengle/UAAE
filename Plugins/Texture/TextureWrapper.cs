@@ -69,5 +69,49 @@ namespace Texture
             Array.Resize(ref dest, size);
             return dest;
         }
+
+        public static byte[] DecodeByCrunchUnity(byte[] data, int mode, int width, int height)
+        {
+            var dest = new byte[width * height * 4];
+            int size;
+            unsafe
+            {
+                fixed (byte* dataPtr = data)
+                fixed (byte* destPtr = dest)
+                {
+                    var dataIntPtr = (IntPtr)dataPtr;
+                    var destIntPtr = (IntPtr)destPtr;
+                    size = (int)PInvoke.DecodeByCrunchUnity(dataIntPtr, (uint)data.Length, destIntPtr, mode, (uint)width, (uint)height);
+                }
+            }
+
+            if (size <= 0)
+                return null;
+
+            Array.Resize(ref dest, size);
+            return dest;
+        }
+
+        public static byte[] EncodeByCrunchUnity(byte[] data,  int mode, int level, int space, int width, int height)
+        {
+            var dest = new byte[width * height * 4];
+            int size;
+            unsafe
+            {
+                fixed (byte* dataPtr = data)
+                fixed (byte* destPtr = dest)
+                {
+                    var dataIntPtr = (IntPtr)dataPtr;
+                    var destIntPtr = (IntPtr)destPtr;
+                    size = (int)PInvoke.EncodeByCrunchUnity(dataIntPtr, destIntPtr, mode, level, space, (uint)width, (uint)height);
+                }
+            }
+
+            if (size <= 0)
+                return null;
+
+            Array.Resize(ref dest, size);
+            return dest;
+        }
     }
 }
