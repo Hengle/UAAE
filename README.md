@@ -93,7 +93,6 @@ This list may be incomplete!
 ## Build
 * Install Visual Studio 2019 or newer
 * Build the solution. Here's a [guide](https://docs.microsoft.com/en-us/visualstudio/ide/walkthrough-building-an-application?view=vs-2019) on how to do it
-* Download the release [files](https://github.com/Igor55x/UAAE/releases/download/v2/ReleaseFiles.zip) and copy them into the program folder. Also copy all built plugins into the "Plugins" folder and all other libraries into the root folder
 
 ## Credits
 * [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)
