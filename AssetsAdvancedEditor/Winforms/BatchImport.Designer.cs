@@ -94,6 +94,7 @@ namespace AssetsAdvancedEditor.Winforms
             // lboxMatchingFiles
             // 
             this.lboxMatchingFiles.FormattingEnabled = true;
+            this.lboxMatchingFiles.HorizontalScrollbar = true;
             this.lboxMatchingFiles.ItemHeight = 15;
             this.lboxMatchingFiles.Location = new System.Drawing.Point(455, 32);
             this.lboxMatchingFiles.Name = "lboxMatchingFiles";

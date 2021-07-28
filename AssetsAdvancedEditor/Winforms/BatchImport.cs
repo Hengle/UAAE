@@ -46,7 +46,6 @@ namespace AssetsAdvancedEditor.Winforms
                     matchingFiles.AddRange(filesInDir.Where(f => f.EndsWith(endWith)).Select(Path.GetFileName).ToList());
                 }
                 batchItem.MatchingFiles = matchingFiles;
-                batchItem.SelectedIndex = matchingFiles.Count > 0 ? 0 : -1;
                 batchItems.Add(batchItem);
                 affectedAssetsList.Items.Add(new ListViewItem(batchItem.ToArray()));
             }
@@ -55,7 +54,12 @@ namespace AssetsAdvancedEditor.Winforms
         private void lboxMatchingFiles_MouseHover(object sender, EventArgs e)
         {
             var pos = PointToClient(Cursor.Position);
-            new ToolTip().Show("Double click an item to move it up and use it for import.", this, pos, 3000);
+            var toolTip = new ToolTip
+            {
+                IsBalloon = true,
+                //InitialDelay = 1000
+            };
+            toolTip.Show("Double click an item to move it up and use it for import.", this, pos, 1000);
         }
 
         private void lboxMatchingFiles_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -88,14 +92,16 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            foreach (var batchItem in batchItems)
+            for (var i = 0; i < batchItems.Count; i++)
             {
-                if (batchItem.SelectedIndex != -1)
+                var batchItem = batchItems[i];
+                if (batchItem.HasMatchingFile)
                 {
                     batchItem.ImportFile = Path.Combine(directory, batchItem.MatchingFiles[0]);
                     continue;
                 }
-                batchItems.Remove(batchItem);
+                batchItems.RemoveAt(i);
+                i--;
             }
         }
 

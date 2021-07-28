@@ -12,7 +12,7 @@ namespace AssetsAdvancedEditor.Assets
         public string ImportFile { get; set; }
         public AssetContainer Cont { get; set; }
         public List<string> MatchingFiles { get; set; }
-        public int SelectedIndex { get; set; }
+        public bool HasMatchingFile => MatchingFiles.Count > 0;
 
         public string GetMatchName(string ext)
         {

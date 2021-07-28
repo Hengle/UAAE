@@ -272,7 +272,7 @@ namespace AssetsAdvancedEditor.Winforms
             return assets;
         }
 
-        private void UpdateAssetInfo(AssetItem item, int index)
+        private void UpdateAssetInfo(AssetItem item)
         {
             var name = item.Name;
             if (string.IsNullOrEmpty(name))
@@ -285,7 +285,7 @@ namespace AssetsAdvancedEditor.Winforms
             }
 			
             item.Name = name;
-            assetList.Items[index] = new ListViewItem(item.ToArray())
+            assetList.Items[assetList.SelectedIndices[0]] = new ListViewItem(item.ToArray())
             {
                 Selected = true
             };
@@ -355,8 +355,9 @@ namespace AssetsAdvancedEditor.Winforms
             var baseFields = GetSelectedFields();
             if (baseFields == null) return;
             var cldb = Workspace.Am.classFile;
-            foreach (var baseField in baseFields)
+            for (var i = 0; i < baseFields.Count; i++)
             {
+                var baseField = baseFields[i];
                 var cldbType = AssetHelper.FindAssetClassByName(cldb, baseField.GetFieldType());
                 if (cldbType != null)
                 {
@@ -367,8 +368,10 @@ namespace AssetsAdvancedEditor.Winforms
                 {
                     MsgBoxUtils.ShowErrorDialog("Unknown asset format.");
                 }
-                baseFields.Remove(baseField);
+                baseFields.RemoveAt(i);
+                i--;
             }
+
             if (baseFields.Count == 0) return;
             foreach (var baseField in baseFields)
                 new AssetData(Workspace, baseField).Show();
@@ -510,7 +513,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (FailIfNothingSelected()) return;
             var selectedAssets = GetSelectedAssets();
 
-            if (GetSelectedCount() > 0)
+            if (GetSelectedCount() > 1)
                 BatchExportRaw(selectedAssets);
             else
                 SingleExportRaw(selectedAssets[0]);
@@ -561,7 +564,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (FailIfNothingSelected()) return;
             var selectedAssets = GetSelectedAssets();
 
-            if (GetSelectedCount() > 0)
+            if (GetSelectedCount() > 1)
                 BatchExportDump(selectedAssets);
             else
                 SingleExportDump(selectedAssets[0]);
@@ -627,7 +630,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (FailIfNothingSelected()) return;
             var selectedAssets = GetSelectedAssets();
 
-            if (GetSelectedCount() > 0)
+            if (GetSelectedCount() > 1)
                 BatchImportRaw(selectedAssets);
             else
                 SingleImportRaw(selectedAssets[0]);
@@ -678,7 +681,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (FailIfNothingSelected()) return;
             var selectedAssets = GetSelectedAssets();
 			
-			if (GetSelectedCount() > 0)
+			if (GetSelectedCount() > 1)
 				BatchImportDump(selectedAssets);
 			else
 				SingleImportDump(selectedAssets[0]);

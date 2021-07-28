@@ -36,7 +36,7 @@ namespace AssetsAdvancedEditor.Assets
         public string AssetsRootDir { get; }
         public string UnityVersion { get; }
 
-        public delegate void AssetsWorkspaceItemUpdateEvent(AssetItem item, int index);
+        public delegate void AssetsWorkspaceItemUpdateEvent(AssetItem item);
         public event AssetsWorkspaceItemUpdateEvent ItemUpdated;
 
         public AssetsWorkspace(AssetsManager am, AssetsFileInstance file, bool fromBundle = false)
@@ -72,8 +72,7 @@ namespace AssetsAdvancedEditor.Assets
             if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
-			var index = LoadedAssets.FindIndex(i => i.FileID == replacer.GetFileID() && i.PathID == replacer.GetPathID());
-            var item = LoadedAssets[index];
+			var item = LoadedAssets.FirstOrDefault(i => i.FileID == replacer.GetFileID() && i.PathID == replacer.GetPathID());
 
             if (NewAssets.ContainsKey(assetId))
                 RemoveReplacer(replacer);
@@ -97,8 +96,10 @@ namespace AssetsAdvancedEditor.Assets
             }
             else
             {
-                var cont = MakeAssetContainer(item, NewAssetDatas[assetId]);
-                UpdateAssetInfo(cont, assetId, index);
+                var reader = new AssetsFileReader(previewStream);
+                var cont = new AssetContainer(reader, item, forInstance);
+                LoadedContainers[assetId] = cont;
+                UpdateAssetInfo(item, assetId);
             }
 
             Modified = true;
@@ -121,35 +122,24 @@ namespace AssetsAdvancedEditor.Assets
             Modified = NewAssets.Count != 0;
         }
 		
-		private void UpdateAssetInfo(AssetContainer cont, AssetID assetId, int index)
+		private void UpdateAssetInfo(AssetItem item, AssetID assetId)
 		{
-			var field = GetBaseField(cont);
-			var replacer = NewAssets[assetId];
-            var classId = (uint)replacer.GetClassID();
+            var replacer = NewAssets[assetId];
+
+            item.Position = 0;
+            item.Size = replacer.GetSize();
+
+            var field = GetBaseField(item);
             var nameValue = field.Get("m_Name").GetValue();
             var name = "";
-            var type = field.GetFieldType();
-
             if (nameValue != null)
             {
                 name = nameValue.AsString();
             }
 
-            var item = new AssetItem
-            {
-				Name = name,
-				Type = type,
-                TypeID = classId,
-                FileID = replacer.GetFileID(),
-                PathID = replacer.GetPathID(),
-                Size = replacer.GetSize(),
-                Modified = "*",
-                MonoID = replacer.GetMonoScriptID()
-            };
-
-            LoadedAssets[index] = item;
-            LoadedContainers[assetId] = new AssetContainer(cont, item);
-			ItemUpdated?.Invoke(item, index);
+            item.Name = name;
+            LoadedContainers[assetId] = new AssetContainer(LoadedContainers[assetId], item);
+			ItemUpdated?.Invoke(item);
 		}
 
         //Existing assets
@@ -172,7 +162,15 @@ namespace AssetsAdvancedEditor.Assets
             return new AssetContainer(reader, item, fileInst, typeInst);
         }
 
-        public AssetContainer GetAssetContainer(AssetItem item)
+        public AssetContainer MakeAssetContainer(AssetItem item, AssetsFileReader reader, bool forceFromCldb = false)
+        {
+            var fileInst = LoadedFiles[item.FileID];
+            var templateField = GetTemplateField(item, forceFromCldb);
+            var typeInst = new AssetTypeInstance(templateField, reader, item.Position);
+            return new AssetContainer(reader, item, fileInst, typeInst);
+        }
+
+        public AssetContainer GetAssetContainer(AssetItem item, bool onlyInfo = false)
         {
             var fileInst = LoadedFiles[item.FileID];
             var assetId = new AssetID(fileInst.path, item.PathID);
@@ -180,12 +178,12 @@ namespace AssetsAdvancedEditor.Assets
             if (!LoadedContainers.TryGetValue(assetId, out var cont))
                 return null;
 
-            if (cont.HasInstance)
+            if (cont.HasInstance || onlyInfo)
                 return cont;
 
-            var newData = NewAssetDatas.ContainsKey(assetId);
-            cont = newData ? MakeAssetContainer(item, NewAssetDatas[assetId]) : MakeAssetContainer(item);
-            LoadedContainers[assetId] = cont;
+            var tempField = GetTemplateField(item);
+            var typeInst = new AssetTypeInstance(tempField, cont.FileReader, item.Position);
+            cont = new AssetContainer(cont, typeInst);
             return cont;
         }
 
