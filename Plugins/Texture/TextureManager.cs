@@ -53,40 +53,38 @@ namespace Texture
         {
             switch (format)
             {
-                case TextureFormat.RGB9e5Float: //pls don't use (what is this?)
-                    return null; // todo
                 case TextureFormat.DXT1Crunched:
                 case TextureFormat.DXT5Crunched:
-                {
-                    var dest = TextureWrapper.DecodeByCrunchUnity(data, (int)format, width, height);
-
-                    if (dest == null)
-                        return null;
-
-                    if (format == TextureFormat.DXT1Crunched)
-                    {
-                        var dxt1 = DXTDecoders.ReadDXT1(dest, width, height);
-                        for (var i = 0; i < dxt1.Length; i += 4)
-                        {
-                            var temp = dxt1[i];
-                            dxt1[i] = dxt1[i + 2];
-                            dxt1[i + 2] = temp;
-                        }
-                        return dxt1;
-                    }
-
-                    var dxt5 = DXTDecoders.ReadDXT5(dest, width, height);
-                    for (var i = 0; i < dxt5.Length; i += 4)
-                    {
-                        var temp = dxt5[i];
-                        dxt5[i] = dxt5[i + 2];
-                        dxt5[i + 2] = temp;
-                    }
-                    return dxt5;
-                }
                 case TextureFormat.ETC_RGB4Crunched:
                 case TextureFormat.ETC2_RGBA8Crunched:
-                    return null; // todo
+                {
+                    var uncrunch = TextureWrapper.DecodeCrunch(data, width, height, format);
+
+                    if (uncrunch == null)
+                        return null;
+
+                    switch (format)
+                    {
+                        case TextureFormat.DXT1Crunched:
+                            format = TextureFormat.DXT1;
+                            break;
+                        case TextureFormat.DXT5Crunched:
+                            format = TextureFormat.DXT5;
+                            break;
+                        case TextureFormat.ETC_RGB4Crunched:
+                            format = TextureFormat.ETC_RGB4;
+                            break;
+                        case TextureFormat.ETC2_RGBA8Crunched:
+                            format = TextureFormat.ETC2_RGBA8;
+                            break;
+                    }
+
+                    var dest = format is TextureFormat.DXT1 or TextureFormat.DXT5 ?
+                        TextureWrapper.DecodeDetex(uncrunch, width, height, format) :
+                        TextureWrapper.DecodePVRTexLib(uncrunch, width, height, format);
+
+                    return dest;
+                }
                 case TextureFormat.ARGB32:
                 case TextureFormat.BGRA32New:
                 case TextureFormat.RGBA32:
@@ -131,30 +129,14 @@ namespace Texture
                 case TextureFormat.ASTC_RGBA_10x10:
                 case TextureFormat.ASTC_RGBA_12x12:
                 {
-                    var dest = TextureWrapper.DecodeByPVRTexLib(data, (int)format, width, height);
+                    var dest = TextureWrapper.DecodePVRTexLib(data, width, height, format);
                     return dest;
                 }
                 case TextureFormat.DXT1:
-                {
-                    var dxt1 = DXTDecoders.ReadDXT1(data, width, height);
-                    for (var i = 0; i < dxt1.Length; i += 4)
-                    {
-                        var temp = dxt1[i];
-                        dxt1[i] = dxt1[i + 2];
-                        dxt1[i + 2] = temp;
-                    }
-                    return dxt1;
-                }
                 case TextureFormat.DXT5:
                 {
-                    var dxt5 = DXTDecoders.ReadDXT5(data, width, height);
-                    for (var i = 0; i < dxt5.Length; i += 4)
-                    {
-                        var temp = dxt5[i];
-                        dxt5[i] = dxt5[i + 2];
-                        dxt5[i + 2] = temp;
-                    }
-                    return dxt5;
+                    var dest = TextureWrapper.DecodeDetex(data, width, height, format);
+                    return dest;
                 }
                 case TextureFormat.BC7:
                 {
@@ -167,6 +149,7 @@ namespace Texture
                     }
                     return bc7;
                 }
+                case TextureFormat.RGB9e5Float:
                 case TextureFormat.BC6H:
                 case TextureFormat.BC4:
                 case TextureFormat.BC5:
@@ -180,17 +163,14 @@ namespace Texture
         {
             switch (format)
             {
-                case TextureFormat.RGB9e5Float: //pls don't use (what is this?)
-                    return null; // todo
                 case TextureFormat.DXT1Crunched:
                 case TextureFormat.DXT5Crunched:
-                {
-                    var dest = TextureWrapper.EncodeByCrunchUnity(data, (int)format, quality, 1, width, height);
-                    return dest;
-                }
                 case TextureFormat.ETC_RGB4Crunched:
                 case TextureFormat.ETC2_RGBA8Crunched:
-                    return null; // todo
+                {
+                    var dest = TextureWrapper.EncodeCrunch(data, quality, 1, width, height, format);
+                    return dest;
+                }
                 case TextureFormat.ARGB32:
                 case TextureFormat.BGRA32New:
                 case TextureFormat.RGBA32:
@@ -237,15 +217,16 @@ namespace Texture
                 case TextureFormat.DXT1:
                 case TextureFormat.DXT5:
                 {
-                    var dest = TextureWrapper.EncodeByPVRTexLib(data, (int)format, quality, 1, width, height);
+                    var dest = TextureWrapper.EncodePVRTexLib(data, quality, 1, width, height, format);
                     return dest;
                 }
                 case TextureFormat.BC6H:
                 case TextureFormat.BC7:
                 {
-                    var dest = TextureWrapper.EncodeByISPC(data, (int)format, quality, width, height);
+                    var dest = TextureWrapper.EncodeISPC(data, quality, width, height, format);
                     return dest;
                 }
+                case TextureFormat.RGB9e5Float:
                 case TextureFormat.BC4:
                 case TextureFormat.BC5:
                     return null; // todo

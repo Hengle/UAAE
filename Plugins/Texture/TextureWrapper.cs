@@ -1,13 +1,15 @@
 ﻿using System;
+using AssetsTools.NET;
+using AssetsTools.NET.Extra;
 
 namespace Texture
 {
     public class TextureWrapper
     {
-        public static byte[] DecodeByPVRTexLib(byte[] data, int mode, int width, int height)
+        public static byte[] DecodePVRTexLib(byte[] data, int width, int height, TextureFormat format)
         {
             var dest = new byte[width * height * 4];
-            int size;
+            uint size;
             unsafe
             {
                 fixed (byte* dataPtr = data)
@@ -15,21 +17,21 @@ namespace Texture
                 {
                     var dataIntPtr = (IntPtr)dataPtr;
                     var destIntPtr = (IntPtr)destPtr;
-                    size = (int)PInvoke.DecodeByPVRTexLib(dataIntPtr, destIntPtr, mode, (uint)width, (uint)height);
+                    size = PInvoke.DecodeByPVRTexLib(dataIntPtr, destIntPtr, (int)format, (uint)width, (uint)height);
                 }
             }
 
-            if (size <= 0)
+            if (size is 0)
                 return null;
 
-            Array.Resize(ref dest, size);
+            Array.Resize(ref dest, (int)size);
             return dest;
         }
 
-        public static byte[] EncodeByPVRTexLib(byte[] data, int mode, int level, int space, int width, int height)
+        public static byte[] EncodePVRTexLib(byte[] data, int level, int space, int width, int height, TextureFormat format)
         {
             var dest = new byte[width * height * 16];
-            int size;
+            uint size;
             unsafe
             {
                 fixed (byte* dataPtr = data)
@@ -37,21 +39,21 @@ namespace Texture
                 {
                     var dataIntPtr = (IntPtr)dataPtr;
                     var destIntPtr = (IntPtr)destPtr;
-                    size = (int)PInvoke.EncodeByPVRTexLib(dataIntPtr, destIntPtr, mode, level, space, (uint)width, (uint)height);
+                    size = PInvoke.EncodeByPVRTexLib(dataIntPtr, destIntPtr, (int)format, level, space, (uint)width, (uint)height);
                 }
             }
 
-            if (size <= 0)
+            if (size is 0)
                 return null;
 
-            Array.Resize(ref dest, size);
+            Array.Resize(ref dest, (int)size);
             return dest;
         }
 
-        public static byte[] EncodeByISPC(byte[] data, int mode, int level, int width, int height)
+        public static byte[] EncodeISPC(byte[] data, int level, int width, int height, TextureFormat format)
         {
             var dest = new byte[width * height * 4];
-            int size;
+            uint size;
             unsafe
             {
                 fixed (byte* dataPtr = data)
@@ -59,21 +61,21 @@ namespace Texture
                 {
                     var dataIntPtr = (IntPtr)dataPtr;
                     var destIntPtr = (IntPtr)destPtr;
-                    size = (int)PInvoke.EncodeByISPC(dataIntPtr, destIntPtr, mode, level, (uint)width, (uint)height);
+                    size = PInvoke.EncodeByISPC(dataIntPtr, destIntPtr, (int)format, level, (uint)width, (uint)height);
                 }
             }
 
-            if (size <= 0)
+            if (size is 0)
                 return null;
 
-            Array.Resize(ref dest, size);
+            Array.Resize(ref dest, (int)size);
             return dest;
         }
 
-        public static byte[] DecodeByCrunchUnity(byte[] data, int mode, int width, int height)
+        public static byte[] DecodeCrunch(byte[] data, int width, int height, TextureFormat format)
         {
             var dest = new byte[width * height * 4];
-            int size;
+            uint size;
             unsafe
             {
                 fixed (byte* dataPtr = data)
@@ -81,21 +83,21 @@ namespace Texture
                 {
                     var dataIntPtr = (IntPtr)dataPtr;
                     var destIntPtr = (IntPtr)destPtr;
-                    size = (int)PInvoke.DecodeByCrunchUnity(dataIntPtr, (uint)data.Length, destIntPtr, mode, (uint)width, (uint)height);
+                    size = PInvoke.DecodeByCrunchUnity(dataIntPtr, (uint)data.Length, destIntPtr, (int)format, (uint)width, (uint)height);
                 }
             }
 
-            if (size <= 0)
+            if (size is 0)
                 return null;
 
-            Array.Resize(ref dest, size);
+            Array.Resize(ref dest, (int)size);
             return dest;
         }
 
-        public static byte[] EncodeByCrunchUnity(byte[] data,  int mode, int level, int space, int width, int height)
+        public static byte[] EncodeCrunch(byte[] data, int level, int space, int width, int height, TextureFormat format)
         {
             var dest = new byte[width * height * 4];
-            int size;
+            uint size;
             unsafe
             {
                 fixed (byte* dataPtr = data)
@@ -103,14 +105,32 @@ namespace Texture
                 {
                     var dataIntPtr = (IntPtr)dataPtr;
                     var destIntPtr = (IntPtr)destPtr;
-                    size = (int)PInvoke.EncodeByCrunchUnity(dataIntPtr, destIntPtr, mode, level, space, (uint)width, (uint)height);
+                    size = PInvoke.EncodeByCrunchUnity(dataIntPtr, destIntPtr, (int)format, level, space, (uint)width, (uint)height);
                 }
             }
 
-            if (size <= 0)
+            if (size is 0)
                 return null;
 
-            Array.Resize(ref dest, size);
+            Array.Resize(ref dest, (int)size);
+            return dest;
+        }
+
+        public static byte[] DecodeDetex(byte[] data, int width, int height, TextureFormat format)
+        {
+            var dest = format switch
+            {
+                TextureFormat.DXT1 => DXTDecoders.ReadDXT1(data, width, height),
+                TextureFormat.DXT5 => DXTDecoders.ReadDXT5(data, width, height),
+                _ => BC7Decoder.ReadBC7(data, width, height)
+            };
+
+            for (var i = 0; i < dest.Length; i += 4)
+            {
+                var temp = dest[i];
+                dest[i] = dest[i + 2];
+                dest[i + 2] = temp;
+            }
             return dest;
         }
     }
