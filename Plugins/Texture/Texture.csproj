@@ -46,7 +46,7 @@
       <TexToolWrapBinDir>$(SolutionDir)TexToolWrap\bin\x64\Release\TexToolWrap.dll</TexToolWrapBinDir>
       <PVRTexToolBinDir>$(SolutionDir)TexToolWrap\PVRTexLib\Windows_x86_64\PVRTexLib.dll</PVRTexToolBinDir>
       <ISPCBinDir>$(SolutionDir)TexToolWrap\Ispc\win64\ispc_texcomp.dll</ISPCBinDir>
-      <CrunchBinDir>$(SolutionDir)TexToolWrap\Crunch\win32\crnlib.dll</CrunchBinDir>
+      <CrunchBinDir>$(SolutionDir)TexToolWrap\Crunch\win64\crnlib.dll</CrunchBinDir>
     </PropertyGroup>
     <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(Windows)) AND '$(Platform)' == 'x86'">
       <UAAENativeConfig>win-x86</UAAENativeConfig>
@@ -60,14 +60,14 @@
       <TexToolWrapBinDir>$(SolutionDir)TexToolWrap\libtextoolwrap.so</TexToolWrapBinDir>
       <PVRTexToolBinDir>$(SolutionDir)TexToolWrap\PVRTexLib\Linux_x86_64\libPVRTexLib.so</PVRTexToolBinDir>
       <ISPCBinDir>$(SolutionDir)TexToolWrap\Ispc\linux64\libispc_texcomp.so</ISPCBinDir>
-	        <CrunchBinDir>$(SolutionDir)TexToolWrap\Crunch\win32\crnlib.dll</CrunchBinDir>
+	        <CrunchBinDir>$(SolutionDir)TexToolWrap\Crunch\linux64\crnlib.dll</CrunchBinDir>
     </PropertyGroup>
     <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(Linux)) AND ('$(LinuxUnameM)' == 'i386' OR '$(Platform)' == 'i686')">
       <UAAENativeConfig>linux-x86</UAAENativeConfig>
       <TexToolWrapBinDir>$(SolutionDir)TexToolWrap\libtextoolwrap.so</TexToolWrapBinDir>
       <PVRTexToolBinDir>$(SolutionDir)TexToolWrap\PVRTexLib\Linux_x86_32\libPVRTexLib.so</PVRTexToolBinDir>
       <ISPCBinDir>$(SolutionDir)TexToolWrap\Ispc\linux32\libispc_texcomp.so</ISPCBinDir>
-      <CrunchBinDir>$(SolutionDir)TexToolWrap\Crunch\win32\crnlib.dll</CrunchBinDir>
+      <CrunchBinDir>$(SolutionDir)TexToolWrap\Crunch\linux32\crnlib.dll</CrunchBinDir>
     </PropertyGroup>
     
     <!-- build textoolwrap for windows with vcxproj -->
