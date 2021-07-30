@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
 using AssetsTools.NET.Extra;
 using AssetsTools.NET.Extra.Decompressors.LZ4;
@@ -12,20 +11,20 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
-        public static void GetUAAENameFast(AssetsWorkspace workspace, AssetItem item, out string type, out string name)
+        public static void GetUAAENameFast(AssetsWorkspace workspace, AssetContainer cont, out string type, out string name)
         {
-            var file = workspace.LoadedFiles[item.FileID].file;
+            var item = cont.Item;
+            var file = cont.FileInstance.file;
             var cldb = workspace.Am.classFile;
             var classId = item.TypeID;
             var cldbType = AssetHelper.FindAssetClassByID(cldb, classId);
-            var reader = file.reader;
+            var reader = cont.FileReader;
 
             if (file.typeTree.hasTypeTree)
             {
                 var ttType = classId == 0x72 ?
                     AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, item.MonoID) :
                     AssetHelper.FindTypeTreeTypeByID(file.typeTree, classId);
-
 
                 type = ttType.typeFieldsEx[0].GetTypeString(ttType.stringTable);
                 switch (ttType.typeFieldsEx.Length)
@@ -110,18 +109,6 @@ namespace AssetsAdvancedEditor.Utils
                     break;
             }
             name = "Unnamed asset";
-        }
-
-        public static ListViewItem.ListViewSubItem Get(this ListViewItem.ListViewSubItemCollection subItems, string text)
-        {
-            foreach (ListViewItem.ListViewSubItem subItem in subItems)
-            {
-                if (subItem.Text == text)
-                {
-                    return subItem;
-                }
-            }
-            return null;
         }
 
         public static bool WildcardMatches(string test, string pattern, bool caseSensitive = true)

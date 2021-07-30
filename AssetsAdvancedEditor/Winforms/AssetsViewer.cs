@@ -27,6 +27,7 @@ namespace AssetsAdvancedEditor.Winforms
         public string AssetsRootDir { get; }
         public string UnityVersion { get; }
 
+        public List<AssetItem> LoadedAssets { get; }
         public Dictionary<BundleReplacer, MemoryStream> ModifiedFiles { get; private set; }
         //private Stack<List<int>> UndoList { get; }
         //private Stack<List<int>> RedoList { get; }
@@ -51,7 +52,6 @@ namespace AssetsAdvancedEditor.Winforms
             InitializeComponent();
 
             Workspace = new AssetsWorkspace(am, instance, fromBundle);
-            Workspace.ItemUpdated += UpdateAssetInfo;
             Am = Workspace.Am;
             Pm = Workspace.Pm;
             MainFile = Workspace.MainInstance;
@@ -64,6 +64,7 @@ namespace AssetsAdvancedEditor.Winforms
             AssetsRootDir = Workspace.AssetsRootDir;
             UnityVersion = Workspace.UnityVersion;
 
+            LoadedAssets = new List<AssetItem>();
             ModifiedFiles = new Dictionary<BundleReplacer, MemoryStream>();
             //UndoList = new Stack<List<int>>();
             //RedoList = new Stack<List<int>>();
@@ -160,7 +161,6 @@ namespace AssetsAdvancedEditor.Winforms
                 name = type != name ? $"{type} {name}" : type;
             }
 
-            Workspace.LoadedAssets.Add(item);
             var assetId = new AssetID(fileInst.path, item.PathID);
             Workspace.LoadedContainers[assetId] = Workspace.MakeAssetContainer(item);
             var data = item.ToArray();
@@ -199,7 +199,6 @@ namespace AssetsAdvancedEditor.Winforms
                 if (!HasName(cldb, cldbType))
                     name = "Unnamed asset";
 
-                Workspace.LoadedAssets.Insert(0, item);
                 var data = item.ToArray();
                 data[0] = name;
                 assetList.Items.Insert(0, new ListViewItem(data));
@@ -216,10 +215,10 @@ namespace AssetsAdvancedEditor.Winforms
 
             foreach (ListViewItem listItem in assetList.SelectedItems)
             {
-                var item = Workspace.LoadedAssets[listItem.Index];
+                var item = LoadedAssets[listItem.Index];
                 Workspace.AddReplacer(AssetModifier.CreateAssetRemover(item));
                 assetList.Items.Remove(listItem);
-                Workspace.LoadedAssets.Remove(item);
+                LoadedAssets.Remove(item);
             }
         }
 
@@ -238,7 +237,7 @@ namespace AssetsAdvancedEditor.Winforms
             var assetItem = new List<AssetItem>();
             foreach (int index in assetList.SelectedIndices)
             {
-                assetItem.Add(Workspace.LoadedAssets[index]);
+                assetItem.Add(LoadedAssets[index]);
             }
             return assetItem;
         }
@@ -272,39 +271,38 @@ namespace AssetsAdvancedEditor.Winforms
             return assets;
         }
 
-        private void UpdateAssetInfo(AssetItem item)
+        private void ModifySelectedAssets(AssetsReplacer replacer)
         {
-            var name = item.Name;
-            if (string.IsNullOrEmpty(name))
+            foreach (int i in assetList.SelectedIndices)
             {
-                name = "Unnamed asset";
+                Workspace.AddReplacer(replacer);
+                var item = LoadedAssets[i];
+                Extensions.GetUAAENameFast(Workspace, Workspace.GetAssetContainer(item.FileID, item.PathID), out _, out var name);
+
+                var listArr = item.ToArray();
+                listArr[0] = name;
+
+                assetList.Items[i] = new ListViewItem(listArr)
+                {
+                    Selected = true
+                };
+                assetList.Select();
             }
-            else if (item.TypeID is 0x01 or 0x72)
-            {
-                name = $"{item.Type} {name}";
-            }
-			
-            item.Name = name;
-            assetList.Items[assetList.SelectedIndices[0]] = new ListViewItem(item.ToArray())
-            {
-                Selected = true
-            };
-            assetList.Select();
         }
 
         private void ClearModified()
         {
             for (var i = 0; i < assetList.Items.Count; i++)
             {
-                assetList.Items[i].SubItems.Get("Modified").Text = "";
+                assetList.Items[i].SubItems[7].Text = "";
             }
             Workspace.ClearModified();
         }
 
         private void assetList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if (Workspace.LoadedAssets.Count != assetList.Items.Count) return;  // shouldn't happen
-            var details = Workspace.LoadedAssets[e.ItemIndex];
+            if (LoadedAssets.Count != assetList.Items.Count) return;  // shouldn't happen
+            var details = LoadedAssets[e.ItemIndex];
             var name = details.Name;
             var cldb = Am.classFile;
             var cldbType = AssetHelper.FindAssetClassByID(cldb, details.TypeID);
@@ -812,7 +810,7 @@ namespace AssetsAdvancedEditor.Winforms
                 {
                     for (var i = searchStart; i < items.Count; i++)
                     {
-                        var name = items[i].SubItems.Get("Name").Text;
+                        var name = items[i].SubItems[0].Text;
 
                         if (!Extensions.WildcardMatches(name, searchText, searchCaseSensitive))
                             continue;
@@ -828,7 +826,7 @@ namespace AssetsAdvancedEditor.Winforms
                 {
                     for (var i = searchStart; i >= 0; i--)
                     {
-                        var name = items[i].SubItems.Get("Name").Text;
+                        var name = items[i].SubItems[0].Text;
 
                         if (!Extensions.WildcardMatches(name, searchText, searchCaseSensitive))
                             continue;
@@ -861,7 +859,7 @@ namespace AssetsAdvancedEditor.Winforms
             var foundResult = false;
             for (var i = 0; i < assetList.Items.Count; i++)
             {
-                var item = Workspace.LoadedAssets[i];
+                var item = LoadedAssets[i];
 
                 if (item.FileID != dialog.FileID || item.PathID != dialog.PathID)
                     continue;

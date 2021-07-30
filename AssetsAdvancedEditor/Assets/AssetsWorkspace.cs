@@ -19,7 +19,6 @@ namespace AssetsAdvancedEditor.Assets
         public bool FromBundle { get; }
 
         public List<AssetsFileInstance> LoadedFiles { get; }
-        public List<AssetItem> LoadedAssets { get; }
         public Dictionary<AssetID, AssetContainer> LoadedContainers { get; }
 
         public Dictionary<string, AssetsFileInstance> LoadedFileLookup { get; }
@@ -36,9 +35,6 @@ namespace AssetsAdvancedEditor.Assets
         public string AssetsRootDir { get; }
         public string UnityVersion { get; }
 
-        public delegate void AssetsWorkspaceItemUpdateEvent(AssetItem item);
-        public event AssetsWorkspaceItemUpdateEvent ItemUpdated;
-
         public AssetsWorkspace(AssetsManager am, AssetsFileInstance file, bool fromBundle = false)
         {
             Am = am;
@@ -48,7 +44,6 @@ namespace AssetsAdvancedEditor.Assets
             FromBundle = fromBundle;
 
             LoadedFiles = new List<AssetsFileInstance>();
-            LoadedAssets = new List<AssetItem>();
             LoadedContainers = new Dictionary<AssetID, AssetContainer>();
 
             LoadedFileLookup = new Dictionary<string, AssetsFileInstance>();
@@ -72,7 +67,8 @@ namespace AssetsAdvancedEditor.Assets
             if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
-			var item = LoadedAssets.FirstOrDefault(i => i.FileID == replacer.GetFileID() && i.PathID == replacer.GetPathID());
+            if (!LoadedContainers.TryGetValue(assetId, out var cont)) return;
+            var item = cont.Item;
 
             if (NewAssets.ContainsKey(assetId))
                 RemoveReplacer(replacer);
@@ -97,9 +93,8 @@ namespace AssetsAdvancedEditor.Assets
             else
             {
                 var reader = new AssetsFileReader(previewStream);
-                var cont = new AssetContainer(reader, item, forInstance);
-                LoadedContainers[assetId] = cont;
-                UpdateAssetInfo(item, assetId);
+                cont = MakeAssetContainer(item, reader);
+                UpdateAssetInfo(cont);
             }
 
             Modified = true;
@@ -122,25 +117,26 @@ namespace AssetsAdvancedEditor.Assets
             Modified = NewAssets.Count != 0;
         }
 		
-		private void UpdateAssetInfo(AssetItem item, AssetID assetId)
-		{
+		private void UpdateAssetInfo(AssetContainer cont)
+        {
+            var assetId = cont.AssetId;
             var replacer = NewAssets[assetId];
+            Extensions.GetUAAENameFast(this, cont, out var type, out var name);
 
-            item.Position = 0;
-            item.Size = replacer.GetSize();
-
-            var field = GetBaseField(item);
-            var nameValue = field.Get("m_Name").GetValue();
-            var name = "";
-            if (nameValue != null)
+            var item = new AssetItem
             {
-                name = nameValue.AsString();
-            }
+                Name = name,
+                Type = type,
+                TypeID = (uint)replacer.GetClassID(),
+                FileID = replacer.GetFileID(),
+                PathID = replacer.GetPathID(),
+                Size = replacer.GetSize(),
+                Modified = "*",
+                MonoID = replacer.GetMonoScriptID()
+            };
 
-            item.Name = name;
             LoadedContainers[assetId] = new AssetContainer(LoadedContainers[assetId], item);
-			ItemUpdated?.Invoke(item);
-		}
+        }
 
         //Existing assets
         public AssetContainer MakeAssetContainer(AssetItem item, bool forceFromCldb = false)
@@ -166,7 +162,7 @@ namespace AssetsAdvancedEditor.Assets
         {
             var fileInst = LoadedFiles[item.FileID];
             var templateField = GetTemplateField(item, forceFromCldb);
-            var typeInst = new AssetTypeInstance(templateField, reader, item.Position);
+            var typeInst = new AssetTypeInstance(templateField, reader, 0);
             return new AssetContainer(reader, item, fileInst, typeInst);
         }
 
@@ -181,15 +177,19 @@ namespace AssetsAdvancedEditor.Assets
             if (cont.HasInstance || onlyInfo)
                 return cont;
 
-            var tempField = GetTemplateField(item);
-            var typeInst = new AssetTypeInstance(tempField, cont.FileReader, item.Position);
-            cont = new AssetContainer(cont, typeInst);
-            return cont;
+            return NewAssetDatas.TryGetValue(assetId, out var newData) ? MakeAssetContainer(item, newData) : MakeAssetContainer(item);
+        }
+
+        public AssetItem GetAssetItem(int fileId, long pathId)
+        {
+            var fileInst = LoadedFiles[fileId];
+            var assetId = new AssetID(fileInst.path, pathId);
+            return LoadedContainers.TryGetValue(assetId, out var cont) ? cont.Item : null;
         }
 
         public AssetContainer GetAssetContainer(int fileId, long pathId)
         {
-            var item = LoadedAssets.FirstOrDefault(i => i.FileID == fileId && i.PathID == pathId);
+            var item = GetAssetItem(fileId, pathId);
             return item != null ? GetAssetContainer(item) : null;
         }
 
@@ -336,9 +336,9 @@ namespace AssetsAdvancedEditor.Assets
 
         public void ClearModified()
         {
-            foreach (var item in LoadedAssets)
+            foreach (var kvp in LoadedContainers)
             {
-                item.Modified = "";
+                kvp.Value.Item.Modified = "";
             }
         }
     }

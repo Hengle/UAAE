@@ -28,6 +28,7 @@ namespace AssetsAdvancedEditor.Assets
         public AssetContainer(AssetsFileReader reader, AssetItem item, AssetsFileInstance fileInst, AssetTypeInstance typeInst = null)
         {
             FileReader = reader;
+            item.Position = 0;
             Item = item;
             FileInstance = fileInst;
             TypeInstance = typeInst;

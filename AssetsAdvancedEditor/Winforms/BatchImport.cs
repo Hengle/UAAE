@@ -28,14 +28,13 @@ namespace AssetsAdvancedEditor.Winforms
 
             foreach (var cont in selectedAssets)
             {
-                var item = cont.Item;
-                Extensions.GetUAAENameFast(workspace, item, out _, out var name);
+                Extensions.GetUAAENameFast(workspace, cont, out var type, out var name);
                 var batchItem = new BatchImportItem
                 {
                     Description = name,
                     File = Path.GetFileName(cont.FileInstance.path),
                     PathID = cont.Item.PathID,
-                    Type = item.Type,
+                    Type = type,
                     Cont = cont
                 };
 

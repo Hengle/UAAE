@@ -348,7 +348,7 @@ namespace AssetsAdvancedEditor.Winforms
 
                 if (inst != null)
                 {
-                    assetsManagerName = inst.name;
+                    assetsManagerName = inst.path;
                     Am.files.Remove(inst);
                 }
                 else //shouldn't happen
