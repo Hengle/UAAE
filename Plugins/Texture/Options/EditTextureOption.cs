@@ -3,8 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Plugins;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 
 namespace Texture.Options
 {

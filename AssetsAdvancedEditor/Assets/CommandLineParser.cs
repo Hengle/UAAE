@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 
 namespace AssetsAdvancedEditor.Assets
 {

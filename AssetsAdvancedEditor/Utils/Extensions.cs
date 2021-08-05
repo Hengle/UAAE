@@ -1,10 +1,8 @@
-﻿using AssetsTools.NET;
+﻿using UnityTools;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AssetsAdvancedEditor.Assets;
-using AssetsTools.NET.Extra;
-using AssetsTools.NET.Extra.Decompressors.LZ4;
 using SevenZip.Compression.LZMA;
 
 namespace AssetsAdvancedEditor.Utils

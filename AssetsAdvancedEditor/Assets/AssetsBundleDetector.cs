@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
-using AssetsTools.NET;
+using UnityTools;
 
 namespace AssetsAdvancedEditor.Assets
 {

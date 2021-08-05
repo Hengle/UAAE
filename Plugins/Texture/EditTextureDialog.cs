@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Utils;
-using AssetsTools.NET;
+using UnityTools;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Image = SixLabors.ImageSharp.Image;

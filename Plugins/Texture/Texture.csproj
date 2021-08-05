@@ -20,12 +20,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AssetsTools.NET" Version="2.0.9" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\AssetsAdvancedEditor\AssetsAdvancedEditor.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="UnityTools">
+      <HintPath>..\..\Libs\UnityTools.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 <!-- this will only execute once while building the solution -->

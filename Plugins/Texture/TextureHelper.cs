@@ -1,8 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using AssetsAdvancedEditor.Assets;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 
 namespace Texture
 {

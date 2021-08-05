@@ -1,6 +1,5 @@
 ﻿using System;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 
 namespace Texture
 {

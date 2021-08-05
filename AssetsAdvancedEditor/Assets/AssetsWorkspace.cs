@@ -5,8 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Plugins;
 using AssetsAdvancedEditor.Utils;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 using Mono.Cecil;
 
 namespace AssetsAdvancedEditor.Assets

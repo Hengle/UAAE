@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;

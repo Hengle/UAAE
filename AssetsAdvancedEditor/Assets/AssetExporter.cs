@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml;
 using AssetsAdvancedEditor.Utils;
-using AssetsTools.NET;
+using UnityTools;
 
 namespace AssetsAdvancedEditor.Assets
 {

@@ -7,8 +7,7 @@ using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Plugins;
 using AssetsAdvancedEditor.Utils;
 using AssetsAdvancedEditor.Winforms.AssetSearch;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 
 namespace AssetsAdvancedEditor.Winforms
 {

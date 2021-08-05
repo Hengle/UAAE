@@ -5,8 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Utils;
-using AssetsTools.NET;
-using AssetsTools.NET.Extra;
+using UnityTools;
 
 namespace AssetsAdvancedEditor.Winforms
 {

@@ -20,9 +20,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AssetsTools.NET" Version="2.0.9" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     <PackageReference Include="Mono.Cecil" Version="0.11.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityTools">
+      <HintPath>..\Libs\UnityTools.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Target Name="UAAEAfterBuild" AfterTargets="AfterBuild" Condition="'$(SolutionDir)' != '*Undefined*'">

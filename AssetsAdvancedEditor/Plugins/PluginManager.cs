@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using AssetsAdvancedEditor.Assets;
-using AssetsTools.NET.Extra;
+using UnityTools;
 
 namespace AssetsAdvancedEditor.Plugins
 {
