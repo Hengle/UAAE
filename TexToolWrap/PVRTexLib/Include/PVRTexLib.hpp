@@ -1191,7 +1191,7 @@ namespace pvrtexlib
 
 		/*!***********************************************************************
 		 @brief     Creates a new texture from a file.
-					Accepted file formats are: PVR, KTX, KTX2, ASTC, DDS,
+					Accepted file formats are: PVR, KTX, KTX2, ASTC, DDS, BASIS,
 					PNG, JPEG, BMP, TGA, GIF, HDR, PSD, PPM, PGM and PIC
 		 @param[in] filePath  File path to a texture to load from.
 		 @return	A new texture.
@@ -1353,9 +1353,11 @@ namespace pvrtexlib
 		/*!***********************************************************************
 		 @brief     Saves the texture to a given file path.
 					File type will be determined by the extension present in the string.
-					Valid extensions are: PVR, KTX, KTX2, ASTC, DDS and h
+					Valid extensions are: PVR, KTX, KTX2, ASTC, DDS, BASIS and h
 					If no extension is present the PVR format will be selected.
 					Unsupported formats will result in failure.
+					ASTC files only support ASTC texture formats.
+					BASIS files only support Basis Universal texture formats.
 		 @param[in]	filepath File path to write to
 		 @return	True if the method succeeds.
 		*************************************************************************/
@@ -1707,6 +1709,8 @@ namespace pvrtexlib
 		 @param[in]	quality		Quality level for compresssed formats,
 								higher quality usually requires more processing time
 		 @param[in]	doDither	Dither the texture to lower precisions
+		 @param[in] maxRange	Max range value for RGB{M/D} encoding
+		 @param[in] maxThreads	Max number of threads to use for transcoding, if set to 0 PVRTexLib will use all available cores.
 		 @return	True if the method succeeds.
 		*************************************************************************/
 		bool Transcode(
@@ -1715,7 +1719,8 @@ namespace pvrtexlib
 			PVRTexLibColourSpace colourspace,
 			PVRTexLibCompressorQuality quality = PVRTexLibCompressorQuality::PVRTLCQ_PVRTCNormal,
 			bool doDither = false,
-			float maxRange = 1.0f)
+			float maxRange = 1.0f,
+			PVRTuint32 maxThreads = 0U)
 		{
 			if (m_hTexture)
 			{
@@ -1728,6 +1733,7 @@ namespace pvrtexlib
 				options.quality = quality;
 				options.doDither = doDither;
 				options.maxRange = maxRange;
+				options.maxThreads = maxThreads;
 				return PVRTexLib_TranscodeTexture(m_hTexture, options);
 			}
 			else
@@ -1765,6 +1771,64 @@ namespace pvrtexlib
 			if (m_hTexture)
 			{
 				return PVRTexLib_EquiRectToCubeMap(m_hTexture, filter);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/*!***********************************************************************
+		 @brief     Generates a mipmapped diffuse irradiance texture from a cubemap
+					environment map, to be used	primarily with physically based
+					rendering (PBR) techniques.
+					The texture must be a cubemap, the width must equal height,
+					and the depth must equal 1.
+		 @param[in]	sampleCount The number of samples to use when generating
+					the diffuse map.
+		 @param[in] mapSize Output dimensions, in pixels.
+		 @return	True if the method succeeds.
+		*************************************************************************/
+		bool GenerateDiffuseIrradianceCubeMap(PVRTuint32 sampleCount, PVRTuint32 mapSize)
+		{
+			if (m_hTexture)
+			{
+				return PVRTexLib_GenerateDiffuseIrradianceCubeMap(m_hTexture, sampleCount, mapSize);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		/*!***********************************************************************
+		 @brief     Generates a prefiltered specular irradiance texture from a
+					cubemap environment map, to be used	primarily with physically
+					based rendering (PBR) techniques.
+					Each Mip level of the specular map is blurred by a roughness
+					value between 0 and 1.
+					The texture must be a cubemap, the width must equal height,
+					and the depth must equal 1.
+		 @param[in]	sampleCount The number of samples to use when generating
+					the specular map.
+		 @param[in] mapSize Output dimensions, in pixels.
+		 @param[in] numMipLevelsToDiscard The number of Mip levels to be discarded
+					from the bottom of the Mip chain.
+		 @param[in] zeroRoughnessIsExternal False to include a roughness of zero
+					when generating the prefiltered environment map.
+					True to omit a rougness of zero, implying that the user
+					will supply roughness zero from the environment texture.
+		 @return	True if the method succeeds.
+		*************************************************************************/
+		bool GeneratePreFilteredSpecularCubeMap(
+			PVRTuint32 sampleCount,
+			PVRTuint32 mapSize,
+			PVRTuint32 numMipLevelsToDiscard,
+			bool zeroRoughnessIsExternal)
+		{
+			if (m_hTexture)
+			{
+				return PVRTexLib_GeneratePreFilteredSpecularCubeMap(m_hTexture, sampleCount, mapSize, numMipLevelsToDiscard, zeroRoughnessIsExternal);
 			}
 			else
 			{

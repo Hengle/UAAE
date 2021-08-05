@@ -77,6 +77,7 @@ struct PVRTexLib_TranscoderOptions
 	PVRTexLibCompressorQuality quality;		///< Compression quality for PVRTC, ASTC, ETC and BASISU, higher quality usually requires more processing time.
 	bool doDither;							///< Apply dithering to lower precision formats.
 	float maxRange;							///< Max range value for RGB{M/D} encoding
+	PVRTuint32 maxThreads;					///< Max number of threads to use for transcoding, if set to 0 PVRTexLib will use all available cores.
 };
 #pragma pack(pop)
 
@@ -726,7 +727,7 @@ PVR_DLL void PVRTexLib_DestroyTexture(PVRTexLib_PVRTexture texture);
 
 /*!***********************************************************************
  @brief     Creates a new texture from a file.
-			Accepted file formats are: PVR, KTX, KTX2, ASTC, DDS,
+			Accepted file formats are: PVR, KTX, KTX2, ASTC, DDS, BASIS,
 			PNG, JPEG, BMP, TGA, GIF, HDR, PSD, PPM, PGM and PIC
  @param[in] filePath  File path to the texture to load from.
  @return	A new texture handle OR NULL on failure.
@@ -787,9 +788,11 @@ PVR_DLL void PVRTexLib_AddPaddingMetaData(PVRTexLib_PVRTexture texture, PVRTuint
 /*!***********************************************************************
  @brief     Saves the texture to a given file path. 
 			File type will be determined by the extension present in the string.
-			Valid extensions are: PVR, KTX, KTX2, ASTC, DDS and h 
+			Valid extensions are: PVR, KTX, KTX2, ASTC, DDS, BASIS and h
 			If no extension is present the PVR format will be selected. 
 			Unsupported formats will result in failure.
+			ASTC files only support ASTC texture formats.
+			BASIS files only support Basis Universal texture formats.
  @param[in]	texture A handle to a previously allocated PVRTexLib_PVRTexture.
  @param[in]	filepath File path to write to
  @return	True if the method succeeds.
@@ -1008,6 +1011,46 @@ PVR_DLL bool PVRTexLib_TranscodeTexture(PVRTexLib_PVRTexture texture, const PVRT
  @return	True if the method succeeds.
 *************************************************************************/
 PVR_DLL bool PVRTexLib_EquiRectToCubeMap(PVRTexLib_PVRTexture texture, PVRTexLibResizeMode filter);
+
+/*!***********************************************************************
+ @brief     Generates a mipmapped diffuse irradiance texture from a cubemap
+			environment map, to be used	primarily with physically based
+			rendering (PBR) techniques.
+			The input must be a cubemap, the width must equal height,
+			and the depth must equal 1.
+ @param[in]	texture	A handle to a previously allocated PVRTexLib_PVRTexture.
+ @param[in]	sampleCount The number of samples to use when generating
+			the diffuse map.
+ @param[in] mapSize Output dimensions, in pixels.
+ @return	True if the method succeeds.
+*************************************************************************/
+PVR_DLL bool PVRTexLib_GenerateDiffuseIrradianceCubeMap(PVRTexLib_PVRTexture texture, PVRTuint32 sampleCount, PVRTuint32 mapSize);
+
+/*!***********************************************************************
+ @brief     Generates a prefiltered specular irradiance texture from a
+			cubemap environment map, to be used	primarily with physically
+			based rendering (PBR) techniques.
+			Each Mip level of the specular map is blurred by a roughness
+			value between 0 and 1.
+			The input must be a cubemap, the width must equal height,
+			and the depth must equal 1.
+ @param[in]	texture	A handle to a previously allocated PVRTexLib_PVRTexture.
+ @param[in]	sampleCount The number of samples to use when generating
+			the specular map.
+ @param[in] mapSize Output dimensions, in pixels.
+ @param[in] numMipLevelsToDiscard The number of Mip levels to be discarded
+			from the bottom of the Mip chain.
+ @param[in] zeroRoughnessIsExternal False to include a roughness of zero
+			when generating the prefiltered environment map.
+			True to omit a rougness of zero, implying that the user
+			will supply roughness zero from the environment texture.
+ @return	True if the method succeeds.
+*************************************************************************/
+PVR_DLL bool PVRTexLib_GeneratePreFilteredSpecularCubeMap(PVRTexLib_PVRTexture texture,
+	PVRTuint32 sampleCount,
+	PVRTuint32 mapSize,
+	PVRTuint32 numMipLevelsToDiscard,
+	bool zeroRoughnessIsExternal);
 
 #ifdef __cplusplus
 }

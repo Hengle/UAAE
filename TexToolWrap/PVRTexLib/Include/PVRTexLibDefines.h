@@ -202,6 +202,11 @@ enum PVRTexLibPixelFormat
 	PVRTLPF_RGBM,
 	PVRTLPF_RGBD,
 
+	PVRTLPF_PVRTCI_HDR_6bpp,
+	PVRTLPF_PVRTCI_HDR_8bpp,
+	PVRTLPF_PVRTCII_HDR_6bpp,
+	PVRTLPF_PVRTCII_HDR_8bpp,
+
 	//Invalid value
 	PVRTLPF_NumCompressedPFs
 };
