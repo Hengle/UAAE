@@ -79,7 +79,7 @@ namespace AssetsAdvancedEditor.Winforms
             MainFile.file.reader.bigEndian = false;
             MainFile.table.GenerateQuickLookupTree();
             Workspace.LoadedFiles.Add(MainFile);
-            foreach (var info in MainFile.table.assetFileInfo) 
+            foreach (var info in MainFile.table.Info) 
                 AddAssetItem(MainFile, info);
 
             var id = 1;
@@ -88,7 +88,7 @@ namespace AssetsAdvancedEditor.Winforms
                 dep.file.reader.bigEndian = false;
                 dep.table.GenerateQuickLookupTree();
                 Workspace.LoadedFiles.Add(dep);
-                foreach (var inf in dep.table.assetFileInfo)
+                foreach (var inf in dep.table.Info)
                     AddAssetItem(dep, inf, id);
                 id++;
             }
@@ -117,9 +117,9 @@ namespace AssetsAdvancedEditor.Winforms
                 {
                     type = $"0x{typeId:X8}";
                 }
-                else if (ttType.typeFieldsEx.Length != 0)
+                else if (ttType.Children.Length != 0)
                 {
-                    type = ttType.typeFieldsEx[0].GetTypeString(ttType.stringTable);
+                    type = ttType.Children[0].GetTypeString(ttType.stringTable);
                 }
                 else
                 {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using AssetsAdvancedEditor.Assets;
 using SevenZip.Compression.LZMA;
+using UnityTools.Compression.LZ4;
 
 namespace AssetsAdvancedEditor.Utils
 {
@@ -24,10 +25,10 @@ namespace AssetsAdvancedEditor.Utils
                     AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, item.MonoID) :
                     AssetHelper.FindTypeTreeTypeByID(file.typeTree, classId);
 
-                type = ttType.typeFieldsEx[0].GetTypeString(ttType.stringTable);
-                switch (ttType.typeFieldsEx.Length)
+                type = ttType.Children[0].GetTypeString(ttType.stringTable);
+                switch (ttType.Children.Length)
                 {
-                    case > 1 when ttType.typeFieldsEx[1].GetNameString(ttType.stringTable) == "m_Name":
+                    case > 1 when ttType.Children[1].GetNameString(ttType.stringTable) == "m_Name":
                     {
                         reader.Position = item.Position;
                         name = reader.ReadCountStringInt32();
@@ -41,7 +42,7 @@ namespace AssetsAdvancedEditor.Utils
                             {
                                 reader.Position = item.Position;
                                 var size = reader.ReadInt32();
-                                var componentSize = file.header.format > 0x10 ? 0x0c : 0x10;
+                                var componentSize = file.header.Version > 0x10 ? 0x0c : 0x10;
                                 reader.Position += size * componentSize;
                                 reader.Position += 0x04;
                                 name = reader.ReadCountStringInt32();
@@ -88,7 +89,7 @@ namespace AssetsAdvancedEditor.Utils
                         {
                             reader.Position = item.Position;
                             var size = reader.ReadInt32();
-                            var componentSize = file.header.format > 0x10 ? 0x0c : 0x10;
+                            var componentSize = file.header.Version > 0x10 ? 0x0c : 0x10;
                             reader.Position += size * componentSize;
                             reader.Position += 0x04;
                             name = reader.ReadCountStringInt32();

@@ -320,7 +320,7 @@ namespace AssetsAdvancedEditor.Assets
                     var asmDef = LoadedAssemblies[assemblyName];
 
                     var mc = new MonoDeserializer();
-                    mc.Read(scriptName, asmDef, file.header.format);
+                    mc.Read(scriptName, asmDef, file.header.Version);
                     var monoTemplateFields = mc.children;
 
                     var templateField = baseTemp.children.Concat(monoTemplateFields).ToArray();

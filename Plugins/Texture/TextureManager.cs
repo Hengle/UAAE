@@ -101,7 +101,7 @@ namespace Texture
                 case TextureFormat.RFloat:
                 case TextureFormat.RGFloat:
                 case TextureFormat.RGBAFloat:
-                case TextureFormat.YUV2:
+                case TextureFormat.YUY2:
                 case TextureFormat.EAC_R:
                 case TextureFormat.EAC_R_SIGNED:
                 case TextureFormat.EAC_RG:
@@ -187,7 +187,7 @@ namespace Texture
                 case TextureFormat.RFloat:
                 case TextureFormat.RGFloat:
                 case TextureFormat.RGBAFloat:
-                case TextureFormat.YUV2: //looks like this should be YUY2 and the api has a typo
+                case TextureFormat.YUY2:
                 case TextureFormat.EAC_R:
                 case TextureFormat.EAC_R_SIGNED:
                 case TextureFormat.EAC_RG:

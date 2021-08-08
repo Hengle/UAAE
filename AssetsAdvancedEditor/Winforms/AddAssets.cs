@@ -39,7 +39,7 @@ namespace AssetsAdvancedEditor.Winforms
         private long GetLastPathId()
         {
             var fileId = cboxFileID.SelectedIndex;
-            var lastId = Workspace.LoadedFiles[fileId].table.assetFileInfo.Max(i => i.index);
+            var lastId = Workspace.LoadedFiles[fileId].table.Info.Max(i => i.index);
 
             if (Workspace.NewAssets.Count == 0)
                 return lastId;
@@ -208,18 +208,18 @@ namespace AssetsAdvancedEditor.Winforms
 
             if (needsTypeId)
             {
-                typeId = ttType.classId;
+                typeId = ttType.ClassID;
             }
 
             if (createBlankAsset)
             {
                 templateField = new AssetTypeTemplateField();
-                if (ttType.typeFieldsExCount == 0)
+                if (ttType.ChildrenCount == 0)
                 {
                     typeId = 0x01;
                     ttType = AssetHelper.FindTypeTreeTypeByID(tt, 0x01);
                 }
-                type = ttType.typeFieldsEx[0].GetTypeString(ttType.stringTable);
+                type = ttType.Children[0].GetTypeString(ttType.stringTable);
                 templateField.From0D(ttType, 0);
             }
             return true;
