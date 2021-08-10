@@ -10,11 +10,10 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
-        public static void GetUAAENameFast(AssetsWorkspace workspace, AssetContainer cont, out string type, out string name)
+        public static void GetListNameFast(ClassDatabaseFile cldb, AssetItem item, out string type, out string name)
         {
-            var item = cont.Item;
+            var cont = item.Cont;
             var file = cont.FileInstance.file;
-            var cldb = workspace.Am.classFile;
             var classId = item.TypeID;
             var cldbType = AssetHelper.FindAssetClassByID(cldb, classId);
             var reader = cont.FileReader;

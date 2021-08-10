@@ -7,14 +7,14 @@ namespace Texture
 {
     public static class TextureHelper
     {
-        public static AssetTypeInstance GetByteArrayTexture(AssetsWorkspace workspace, AssetContainer tex)
+        public static AssetTypeInstance GetByteArrayTexture(AssetsWorkspace workspace, AssetItem tex)
         {
-            var textureTemp = workspace.GetTemplateField(tex.Item);
+            var textureTemp = workspace.GetTemplateField(tex);
             var image_data = textureTemp.children.FirstOrDefault(f => f.name == "image data");
             if (image_data == null)
                 return null;
             image_data.valueType = EnumValueTypes.ByteArray;
-            var texTypeInst = new AssetTypeInstance(new[] { textureTemp }, tex.FileReader, tex.Item.Position);
+            var texTypeInst = new AssetTypeInstance(new[] { textureTemp }, tex.Cont.FileReader, tex.Position);
             return texTypeInst;
         }
 
@@ -43,10 +43,11 @@ namespace Texture
             return texFile.pictureData;
         }
 
-        public static bool GetResSTexture(TextureFile texFile, AssetContainer cont)
+        public static bool GetResSTexture(TextureFile texFile, AssetItem item)
         {
+            var parentBundle = item.Cont.FileInstance.parentBundle;
             var streamInfo = texFile.m_StreamData;
-            if (!string.IsNullOrEmpty(streamInfo.path) && cont.FileInstance.parentBundle != null)
+            if (!string.IsNullOrEmpty(streamInfo.path) && parentBundle != null)
             {
                 //some versions apparently don't use archive:/
                 var searchPath = streamInfo.path;
@@ -55,7 +56,7 @@ namespace Texture
 
                 searchPath = Path.GetFileName(searchPath);
 
-                var bundle = cont.FileInstance.parentBundle.file;
+                var bundle = parentBundle.file;
 
                 var reader = bundle.reader;
                 var dirInf = bundle.bundleInf6.dirInf;

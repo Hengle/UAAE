@@ -9,7 +9,7 @@ namespace AssetsAdvancedEditor.Plugins
     {
         public PluginAction Action;
         public string Description;
-        public abstract bool IsValidForPlugin(AssetsManager am, List<AssetContainer> selectedAssets);
-        public abstract bool ExecutePlugin(IWin32Window owner, AssetsWorkspace workspace, List<AssetContainer> selectedAssets);
+        public abstract bool IsValidForPlugin(AssetsManager am, List<AssetItem> selectedItems);
+        public abstract bool ExecutePlugin(IWin32Window owner, AssetsWorkspace workspace, List<AssetItem> selectedItems);
     }
 }

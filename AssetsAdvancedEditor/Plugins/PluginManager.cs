@@ -45,14 +45,14 @@ namespace AssetsAdvancedEditor.Plugins
             }
         }
 
-        public List<PluginMenuInfo> GetSupportedPlugins(List<AssetContainer> selectedAssets)
+        public List<PluginMenuInfo> GetSupportedPlugins(List<AssetItem> selectedItems)
         {
             var menuInfos = new List<PluginMenuInfo>();
             foreach (var pluginInf in LoadedPlugins)
             {
                 foreach (var option in pluginInf.Options)
                 {
-                    var supported = option.IsValidForPlugin(Am, selectedAssets);
+                    var supported = option.IsValidForPlugin(Am, selectedItems);
                     if (!supported) continue;
                     var menuInf = new PluginMenuInfo(pluginInf, option);
                     menuInfos.Add(menuInf);

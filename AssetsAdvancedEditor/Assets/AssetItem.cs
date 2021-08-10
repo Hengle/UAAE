@@ -2,7 +2,9 @@
 {
     public class AssetItem
     {
+        public AssetContainer Cont { get; set; }
         public string Name { get; set; }
+        public string ListName { get; set; }
         public string Container { get; set; }
         public string Type { get; set; }
         public uint TypeID { get; set; }
@@ -17,7 +19,7 @@
         {
             return new[]
             {
-                Name,
+                ListName,
                 Container,
                 Type,
                 TypeID.ToString(),

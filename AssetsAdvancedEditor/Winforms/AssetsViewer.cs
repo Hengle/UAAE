@@ -26,7 +26,6 @@ namespace AssetsAdvancedEditor.Winforms
         public string AssetsRootDir { get; }
         public string UnityVersion { get; }
 
-        public List<AssetItem> LoadedAssets { get; }
         public Dictionary<BundleReplacer, MemoryStream> ModifiedFiles { get; private set; }
         //private Stack<List<int>> UndoList { get; }
         //private Stack<List<int>> RedoList { get; }
@@ -63,7 +62,6 @@ namespace AssetsAdvancedEditor.Winforms
             AssetsRootDir = Workspace.AssetsRootDir;
             UnityVersion = Workspace.UnityVersion;
 
-            LoadedAssets = new List<AssetItem>();
             ModifiedFiles = new Dictionary<BundleReplacer, MemoryStream>();
             //UndoList = new Stack<List<int>>();
             //RedoList = new Stack<List<int>>();
@@ -152,19 +150,11 @@ namespace AssetsAdvancedEditor.Winforms
                 MonoID = monoId
             };
 
-            if (string.IsNullOrEmpty(name) || !HasName(cldb, cldbType))
-                name = "Unnamed asset";
-
-            if (typeId is 0x01 or 0x72)
-            {
-                name = type != name ? $"{type} {name}" : type;
-            }
-
-            var assetId = new AssetID(fileInst.path, item.PathID);
-            Workspace.LoadedContainers[assetId] = Workspace.MakeAssetContainer(item);
-            var data = item.ToArray();
-            data[0] = name;
-            assetList.Items.Add(new ListViewItem(data));
+            item.Cont = Workspace.MakeAssetContainer(item);
+            Extensions.GetListNameFast(cldb, item, out _, out var listName);
+            item.ListName = listName;
+            Workspace.LoadedAssets.Add(item);
+            assetList.Items.Add(new ListViewItem(item.ToArray()));
         }
 
         private static bool HasName(ClassDatabaseFile cldb, ClassDatabaseType cldbType)
@@ -214,10 +204,10 @@ namespace AssetsAdvancedEditor.Winforms
 
             foreach (ListViewItem listItem in assetList.SelectedItems)
             {
-                var item = LoadedAssets[listItem.Index];
+                var item = Workspace.LoadedAssets[listItem.Index];
                 Workspace.AddReplacer(AssetModifier.CreateAssetRemover(item));
                 assetList.Items.Remove(listItem);
-                LoadedAssets.Remove(item);
+                Workspace.LoadedAssets.Remove(item);
             }
         }
 
@@ -236,7 +226,7 @@ namespace AssetsAdvancedEditor.Winforms
             var assetItem = new List<AssetItem>();
             foreach (int index in assetList.SelectedIndices)
             {
-                assetItem.Add(LoadedAssets[index]);
+                assetItem.Add(Workspace.LoadedAssets[index]);
             }
             return assetItem;
         }
@@ -246,9 +236,9 @@ namespace AssetsAdvancedEditor.Winforms
             try
             {
                 var fields = new List<AssetTypeValueField>();
-                foreach (var cont in GetSelectedAssets())
+                foreach (var item in GetSelectedAssetItems())
                 {
-                    fields.Add(Workspace.GetBaseField(cont));
+                    fields.Add(Workspace.GetBaseField(item));
                 }
                 return fields;
             }
@@ -260,33 +250,18 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private List<AssetContainer> GetSelectedAssets()
+        private void UpdateAssetInfo()
         {
-            var assets = new List<AssetContainer>();
-            foreach (var item in GetSelectedAssetItems())
+            foreach (int index in assetList.SelectedIndices)
             {
-                assets.Add(Workspace.GetAssetContainer(item));
-            }
-            return assets;
-        }
+                var item = Workspace.LoadedAssets[index];
 
-        private void ModifySelectedAssets(AssetsReplacer replacer)
-        {
-            foreach (int i in assetList.SelectedIndices)
-            {
-                Workspace.AddReplacer(replacer);
-                var item = LoadedAssets[i];
-                Extensions.GetUAAENameFast(Workspace, Workspace.GetAssetContainer(item.FileID, item.PathID), out _, out var name);
-
-                var listArr = item.ToArray();
-                listArr[0] = name;
-
-                assetList.Items[i] = new ListViewItem(listArr)
+                assetList.Items[index] = new ListViewItem(item.ToArray())
                 {
                     Selected = true
                 };
-                assetList.Select();
             }
+            assetList.Select();
         }
 
         private void ClearModified()
@@ -300,8 +275,8 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void assetList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if (LoadedAssets.Count != assetList.Items.Count) return;  // shouldn't happen
-            var details = LoadedAssets[e.ItemIndex];
+            if (Workspace.LoadedAssets.Count != assetList.Items.Count) return;  // shouldn't happen
+            var details = Workspace.LoadedAssets[e.ItemIndex];
             var name = details.Name;
             var cldb = Am.classFile;
             var cldbType = AssetHelper.FindAssetClassByID(cldb, details.TypeID);
@@ -508,24 +483,23 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnExportRaw_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var selectedAssets = GetSelectedAssets();
+            var selectedItems = GetSelectedAssetItems();
 
             if (GetSelectedCount() > 1)
-                BatchExportRaw(selectedAssets);
+                BatchExportRaw(selectedItems);
             else
-                SingleExportRaw(selectedAssets[0]);
+                SingleExportRaw(selectedItems[0]);
         }
 
-        private void BatchExportRaw(List<AssetContainer> selectedAssets)
+        private void BatchExportRaw(List<AssetItem> selectedItems)
         {
             var fd = new OpenFolderDialog
             {
                 Title = "Select a folder for the raw assets"
             };
             if (fd.ShowDialog(this) != DialogResult.OK) return;
-            foreach (var cont in selectedAssets)
+            foreach (var item in selectedItems)
             {
-                var item = cont.Item;
                 var name = item.Name;
                 if (string.IsNullOrEmpty(name))
                 {
@@ -538,10 +512,9 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private void SingleExportRaw(AssetContainer selectedAsset)
+        private void SingleExportRaw(AssetItem selectedItem)
         {
-            var item = selectedAsset.Item;
-            var name = item.Name;
+            var name = selectedItem.Name;
             if (string.IsNullOrEmpty(name))
             {
                 name = "Unnamed asset";
@@ -550,24 +523,24 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 Title = @"Save raw asset",
                 Filter = @"Raw Unity asset (*.dat)|*.dat",
-                FileName = $"{name}-{Workspace.LoadedFiles[item.FileID].name}-{item.PathID}"
+                FileName = $"{name}-{Workspace.LoadedFiles[selectedItem.FileID].name}-{selectedItem.PathID}"
             };
             if (sfd.ShowDialog() != DialogResult.OK) return;
-            Exporter.ExportRawAsset(sfd.FileName, item);
+            Exporter.ExportRawAsset(sfd.FileName, selectedItem);
         }
 
         private void btnExportDump_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var selectedAssets = GetSelectedAssets();
+            var selectedItems = GetSelectedAssetItems();
 
             if (GetSelectedCount() > 1)
-                BatchExportDump(selectedAssets);
+                BatchExportDump(selectedItems);
             else
-                SingleExportDump(selectedAssets[0]);
+                SingleExportDump(selectedItems[0]);
         }
 
-        private void BatchExportDump(List<AssetContainer> selectedAssets)
+        private void BatchExportDump(List<AssetItem> selectedItems)
         {
             var dialog = new DumpTypeDialog();
             if (dialog.ShowDialog() != DialogResult.OK) return;
@@ -583,9 +556,8 @@ namespace AssetsAdvancedEditor.Winforms
                 Title = "Select a folder for the dumps"
             };
             if (fd.ShowDialog(this) != DialogResult.OK) return;
-            foreach (var cont in selectedAssets)
+            foreach (var item in selectedItems)
             {
-                var item = cont.Item;
                 var name = item.Name;
                 if (string.IsNullOrEmpty(name))
                 {
@@ -598,10 +570,9 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private void SingleExportDump(AssetContainer selectedAsset)
+        private void SingleExportDump(AssetItem selectedItem)
         {
-            var item = selectedAsset.Item;
-            var name = item.Name;
+            var name = selectedItem.Name;
             if (string.IsNullOrEmpty(name))
             {
                 name = "Unnamed asset";
@@ -610,7 +581,7 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 Title = @"Save dump",
                 Filter = @"UAAE text dump (*.txt)|*.txt|UAAE xml dump (*.xml)|*.xml",
-                FileName = $"{name}-{Workspace.LoadedFiles[item.FileID].name}-{item.PathID}-{item.Type}"
+                FileName = $"{name}-{Workspace.LoadedFiles[selectedItem.FileID].name}-{selectedItem.PathID}-{selectedItem.Type}"
             };
             if (sfd.ShowDialog() != DialogResult.OK) return;
             var dumpType = sfd.FilterIndex switch
@@ -619,21 +590,22 @@ namespace AssetsAdvancedEditor.Winforms
                 2 => DumpType.XML,
                 _ => DumpType.TXT
             };
-            Exporter.ExportDump(sfd.FileName, item, dumpType);
+            Exporter.ExportDump(sfd.FileName, selectedItem, dumpType);
         }
 
         private void btnImportRaw_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var selectedAssets = GetSelectedAssets();
+            var selectedItems = GetSelectedAssetItems();
 
             if (GetSelectedCount() > 1)
-                BatchImportRaw(selectedAssets);
+                BatchImportRaw(selectedItems);
             else
-                SingleImportRaw(selectedAssets[0]);
+                SingleImportRaw(selectedItems[0]);
+            UpdateAssetInfo();
         }
 
-        private void BatchImportRaw(List<AssetContainer> selectedAssets)
+        private void BatchImportRaw(List<AssetItem> selectedItems)
         {
             var fd = new OpenFolderDialog
             {
@@ -641,7 +613,7 @@ namespace AssetsAdvancedEditor.Winforms
             };
             if (fd.ShowDialog(this) != DialogResult.OK) return;
 
-            var dialog = new BatchImport(Workspace, selectedAssets, fd.Folder, ".dat");
+            var dialog = new BatchImport(Workspace.Am.classFile, selectedItems, fd.Folder, ".dat");
             if (dialog.ShowDialog() != DialogResult.OK) return;
 
             var batchItems = dialog.batchItems;
@@ -649,18 +621,18 @@ namespace AssetsAdvancedEditor.Winforms
             foreach (var batchItem in batchItems)
             {
                 var selectedFilePath = batchItem.ImportFile;
-                var selectedCont = batchItem.Cont;
+                var affectedItem = batchItem.Item;
 
                 var replacer = selectedFilePath.EndsWith(".dat") ?
-                    Importer.ImportRawAsset(selectedFilePath, selectedCont.Item) :
-                    Importer.ImportDump(selectedFilePath, selectedCont.Item, DumpType.TXT);
+                    Importer.ImportRawAsset(selectedFilePath, affectedItem) :
+                    Importer.ImportDump(selectedFilePath, affectedItem, DumpType.TXT);
 
                 if (replacer == null) continue;
                 Workspace.AddReplacer(replacer);
             }
         }
 
-        private void SingleImportRaw(AssetContainer selectedAsset)
+        private void SingleImportRaw(AssetItem selectedItem)
         {
             var ofd = new OpenFileDialog
             {
@@ -669,22 +641,23 @@ namespace AssetsAdvancedEditor.Winforms
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
-            var replacer = Importer.ImportRawAsset(ofd.FileName, selectedAsset.Item);
+            var replacer = Importer.ImportRawAsset(ofd.FileName, selectedItem);
             Workspace.AddReplacer(replacer);
         }
 
         private void btnImportDump_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var selectedAssets = GetSelectedAssets();
+            var selectedItems = GetSelectedAssetItems();
 			
 			if (GetSelectedCount() > 1)
-				BatchImportDump(selectedAssets);
+				BatchImportDump(selectedItems);
 			else
-				SingleImportDump(selectedAssets[0]);
+				SingleImportDump(selectedItems[0]);
+            UpdateAssetInfo();
         }
 
-        private void BatchImportDump(List<AssetContainer> selectedAssets)
+        private void BatchImportDump(List<AssetItem> selectedItems)
         {
 			var fd = new OpenFolderDialog
 			{
@@ -692,7 +665,7 @@ namespace AssetsAdvancedEditor.Winforms
 			};
 			if (fd.ShowDialog(this) != DialogResult.OK) return;
 
-			var dialog = new BatchImport(Workspace, selectedAssets, fd.Folder, ".txt");
+			var dialog = new BatchImport(Workspace.Am.classFile, selectedItems, fd.Folder, ".txt");
             if (dialog.ShowDialog() != DialogResult.OK) return;
 
             var batchItems = dialog.batchItems;
@@ -700,18 +673,18 @@ namespace AssetsAdvancedEditor.Winforms
             foreach (var batchItem in batchItems)
             {
                 var selectedFilePath = batchItem.ImportFile;
-                var selectedCont = batchItem.Cont;
+                var affectedItem = batchItem.Item;
 
                 var replacer = selectedFilePath.EndsWith(".dat") ?
-                    Importer.ImportRawAsset(selectedFilePath, selectedCont.Item) :
-                    Importer.ImportDump(selectedFilePath, selectedCont.Item, DumpType.TXT);
+                    Importer.ImportRawAsset(selectedFilePath, affectedItem) :
+                    Importer.ImportDump(selectedFilePath, affectedItem, DumpType.TXT);
 
                 if (replacer == null) continue;
                 Workspace.AddReplacer(replacer);
             }
         }
         
-        private void SingleImportDump(AssetContainer selectedAsset)
+        private void SingleImportDump(AssetItem selectedItem)
         {
             var ofd = new OpenFileDialog
             {
@@ -720,7 +693,7 @@ namespace AssetsAdvancedEditor.Winforms
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
-            var replacer = Importer.ImportDump(ofd.FileName, selectedAsset.Item, DumpType.TXT);
+            var replacer = Importer.ImportDump(ofd.FileName, selectedItem, DumpType.TXT);
             if (replacer == null) return;
             Workspace.AddReplacer(replacer);
         }
@@ -728,8 +701,8 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnEdit_Click(object sender, EventArgs e)
         {
             if (FailIfNothingSelected()) return;
-            var conts = GetSelectedAssets();
-            var editDialog = new EditDialog(this, Workspace, conts);
+            var items = GetSelectedAssetItems();
+            var editDialog = new EditDialog(this, Workspace, items);
             editDialog.ShowDialog(this);
         }
 
@@ -858,7 +831,7 @@ namespace AssetsAdvancedEditor.Winforms
             var foundResult = false;
             for (var i = 0; i < assetList.Items.Count; i++)
             {
-                var item = LoadedAssets[i];
+                var item = Workspace.LoadedAssets[i];
 
                 if (item.FileID != dialog.FileID || item.PathID != dialog.PathID)
                     continue;

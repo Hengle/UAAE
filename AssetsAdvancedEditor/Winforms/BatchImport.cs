@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Utils;
+using UnityTools;
 
 namespace AssetsAdvancedEditor.Winforms
 {
@@ -13,7 +14,7 @@ namespace AssetsAdvancedEditor.Winforms
         private string directory { get; }
         public List<BatchImportItem> batchItems;
 
-        public BatchImport(AssetsWorkspace workspace, List<AssetContainer> selectedAssets, string directory, params string[] extensions)
+        public BatchImport(ClassDatabaseFile cldb, List<AssetItem> selectedItems, string directory, params string[] extensions)
         {
             InitializeComponent();
 
@@ -26,16 +27,16 @@ namespace AssetsAdvancedEditor.Winforms
                 filesInDir.AddRange(Directory.GetFiles(directory, "*" + ext));
             }
 
-            foreach (var cont in selectedAssets)
+            foreach (var item in selectedItems)
             {
-                Extensions.GetUAAENameFast(workspace, cont, out var type, out var name);
+                Extensions.GetListNameFast(cldb, item, out var type, out var name);
                 var batchItem = new BatchImportItem
                 {
                     Description = name,
-                    File = Path.GetFileName(cont.FileInstance.path),
-                    PathID = cont.Item.PathID,
+                    File = Path.GetFileName(item.Cont.FileInstance.path),
+                    PathID = item.PathID,
                     Type = type,
-                    Cont = cont
+                    Item = item
                 };
 
                 var matchingFiles = new List<string>();

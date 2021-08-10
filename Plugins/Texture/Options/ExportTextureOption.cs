@@ -14,32 +14,32 @@ namespace Texture.Options
     {
         public ExportTextureOption() => Action = PluginAction.Export;
 
-        public override bool IsValidForPlugin(AssetsManager am, List<AssetContainer> selectedAssets)
+        public override bool IsValidForPlugin(AssetsManager am, List<AssetItem> selectedItems)
         {
-            Description = selectedAssets.Count > 1 ? "Batch export Png/Tga" : "Export Png/Tga";
+            Description = selectedItems.Count > 1 ? "Batch export Png/Tga" : "Export Png/Tga";
 
             var classId = AssetHelper.FindAssetClassByName(am.classFile, "Texture2D").classId;
 
-            foreach (var cont in selectedAssets)
+            foreach (var item in selectedItems)
             {
-                if (cont.Item.TypeID != classId)
+                if (item.TypeID != classId)
                     return false;
             }
             return true;
         }
 
-        public override bool ExecutePlugin(IWin32Window owner, AssetsWorkspace workspace, List<AssetContainer> selectedAssets)
+        public override bool ExecutePlugin(IWin32Window owner, AssetsWorkspace workspace, List<AssetItem> selectedItems)
         {
-            return selectedAssets.Count > 1
-                ? BatchExport(owner, workspace, selectedAssets)
-                : SingleExport(owner, workspace, selectedAssets[0]);
+            return selectedItems.Count > 1
+                ? BatchExport(owner, workspace, selectedItems)
+                : SingleExport(owner, workspace, selectedItems[0]);
         }
 
-        public bool BatchExport(IWin32Window owner, AssetsWorkspace workspace, List<AssetContainer> selectedAssets)
+        public bool BatchExport(IWin32Window owner, AssetsWorkspace workspace, List<AssetItem> selectedItems)
         {
-            for (var i = 0; i < selectedAssets.Count; i++)
+            foreach (var item in selectedItems)
             {
-                selectedAssets[i] = new AssetContainer(selectedAssets[i], TextureHelper.GetByteArrayTexture(workspace, selectedAssets[i]));
+                item.Cont = new AssetContainer(item.Cont, TextureHelper.GetByteArrayTexture(workspace, item));
             }
 
             var ofd = new OpenFolderDialog
@@ -51,27 +51,28 @@ namespace Texture.Options
 
             var dir = ofd.Folder;
             var errorBuilder = new StringBuilder();
-            foreach (var cont in selectedAssets)
+            foreach (var item in selectedItems)
             {
-                var errorAssetName = $"{Path.GetFileName(cont.FileInstance.path)}/{cont.AssetId.pathID}";
-                var texBaseField = cont.TypeInstance.GetBaseField();
+                var fileInst = item.Cont.FileInstance;
+                var errorAssetName = $"{Path.GetFileName(fileInst.path)}/{item.PathID}";
+                var texBaseField = item.Cont.TypeInstance.GetBaseField();
                 var texFile = TextureFile.ReadTextureFile(texBaseField);
 
                 //0x0 texture, usually called like Font Texture or smth
                 if (texFile.m_Width == 0 && texFile.m_Height == 0)
                     continue;
 
-                var file = Path.Combine(dir, $"{texFile.m_Name}-{Path.GetFileName(cont.FileInstance.path)}-{cont.Item.PathID}.png");
+                var file = Path.Combine(dir, $"{texFile.m_Name}-{Path.GetFileName(fileInst.path)}-{item.PathID}.png");
 
                 //bundle resS
-                if (!TextureHelper.GetResSTexture(texFile, cont))
+                if (!TextureHelper.GetResSTexture(texFile, item))
                 {
                     var resSName = Path.GetFileName(texFile.m_StreamData.path);
                     errorBuilder.AppendLine($"[{errorAssetName}]: resS was detected but {resSName} was not found in bundle");
                     continue;
                 }
 
-                var data = TextureHelper.GetRawTextureBytes(texFile, cont.FileInstance);
+                var data = TextureHelper.GetRawTextureBytes(texFile, fileInst);
 
                 if (data == null)
                 {
@@ -95,31 +96,32 @@ namespace Texture.Options
             return true;
         }
 
-        public bool SingleExport(IWin32Window owner, AssetsWorkspace workspace, AssetContainer selectedAsset)
+        public bool SingleExport(IWin32Window owner, AssetsWorkspace workspace, AssetItem selectedItem)
         {
-            var texField = TextureHelper.GetByteArrayTexture(workspace, selectedAsset).GetBaseField();
+            var fileInst = selectedItem.Cont.FileInstance;
+            var texField = TextureHelper.GetByteArrayTexture(workspace, selectedItem).GetBaseField();
             var texFile = TextureFile.ReadTextureFile(texField);
             var sfd = new SaveFileDialog
             {
                 Title = @"Save texture",
                 Filter = @"PNG file (*.png)|*.png|TGA file (*.tga)|*.tga|All types (*.*)|*.*",
-                FileName = $"{texFile.m_Name}-{Path.GetFileName(selectedAsset.FileInstance.path)}-{selectedAsset.Item.PathID}"
+                FileName = $"{texFile.m_Name}-{Path.GetFileName(fileInst.path)}-{selectedItem.PathID}"
             };
             if (sfd.ShowDialog(owner) != DialogResult.OK)
                 return false;
 
             var file = sfd.FileName;
-            var errorAssetName = $"{Path.GetFileName(selectedAsset.FileInstance.path)}/{selectedAsset.AssetId.pathID}";
+            var errorAssetName = $"{Path.GetFileName(fileInst.path)}/{selectedItem.PathID}";
 
             //bundle resS
-            if (!TextureHelper.GetResSTexture(texFile, selectedAsset))
+            if (!TextureHelper.GetResSTexture(texFile, selectedItem))
             {
                 var resSName = Path.GetFileName(texFile.m_StreamData.path);
                 MsgBoxUtils.ShowErrorDialog($"[{errorAssetName}]: resS was detected but {resSName} was not found in bundle");
                 return false;
             }
 
-            var data = TextureHelper.GetRawTextureBytes(texFile, selectedAsset.FileInstance);
+            var data = TextureHelper.GetRawTextureBytes(texFile, fileInst);
 
             if (data == null)
             {

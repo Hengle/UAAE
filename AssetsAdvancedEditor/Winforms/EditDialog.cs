@@ -10,15 +10,15 @@ namespace AssetsAdvancedEditor.Winforms
     {
         private IWin32Window owner { get; }
         private AssetsWorkspace workspace { get; }
-        private List<AssetContainer> selectedAssets { get; }
-        public EditDialog(IWin32Window owner, AssetsWorkspace workspace, List<AssetContainer> selectedAssets)
+        private List<AssetItem> selectedItems { get; }
+        public EditDialog(IWin32Window owner, AssetsWorkspace workspace, List<AssetItem> selectedItems)
         {
             InitializeComponent();
 
             this.owner = owner;
             this.workspace = workspace;
-            this.selectedAssets = selectedAssets;
-            var plugInfs = workspace.Pm.GetSupportedPlugins(selectedAssets);
+            this.selectedItems = selectedItems;
+            var plugInfs = workspace.Pm.GetSupportedPlugins(selectedItems);
             foreach (var plugInfo in plugInfs)
             {
                 lboxPluginsList.Items.Add(plugInfo);
@@ -35,7 +35,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (lboxPluginsList.SelectedItem is PluginMenuInfo menuPlugInf)
             {
                 var plugOption = menuPlugInf.PluginOpt;
-                plugOption.ExecutePlugin(owner, workspace, selectedAssets);
+                plugOption.ExecutePlugin(owner, workspace, selectedItems);
             }
         }
     }

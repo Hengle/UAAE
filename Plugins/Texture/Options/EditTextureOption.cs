@@ -11,35 +11,35 @@ namespace Texture.Options
     {
         public EditTextureOption() => Action = PluginAction.Import;
 
-        public override bool IsValidForPlugin(AssetsManager am, List<AssetContainer> selectedAssets)
+        public override bool IsValidForPlugin(AssetsManager am, List<AssetItem> selectedItems)
         {
             Description = "Edit texture";
 
-            if (selectedAssets.Count != 1)
+            if (selectedItems.Count != 1)
                 return false;
 
             var classId = AssetHelper.FindAssetClassByName(am.classFile, "Texture2D").classId;
 
-            foreach (var cont in selectedAssets)
+            foreach (var item in selectedItems)
             {
-                if (cont.Item.TypeID != classId)
+                if (item.TypeID != classId)
                     return false;
             }
             return true;
         }
 
-        public override bool ExecutePlugin(IWin32Window owner, AssetsWorkspace workspace, List<AssetContainer> selectedAssets)
+        public override bool ExecutePlugin(IWin32Window owner, AssetsWorkspace workspace, List<AssetItem> selectedItems)
         {
-            var cont = selectedAssets[0];
+            var item = selectedItems[0];
 
-            var texField = TextureHelper.GetByteArrayTexture(workspace, cont).GetBaseField();
+            var texField = TextureHelper.GetByteArrayTexture(workspace, item).GetBaseField();
             var texFile = TextureFile.ReadTextureFile(texField);
             var editTexDialog = new EditTextureDialog(texFile, texField);
             var saved = editTexDialog.ShowDialog(owner) == DialogResult.OK;
             if (!saved) return false;
 
             var savedAsset = texField.WriteToByteArray();
-            var replacer = AssetModifier.CreateAssetReplacer(cont.Item, savedAsset);
+            var replacer = AssetModifier.CreateAssetReplacer(item, savedAsset);
 
             workspace.AddReplacer(replacer, new MemoryStream(savedAsset));
             return true;

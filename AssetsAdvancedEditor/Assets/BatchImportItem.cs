@@ -10,7 +10,7 @@ namespace AssetsAdvancedEditor.Assets
 
         public string Type { get; set; }
         public string ImportFile { get; set; }
-        public AssetContainer Cont { get; set; }
+        public AssetItem Item { get; set; }
         public List<string> MatchingFiles { get; set; }
         public bool HasMatchingFile => MatchingFiles.Count > 0;
 
