@@ -4,45 +4,39 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using AssetsAdvancedEditor.Assets;
-using AssetsAdvancedEditor.Utils;
-using UnityTools;
 
 namespace AssetsAdvancedEditor.Winforms
 {
     public partial class BatchImport : Form
     {
+        private BatchImportType batchType { get; }
         private string directory { get; }
         public List<BatchImportItem> batchItems;
 
-        public BatchImport(ClassDatabaseFile cldb, List<AssetItem> selectedItems, string directory, params string[] extensions)
+        public BatchImport(List<AssetItem> selectedItems, string directory, BatchImportType batchType)
         {
             InitializeComponent();
-
+            this.batchType = batchType;
             this.directory = directory;
             batchItems = new List<BatchImportItem>();
 
-            var filesInDir = new List<string>();
-            foreach (var ext in extensions)
-            {
-                filesInDir.AddRange(Directory.GetFiles(directory, "*" + ext));
-            }
-
+            var extensions = GetMatchingExtensions(batchType);
             foreach (var item in selectedItems)
             {
-                Extensions.GetListNameFast(cldb, item, out var type, out var name);
                 var batchItem = new BatchImportItem
                 {
-                    Description = name,
+                    Description = item.ListName,
                     File = Path.GetFileName(item.Cont.FileInstance.path),
                     PathID = item.PathID,
-                    Type = type,
+                    Type = item.Type,
                     Item = item
                 };
 
                 var matchingFiles = new List<string>();
                 foreach (var ext in extensions)
                 {
-                    var endWith = batchItem.GetMatchName(ext);
+                    var endWith = batchItem.GetMatchName(ext, batchType);
+                    var filesInDir = Directory.GetFiles(directory, "*" + ext);
                     matchingFiles.AddRange(filesInDir.Where(f => f.EndsWith(endWith)).Select(Path.GetFileName).ToList());
                 }
                 batchItem.MatchingFiles = matchingFiles;
@@ -51,13 +45,22 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
+        private static string[] GetMatchingExtensions(BatchImportType batchType)
+        {
+            return batchType switch
+            {
+                BatchImportType.Dump => new[] {".dat", ".txt"},
+                BatchImportType.Image => new[] {".png", ".tga"},
+                _ => null
+            };
+        }
+
         private void lboxMatchingFiles_MouseHover(object sender, EventArgs e)
         {
             var pos = PointToClient(Cursor.Position);
             var toolTip = new ToolTip
             {
-                IsBalloon = true,
-                //InitialDelay = 1000
+                IsBalloon = true
             };
             toolTip.Show("Double click an item to move it up and use it for import.", this, pos, 1000);
         }
@@ -109,11 +112,30 @@ namespace AssetsAdvancedEditor.Winforms
         {
             var batchItem = GetSelectedBatchItem();
 
-            var ofd = new OpenFileDialog
+            OpenFileDialog ofd;
+            switch (batchType)
             {
-                Title = @"Import dump/raw asset",
-                Filter = @"UAAE text dump (*.txt)|*.txt|Raw Unity asset (*.dat)|*.dat"
-            };
+                case BatchImportType.Dump:
+                {
+                    ofd = new OpenFileDialog
+                    {
+                        Title = @"Import dump/raw asset",
+                        Filter = @"UAAE text dump (*.txt)|*.txt|Raw Unity asset (*.dat)|*.dat|All types (*.*)|*.*"
+                    };
+                    break;
+                }
+                case BatchImportType.Image:
+                {
+                    ofd = new OpenFileDialog
+                    {
+                        Title = @"Import png/tga image",
+                        Filter = @"PNG file (*.png)|*.png|TGA file (*.tga)|*.tga|All types (*.*)|*.*"
+                    };
+                    break;
+                }
+                default:
+                    return;
+            }
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
             var newMatchingFile = ofd.FileName;

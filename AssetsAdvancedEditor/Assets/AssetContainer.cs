@@ -9,7 +9,6 @@ namespace AssetsAdvancedEditor.Assets
         public AssetsFileInstance FileInstance { get; }
         public AssetTypeInstance TypeInstance { get; }
         public AssetsFileReader FileReader { get; }
-        //public AssetID AssetId => new (FileInstance.path, Item.PathID);
         public bool HasInstance => TypeInstance != null;
 
         //Existing assets

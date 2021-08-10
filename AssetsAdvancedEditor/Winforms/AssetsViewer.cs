@@ -16,7 +16,7 @@ namespace AssetsAdvancedEditor.Winforms
         public AssetsWorkspace Workspace { get; }
         public AssetsManager Am { get; }
         public PluginManager Pm { get; }
-        public AssetsFileInstance MainFile { get; }
+        public AssetsFileInstance MainInstance { get; }
         public bool FromBundle { get; }
 
         public AssetImporter Importer { get; }
@@ -52,7 +52,7 @@ namespace AssetsAdvancedEditor.Winforms
             Workspace = new AssetsWorkspace(am, instance, fromBundle);
             Am = Workspace.Am;
             Pm = Workspace.Pm;
-            MainFile = Workspace.MainInstance;
+            MainInstance = Workspace.MainInstance;
             FromBundle = Workspace.FromBundle;
 
             Importer = Workspace.Importer;
@@ -74,14 +74,14 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void LoadAssetsToList()
         {
-            MainFile.file.reader.bigEndian = false;
-            MainFile.table.GenerateQuickLookupTree();
-            Workspace.LoadedFiles.Add(MainFile);
-            foreach (var info in MainFile.table.Info) 
-                AddAssetItem(MainFile, info);
+            MainInstance.file.reader.bigEndian = false;
+            MainInstance.table.GenerateQuickLookupTree();
+            Workspace.LoadedFiles.Add(MainInstance);
+            foreach (var info in MainInstance.table.Info) 
+                AddAssetItem(MainInstance, info);
 
             var id = 1;
-            foreach (var dep in MainFile.dependencies.Where(dep => dep != null))
+            foreach (var dep in MainInstance.dependencies.Where(dep => dep != null))
             {
                 dep.file.reader.bigEndian = false;
                 dep.table.GenerateQuickLookupTree();
@@ -151,7 +151,7 @@ namespace AssetsAdvancedEditor.Winforms
             };
 
             item.Cont = Workspace.MakeAssetContainer(item);
-            Extensions.GetListNameFast(cldb, item, out _, out var listName);
+            Extensions.GetAssetNameFast(cldb, item, out _, out var listName, out _);
             item.ListName = listName;
             Workspace.LoadedAssets.Add(item);
             assetList.Items.Add(new ListViewItem(item.ToArray()));
@@ -613,7 +613,7 @@ namespace AssetsAdvancedEditor.Winforms
             };
             if (fd.ShowDialog(this) != DialogResult.OK) return;
 
-            var dialog = new BatchImport(Workspace.Am.classFile, selectedItems, fd.Folder, ".dat");
+            var dialog = new BatchImport(selectedItems, fd.Folder, BatchImportType.Dump);
             if (dialog.ShowDialog() != DialogResult.OK) return;
 
             var batchItems = dialog.batchItems;
@@ -665,7 +665,7 @@ namespace AssetsAdvancedEditor.Winforms
 			};
 			if (fd.ShowDialog(this) != DialogResult.OK) return;
 
-			var dialog = new BatchImport(Workspace.Am.classFile, selectedItems, fd.Folder, ".txt");
+			var dialog = new BatchImport(selectedItems, fd.Folder, BatchImportType.Dump);
             if (dialog.ShowDialog() != DialogResult.OK) return;
 
             var batchItems = dialog.batchItems;
@@ -704,6 +704,7 @@ namespace AssetsAdvancedEditor.Winforms
             var items = GetSelectedAssetItems();
             var editDialog = new EditDialog(this, Workspace, items);
             editDialog.ShowDialog(this);
+            UpdateAssetInfo();
         }
 
         private void btnAdd_Click(object sender, EventArgs e)

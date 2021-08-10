@@ -27,11 +27,6 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            // todo
-        }
-
-        private void btnExecute_Click(object sender, EventArgs e)
-        {
             if (lboxPluginsList.SelectedItem is PluginMenuInfo menuPlugInf)
             {
                 var plugOption = menuPlugInf.PluginOpt;

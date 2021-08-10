@@ -14,8 +14,12 @@ namespace AssetsAdvancedEditor.Assets
         public List<string> MatchingFiles { get; set; }
         public bool HasMatchingFile => MatchingFiles.Count > 0;
 
-        public string GetMatchName(string ext)
+        public string GetMatchName(string ext, BatchImportType batchType)
         {
+            if (batchType is BatchImportType.Image)
+            {
+                return $"-{File}-{PathID}{ext}";
+            }
             return $"-{File}-{PathID}-{Type}{ext}";
         }
 

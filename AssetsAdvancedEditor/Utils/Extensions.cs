@@ -10,13 +10,15 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
-        public static void GetListNameFast(ClassDatabaseFile cldb, AssetItem item, out string type, out string name)
+        public static void GetAssetNameFast(ClassDatabaseFile cldb, AssetItem item, out string type, out string listName, out string name)
         {
             var cont = item.Cont;
             var file = cont.FileInstance.file;
             var classId = item.TypeID;
             var cldbType = AssetHelper.FindAssetClassByID(cldb, classId);
             var reader = cont.FileReader;
+            name = "";
+            listName = "Unnamed asset";
 
             if (file.typeTree.hasTypeTree)
             {
@@ -31,10 +33,15 @@ namespace AssetsAdvancedEditor.Utils
                     {
                         reader.Position = item.Position;
                         name = reader.ReadCountStringInt32();
-                        if (name != "") return;
+                        if (name != "")
+                        {
+                            listName = name;
+                            return;
+                        }
                         break;
                     }
                     default:
+                    {
                         switch (type)
                         {
                             case "GameObject":
@@ -45,26 +52,33 @@ namespace AssetsAdvancedEditor.Utils
                                 reader.Position += size * componentSize;
                                 reader.Position += 0x04;
                                 name = reader.ReadCountStringInt32();
-                                name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                                if (name != "")
+                                {
+                                    listName = $"{type} {name}";
+                                }
                                 return;
                             }
                             case "MonoBehaviour":
+                            {
                                 reader.Position = item.Position;
                                 reader.Position += 0x1c;
                                 name = reader.ReadCountStringInt32();
-                                name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                                if (name != "")
+                                {
+                                    listName = $"{type} {name}";
+                                }
                                 return;
+                            }
                         }
                         break;
+                    }
                 }
-                name = "Unnamed asset";
                 return;
             }
 
             if (cldbType == null)
             {
                 type = $"0x{classId:X8}";
-                name = "Unnamed asset";
                 return;
             }
 
@@ -72,16 +86,21 @@ namespace AssetsAdvancedEditor.Utils
             switch (cldbType.fields.Count)
             {
                 case 0:
-                    name = "Unnamed asset";
+                {
                     return;
+                }
                 case > 1 when cldbType.fields[1].fieldName.GetString(cldb) == "m_Name":
                 {
                     reader.Position = item.Position;
                     name = reader.ReadCountStringInt32();
-                    if (name != "") return;
+                    if (name != "")
+                    {
+                        listName = name;
+                    }
                     break;
                 }
                 default:
+                {
                     switch (type)
                     {
                         case "GameObject":
@@ -92,7 +111,10 @@ namespace AssetsAdvancedEditor.Utils
                             reader.Position += size * componentSize;
                             reader.Position += 0x04;
                             name = reader.ReadCountStringInt32();
-                            name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                            if (name != "")
+                            {
+                                listName = $"{type} {name}";
+                            }
                             return;
                         }
                         case "MonoBehaviour":
@@ -100,13 +122,16 @@ namespace AssetsAdvancedEditor.Utils
                             reader.Position = item.Position;
                             reader.Position += 0x1c;
                             name = reader.ReadCountStringInt32();
-                            name = name == "" ? "Unnamed asset" : $"{type} {name}";
+                            if (name != "")
+                            {
+                                listName = $"{type} {name}";
+                            }
                             return;
                         }
                     }
                     break;
+                }
             }
-            name = "Unnamed asset";
         }
 
         public static bool WildcardMatches(string test, string pattern, bool caseSensitive = true)
@@ -128,6 +153,7 @@ namespace AssetsAdvancedEditor.Utils
             switch (bundle.bundleHeader6.GetCompressionType())
             {
                 case 1:
+                {
                     uncompressedBytes = new byte[bundle.bundleHeader6.decompressedSize];
                     using (var ms = new MemoryStream(reader.ReadBytes(compressedSize)))
                     {
@@ -137,8 +163,10 @@ namespace AssetsAdvancedEditor.Utils
                     }
                     blocksInfoStream = new MemoryStream(uncompressedBytes);
                     break;
+                }
                 case 2:
                 case 3:
+                {
                     uncompressedBytes = new byte[bundle.bundleHeader6.decompressedSize];
                     using (var ms = new MemoryStream(reader.ReadBytes(compressedSize)))
                     {
@@ -148,9 +176,12 @@ namespace AssetsAdvancedEditor.Utils
                     }
                     blocksInfoStream = new MemoryStream(uncompressedBytes);
                     break;
+                }
                 default:
+                {
                     blocksInfoStream = null;
                     break;
+                }
             }
 
             var uncompressedInf = bundle.bundleInf6;

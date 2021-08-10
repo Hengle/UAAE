@@ -119,16 +119,8 @@ namespace AssetsAdvancedEditor.Assets
 
         public void UpdateAssetInfo(AssetItem item, AssetsReplacer replacer)
         {
-            var baseField = item.Cont.TypeInstance.GetBaseField();
-            var nameValue = baseField.Get("m_Name").GetValue();
-            var name = "";
-            if (nameValue != null)
-            {
-                name = nameValue.AsString();
-            }
-
             item.Position = 0;
-            Extensions.GetListNameFast(Am.classFile, item, out _, out var listName);
+            Extensions.GetAssetNameFast(Am.classFile, item, out _, out var listName, out var name);
 
             item.Name = name;
             item.ListName = listName;

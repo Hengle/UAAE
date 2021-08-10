@@ -32,11 +32,14 @@ namespace Texture.Options
         {
             var item = selectedItems[0];
 
-            var texField = TextureHelper.GetByteArrayTexture(workspace, item).GetBaseField();
+            var texField = item.Cont.HasInstance ?
+                TextureHelper.GetByteArrayTexture(workspace, item).GetBaseField() :
+                item.Cont.TypeInstance.GetBaseField();
+
             var texFile = TextureFile.ReadTextureFile(texField);
             var editTexDialog = new EditTextureDialog(texFile, texField);
-            var saved = editTexDialog.ShowDialog(owner) == DialogResult.OK;
-            if (!saved) return false;
+            if (editTexDialog.ShowDialog(owner) != DialogResult.OK)
+                return false;
 
             var savedAsset = texField.WriteToByteArray();
             var replacer = AssetModifier.CreateAssetReplacer(item, savedAsset);

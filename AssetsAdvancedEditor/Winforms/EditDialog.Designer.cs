@@ -35,7 +35,6 @@ namespace AssetsAdvancedEditor.Winforms
             this.lboxPluginsList = new System.Windows.Forms.ListBox();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
-            this.btnExecute = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tcEditOptions.SuspendLayout();
             this.SuspendLayout();
@@ -90,16 +89,6 @@ namespace AssetsAdvancedEditor.Winforms
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
-            // btnExecute
-            // 
-            this.btnExecute.Location = new System.Drawing.Point(154, 356);
-            this.btnExecute.Name = "btnExecute";
-            this.btnExecute.Size = new System.Drawing.Size(101, 25);
-            this.btnExecute.TabIndex = 8;
-            this.btnExecute.Text = "Execute plugin";
-            this.btnExecute.UseVisualStyleBackColor = true;
-            this.btnExecute.Click += new System.EventHandler(this.btnExecute_Click);
-            // 
             // EditDialog
             // 
             this.AcceptButton = this.btnOK;
@@ -108,7 +97,6 @@ namespace AssetsAdvancedEditor.Winforms
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(409, 393);
-            this.Controls.Add(this.btnExecute);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.tabControl1);
@@ -131,6 +119,5 @@ namespace AssetsAdvancedEditor.Winforms
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.ListBox lboxPluginsList;
-        private System.Windows.Forms.Button btnExecute;
     }
 }

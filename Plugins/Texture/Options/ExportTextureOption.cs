@@ -39,7 +39,10 @@ namespace Texture.Options
         {
             foreach (var item in selectedItems)
             {
-                item.Cont = new AssetContainer(item.Cont, TextureHelper.GetByteArrayTexture(workspace, item));
+                if (!item.Cont.HasInstance)
+                {
+                    item.Cont = new AssetContainer(item.Cont, TextureHelper.GetByteArrayTexture(workspace, item));
+                }
             }
 
             var ofd = new OpenFolderDialog
@@ -88,9 +91,9 @@ namespace Texture.Options
 
             if (errorBuilder.Length > 0)
             {
-                var firstLines = errorBuilder.ToString().Split('\n').Take(20).ToArray();
+                var firstLines = errorBuilder.ToString().Split('\n').Take(10).ToArray();
                 var firstLinesStr = string.Join('\n', firstLines);
-                MsgBoxUtils.ShowErrorDialog("Some errors occurred while exporting", firstLinesStr);
+                MsgBoxUtils.ShowErrorDialog(owner, $"Some errors occurred while exporting:\n{firstLinesStr}");
             }
 
             return true;
