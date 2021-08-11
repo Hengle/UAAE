@@ -500,13 +500,13 @@ namespace AssetsAdvancedEditor.Winforms
             if (fd.ShowDialog(this) != DialogResult.OK) return;
             foreach (var item in selectedItems)
             {
-                var name = item.Name;
+                var name = Extensions.ReplaceInvalidFileNameChars(item.Name);
                 if (string.IsNullOrEmpty(name))
                 {
                     name = "Unnamed asset";
                 }
 
-                var fileName = $"{name}-{Workspace.LoadedFiles[item.FileID].name}-{item.PathID}-{item.Type}.dat";
+                var fileName = $"{name}-{item.Cont.FileInstance.name}-{item.PathID}-{item.Type}.dat";
                 var path = Path.Combine(fd.Folder, fileName);
                 Exporter.ExportRawAsset(path, item);
             }
@@ -514,7 +514,7 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void SingleExportRaw(AssetItem selectedItem)
         {
-            var name = selectedItem.Name;
+            var name = Extensions.ReplaceInvalidFileNameChars(selectedItem.Name);
             if (string.IsNullOrEmpty(name))
             {
                 name = "Unnamed asset";
@@ -523,7 +523,7 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 Title = @"Save raw asset",
                 Filter = @"Raw Unity asset (*.dat)|*.dat",
-                FileName = $"{name}-{Workspace.LoadedFiles[selectedItem.FileID].name}-{selectedItem.PathID}"
+                FileName = $"{name}-{selectedItem.Cont.FileInstance.name}-{selectedItem.PathID}"
             };
             if (sfd.ShowDialog() != DialogResult.OK) return;
             Exporter.ExportRawAsset(sfd.FileName, selectedItem);
@@ -558,13 +558,13 @@ namespace AssetsAdvancedEditor.Winforms
             if (fd.ShowDialog(this) != DialogResult.OK) return;
             foreach (var item in selectedItems)
             {
-                var name = item.Name;
+                var name = Extensions.ReplaceInvalidFileNameChars(item.Name);
                 if (string.IsNullOrEmpty(name))
                 {
                     name = "Unnamed asset";
                 }
 
-                var fileName = $"{name}-{Workspace.LoadedFiles[item.FileID].name}-{item.PathID}-{item.Type}{ext}";
+                var fileName = $"{name}-{item.Cont.FileInstance.name}-{item.PathID}-{item.Type}{ext}";
                 var path = Path.Combine(fd.Folder, fileName);
                 Exporter.ExportDump(path, item, dumpType);
             }
@@ -572,7 +572,7 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void SingleExportDump(AssetItem selectedItem)
         {
-            var name = selectedItem.Name;
+            var name = Extensions.ReplaceInvalidFileNameChars(selectedItem.Name);
             if (string.IsNullOrEmpty(name))
             {
                 name = "Unnamed asset";
@@ -581,7 +581,7 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 Title = @"Save dump",
                 Filter = @"UAAE text dump (*.txt)|*.txt|UAAE xml dump (*.xml)|*.xml",
-                FileName = $"{name}-{Workspace.LoadedFiles[selectedItem.FileID].name}-{selectedItem.PathID}-{selectedItem.Type}"
+                FileName = $"{name}-{selectedItem.Cont.FileInstance.name}-{selectedItem.PathID}-{selectedItem.Type}"
             };
             if (sfd.ShowDialog() != DialogResult.OK) return;
             var dumpType = sfd.FilterIndex switch

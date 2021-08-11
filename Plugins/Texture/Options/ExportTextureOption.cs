@@ -65,7 +65,8 @@ namespace Texture.Options
                 if (texFile.m_Width == 0 && texFile.m_Height == 0)
                     continue;
 
-                var file = Path.Combine(dir, $"{texFile.m_Name}-{Path.GetFileName(fileInst.path)}-{item.PathID}.png");
+                var fixedName = Extensions.ReplaceInvalidFileNameChars(texFile.m_Name);
+                var file = Path.Combine(dir, $"{fixedName}-{Path.GetFileName(fileInst.path)}-{item.PathID}.png");
 
                 //bundle resS
                 if (!TextureHelper.GetResSTexture(texFile, item))
@@ -104,11 +105,12 @@ namespace Texture.Options
             var fileInst = selectedItem.Cont.FileInstance;
             var texField = TextureHelper.GetByteArrayTexture(workspace, selectedItem).GetBaseField();
             var texFile = TextureFile.ReadTextureFile(texField);
+            var fixedName = Extensions.ReplaceInvalidFileNameChars(texFile.m_Name);
             var sfd = new SaveFileDialog
             {
                 Title = @"Save texture",
                 Filter = @"PNG file (*.png)|*.png|TGA file (*.tga)|*.tga|All types (*.*)|*.*",
-                FileName = $"{texFile.m_Name}-{Path.GetFileName(fileInst.path)}-{selectedItem.PathID}"
+                FileName = $"{fixedName}-{Path.GetFileName(fileInst.path)}-{selectedItem.PathID}"
             };
             if (sfd.ShowDialog(owner) != DialogResult.OK)
                 return false;

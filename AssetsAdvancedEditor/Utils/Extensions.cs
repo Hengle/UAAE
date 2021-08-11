@@ -10,6 +10,11 @@ namespace AssetsAdvancedEditor.Utils
 {
     public static class Extensions
     {
+        public static string ReplaceInvalidFileNameChars(string filename)
+        {
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+        }
+
         public static void GetAssetNameFast(ClassDatabaseFile cldb, AssetItem item, out string type, out string listName, out string name)
         {
             var cont = item.Cont;

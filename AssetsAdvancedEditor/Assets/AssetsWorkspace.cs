@@ -171,12 +171,14 @@ namespace AssetsAdvancedEditor.Assets
 
             if (hasTypeTree && !forceFromCldb)
             {
-                baseField.From0D(AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, scriptIndex), 0);
+                var type0d = AssetHelper.FindTypeTreeTypeByID(file.typeTree, fixedId, scriptIndex);
+                if (type0d is {ChildrenCount: > 0})
+                {
+                    baseField.From0D(type0d, 0);
+                    return baseField;
+                }
             }
-            else
-            {
-                baseField.FromClassDatabase(Am.classFile, AssetHelper.FindAssetClassByID(Am.classFile, fixedId), 0);
-            }
+            baseField.FromClassDatabase(Am.classFile, AssetHelper.FindAssetClassByID(Am.classFile, fixedId), 0);
             return baseField;
         }
 
