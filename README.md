@@ -30,6 +30,7 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 * Plugin support
 * Plugins
   * Texture plugin
+  * TextAsset plugin
 
 ## Todo
 This list may be incomplete!
@@ -62,7 +63,7 @@ This list may be incomplete!
 * ~~Plugin support~~
 * Plugins
   * ~~Texture plugin~~ (including sprite editor)
-  * TextAsset plugin
+  * ~~TextAsset plugin~~
   * Audio plugin (including Wwise)
   * MovieTexture plugin
   * Mesh plugin (FBX)

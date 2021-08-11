@@ -52,9 +52,7 @@ namespace Texture.Options
             var dir = ofd.Folder;
             var dialog = new BatchImport(selectedItems, dir, BatchImportType.Image);
             if (dialog.ShowDialog(owner) != DialogResult.OK)
-            {
                 return false;
-            }
 
             var batchItems = dialog.batchItems;
             var success = ImportTextures(owner, batchItems);

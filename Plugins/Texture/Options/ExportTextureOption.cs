@@ -58,7 +58,7 @@ namespace Texture.Options
             {
                 var fileInst = item.Cont.FileInstance;
                 var errorAssetName = $"{Path.GetFileName(fileInst.path)}/{item.PathID}";
-                var texBaseField = item.Cont.TypeInstance.GetBaseField();
+                var texBaseField = workspace.GetBaseField(item);
                 var texFile = TextureFile.ReadTextureFile(texBaseField);
 
                 //0x0 texture, usually called like Font Texture or smth
