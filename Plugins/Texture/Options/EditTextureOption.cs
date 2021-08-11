@@ -44,7 +44,7 @@ namespace Texture.Options
             var savedAsset = texField.WriteToByteArray();
             var replacer = AssetModifier.CreateAssetReplacer(item, savedAsset);
 
-            workspace.AddReplacer(replacer, new MemoryStream(savedAsset));
+            workspace.AddReplacer(ref item, replacer, new MemoryStream(savedAsset));
             return true;
         }
     }

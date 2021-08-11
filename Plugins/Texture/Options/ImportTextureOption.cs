@@ -65,7 +65,7 @@ namespace Texture.Options
                         var item = batchItem.Item;
                         var savedAsset = item.Cont.TypeInstance.WriteToByteArray();
                         var replacer = AssetModifier.CreateAssetReplacer(batchItem.Item, savedAsset);
-                        workspace.AddReplacer(replacer, new MemoryStream(savedAsset));
+                        workspace.AddReplacer(ref item, replacer, new MemoryStream(savedAsset));
                     }
                 }
                 return true;

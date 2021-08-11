@@ -136,7 +136,7 @@ namespace AssetsAdvancedEditor.Winforms
                     MonoID = monoId
                 };
                 Items.Add(item);
-                Workspace.AddReplacer(AssetModifier.CreateAssetReplacer(item, assetBytes), new MemoryStream(assetBytes));
+                Workspace.AddReplacer(ref item, AssetModifier.CreateAssetReplacer(item, assetBytes), new MemoryStream(assetBytes));
             }
             DialogResult = DialogResult.OK;
         }

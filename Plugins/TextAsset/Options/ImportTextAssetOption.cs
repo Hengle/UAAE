@@ -52,12 +52,13 @@ namespace TextAsset.Options
             {
                 if (batchItem.HasMatchingFile)
                 {
+                    var item = batchItem.Item;
                     var baseField = workspace.GetBaseField(batchItem.Item);
                     var strBytes = File.ReadAllBytes(batchItem.ImportFile);
                     baseField.Get("m_Script").GetValue().Set(strBytes);
                     var savedAsset = baseField.WriteToByteArray();
-                    var replacer = AssetModifier.CreateAssetReplacer(batchItem.Item, savedAsset);
-                    workspace.AddReplacer(replacer, new MemoryStream(savedAsset));
+                    var replacer = AssetModifier.CreateAssetReplacer(item, savedAsset);
+                    workspace.AddReplacer(ref item, replacer, new MemoryStream(savedAsset));
                 }
             }
             return true;
@@ -78,7 +79,7 @@ namespace TextAsset.Options
             baseField.Get("m_Script").GetValue().Set(strBytes);
             var savedAsset = baseField.WriteToByteArray();
             var replacer = AssetModifier.CreateAssetReplacer(selectedItem, savedAsset);
-            workspace.AddReplacer(replacer, new MemoryStream(savedAsset));
+            workspace.AddReplacer(ref selectedItem, replacer, new MemoryStream(savedAsset));
             return true;
         }
     }

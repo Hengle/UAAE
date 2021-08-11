@@ -61,12 +61,11 @@ namespace AssetsAdvancedEditor.Assets
             UnityVersion = MainInstance.file.typeTree.unityVersion;
         }
 
-        public void AddReplacer(AssetsReplacer replacer, MemoryStream previewStream = null)
+        public void AddReplacer(ref AssetItem item, AssetsReplacer replacer, MemoryStream previewStream = null)
         {
             if (replacer == null) return;
             var forInstance = LoadedFiles[replacer.GetFileID()];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
-            var item = LoadedAssets.FirstOrDefault(i => i.FileID == replacer.GetFileID() && i.PathID == replacer.GetPathID());
 
             if (NewAssets.ContainsKey(assetId))
                 RemoveReplacer(replacer);

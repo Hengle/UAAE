@@ -164,7 +164,7 @@ namespace AssetsAdvancedEditor.Winforms
 
         private static bool HasAnyField(ClassDatabaseType cldbType) => cldbType != null && cldbType.fields.Any();
 
-        private void AddAssetItems(IEnumerable<AssetItem> items)
+        private void AddAssetItems(List<AssetItem> items)
         {
             var cldb = Am.classFile;
             foreach (var item in items)
@@ -188,9 +188,9 @@ namespace AssetsAdvancedEditor.Winforms
                 if (!HasName(cldb, cldbType))
                     name = "Unnamed asset";
 
-                var data = item.ToArray();
-                data[0] = name;
-                assetList.Items.Insert(0, new ListViewItem(data));
+                item.ListName = name;
+                assetList.Items.Insert(0, new ListViewItem(item.ToArray()));
+                Workspace.LoadedAssets.Insert(0, item);
                 assetList.Items[0].Selected = true;
             }
             assetList.Select();
@@ -205,9 +205,8 @@ namespace AssetsAdvancedEditor.Winforms
             foreach (ListViewItem listItem in assetList.SelectedItems)
             {
                 var item = Workspace.LoadedAssets[listItem.Index];
-                Workspace.AddReplacer(AssetModifier.CreateAssetRemover(item));
+                Workspace.AddReplacer(ref item, AssetModifier.CreateAssetRemover(item));
                 assetList.Items.Remove(listItem);
-                Workspace.LoadedAssets.Remove(item);
             }
         }
 
@@ -628,7 +627,7 @@ namespace AssetsAdvancedEditor.Winforms
                     Importer.ImportDump(selectedFilePath, affectedItem, DumpType.TXT);
 
                 if (replacer == null) continue;
-                Workspace.AddReplacer(replacer);
+                Workspace.AddReplacer(ref affectedItem, replacer);
             }
         }
 
@@ -642,7 +641,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
             var replacer = Importer.ImportRawAsset(ofd.FileName, selectedItem);
-            Workspace.AddReplacer(replacer);
+            Workspace.AddReplacer(ref selectedItem, replacer);
         }
 
         private void btnImportDump_Click(object sender, EventArgs e)
@@ -680,7 +679,7 @@ namespace AssetsAdvancedEditor.Winforms
                     Importer.ImportDump(selectedFilePath, affectedItem, DumpType.TXT);
 
                 if (replacer == null) continue;
-                Workspace.AddReplacer(replacer);
+                Workspace.AddReplacer(ref affectedItem, replacer);
             }
         }
         
@@ -695,7 +694,7 @@ namespace AssetsAdvancedEditor.Winforms
 
             var replacer = Importer.ImportDump(ofd.FileName, selectedItem, DumpType.TXT);
             if (replacer == null) return;
-            Workspace.AddReplacer(replacer);
+            Workspace.AddReplacer(ref selectedItem, replacer);
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
