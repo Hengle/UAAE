@@ -56,7 +56,12 @@ namespace AssetsAdvancedEditor.Winforms
         {
             if (BundleInst == null) return;
             var bunDecomp = new BundleDecompression(BundleInst);
-            if (bunDecomp.ShowDialog() != DialogResult.OK) return;
+            if (bunDecomp.ShowDialog() != DialogResult.OK)
+            {
+                DialogResult = DialogResult.Cancel;
+                return;
+            }
+
             lblNote.Text = @"Decompressing...";
             btnDecompress.Enabled = false;
             btnCompress.Enabled = false;

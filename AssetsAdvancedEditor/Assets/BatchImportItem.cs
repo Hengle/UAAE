@@ -12,6 +12,7 @@ namespace AssetsAdvancedEditor.Assets
         public string ImportFile { get; set; }
         public AssetItem Item { get; set; }
         public List<string> MatchingFiles { get; set; }
+        public int SelectedIndex { get; set; }
         public bool HasMatchingFile => MatchingFiles.Count > 0;
 
         public string GetMatchName(string ext, BatchImportType batchType)
@@ -22,6 +23,8 @@ namespace AssetsAdvancedEditor.Assets
             }
             return $"-{File}-{PathID}-{Type}{ext}";
         }
+
+        public string GetSelectedFile() => MatchingFiles[SelectedIndex];
 
         public string[] ToArray()
         {

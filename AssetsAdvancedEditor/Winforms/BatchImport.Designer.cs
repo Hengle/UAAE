@@ -100,7 +100,7 @@ namespace AssetsAdvancedEditor.Winforms
             this.lboxMatchingFiles.Name = "lboxMatchingFiles";
             this.lboxMatchingFiles.Size = new System.Drawing.Size(235, 319);
             this.lboxMatchingFiles.TabIndex = 3;
-            this.lboxMatchingFiles.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lboxMatchingFiles_MouseDoubleClick);
+            this.lboxMatchingFiles.SelectedIndexChanged += new System.EventHandler(this.lboxMatchingFiles_SelectedIndexChanged);
             this.lboxMatchingFiles.MouseHover += new System.EventHandler(this.lboxMatchingFiles_MouseHover);
             // 
             // btnCancel

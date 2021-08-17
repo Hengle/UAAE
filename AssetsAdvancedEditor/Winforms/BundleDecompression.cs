@@ -70,7 +70,6 @@ namespace AssetsAdvancedEditor.Winforms
                 Bw.RunWorkerCompleted += delegate
                 {
                     MsgBoxUtils.ShowInfoDialog("The bundle file has been successfully unpacked!", MessageBoxButtons.OK);
-                    //Decompressed = true;
                 };
                 Bw.RunWorkerAsync();
             }

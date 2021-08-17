@@ -32,14 +32,15 @@ namespace AssetsAdvancedEditor.Winforms
                     Item = item
                 };
 
-                var matchingFiles = new List<string>();
+                var allMatchingFiles = new List<string>();
                 foreach (var ext in extensions)
                 {
                     var endWith = batchItem.GetMatchName(ext, batchType);
-                    var filesInDir = Directory.GetFiles(directory, "*" + ext);
-                    matchingFiles.AddRange(filesInDir.Where(f => f.EndsWith(endWith)).Select(Path.GetFileName).ToList());
+                    var matchingFiles = Directory.GetFiles(directory, "*" + endWith).Select(Path.GetFileName).ToList();
+                    allMatchingFiles.AddRange(matchingFiles);
                 }
-                batchItem.MatchingFiles = matchingFiles;
+                batchItem.MatchingFiles = allMatchingFiles;
+                batchItem.SelectedIndex = allMatchingFiles.Count > 0 ? 0 : -1;
                 batchItems.Add(batchItem);
                 affectedAssetsList.Items.Add(new ListViewItem(batchItem.ToArray()));
             }
@@ -62,28 +63,23 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 IsBalloon = true
             };
-            toolTip.Show("Double click an item to move it up and use it for import.", this, pos, 1000);
+            toolTip.Show("Select an item to import.", this, pos, 1000);
         }
 
-        private void lboxMatchingFiles_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void lboxMatchingFiles_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (affectedAssetsList.SelectedItems.Count == 0) return;
+            if (FailIfNothingSelected()) return;
 
             var batchItem = GetSelectedBatchItem();
-            var selIndex = lboxMatchingFiles.SelectedIndex;
-            if (selIndex == -1) return;
-
-            var matchingFile = batchItem.MatchingFiles[selIndex];
-            batchItem.MatchingFiles.RemoveAt(selIndex);
-            batchItem.MatchingFiles.Insert(0, matchingFile);
-
-            lboxMatchingFiles.Items.RemoveAt(selIndex);
-            lboxMatchingFiles.Items.Insert(0, matchingFile);
+            if (lboxMatchingFiles.SelectedIndex != -1)
+            {
+                batchItem.SelectedIndex = lboxMatchingFiles.SelectedIndex;
+            }
         }
 
         private void affectedAssetsList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
-            if (affectedAssetsList.SelectedItems.Count == 0) return;
+            if (FailIfNothingSelected()) return;
 
             var batchItem = GetSelectedBatchItem();
             lboxMatchingFiles.Items.Clear();
@@ -91,6 +87,7 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 lboxMatchingFiles.Items.Add(matchingFile);
             }
+            lboxMatchingFiles.SelectedIndex = batchItem.SelectedIndex;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -100,7 +97,7 @@ namespace AssetsAdvancedEditor.Winforms
                 var batchItem = batchItems[i];
                 if (batchItem.HasMatchingFile)
                 {
-                    batchItem.ImportFile = Path.Combine(directory, batchItem.MatchingFiles[0]);
+                    batchItem.ImportFile = Path.Combine(directory, batchItem.GetSelectedFile());
                     continue;
                 }
                 batchItems.RemoveAt(i);
@@ -141,8 +138,10 @@ namespace AssetsAdvancedEditor.Winforms
             var newMatchingFile = ofd.FileName;
             batchItem.MatchingFiles.Insert(0, newMatchingFile);
             lboxMatchingFiles.Items.Insert(0, newMatchingFile);
+            batchItem.SelectedIndex += 1;
         }
 
+        private bool FailIfNothingSelected() => affectedAssetsList.SelectedItems.Count == 0;
         private BatchImportItem GetSelectedBatchItem() => batchItems[affectedAssetsList.SelectedIndices[0]];
     }
 }
