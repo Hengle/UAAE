@@ -75,84 +75,33 @@ namespace AssetsAdvancedEditor.Winforms
         private void LoadAssetsToList()
         {
             MainInstance.file.reader.bigEndian = false;
-            MainInstance.table.GenerateQuickLookupTree();
             Workspace.LoadedFiles.Add(MainInstance);
-            foreach (var info in MainInstance.table.Info) 
+            foreach (var info in MainInstance.table.Info)
+            {
                 AddAssetItem(MainInstance, info);
+            }
 
             var id = 1;
-            foreach (var dep in MainInstance.dependencies.Where(dep => dep != null))
+            foreach (var dep in MainInstance.dependencies)
             {
-                dep.file.reader.bigEndian = false;
-                dep.table.GenerateQuickLookupTree();
-                Workspace.LoadedFiles.Add(dep);
-                foreach (var inf in dep.table.Info)
-                    AddAssetItem(dep, inf, id);
-                id++;
+                if (dep != null)
+                {
+                    dep.file.reader.bigEndian = false;
+                    Workspace.LoadedFiles.Add(dep);
+                    foreach (var inf in dep.table.Info)
+                    {
+                        AddAssetItem(dep, inf, id);
+                    }
+                    id++;
+                }
             }
+
             Workspace.GenerateAssetsFileLookup();
         }
 
         private void AddAssetItem(AssetsFileInstance fileInst, AssetFileInfoEx info, int fileId = 0)
         {
-            var thisFile = fileInst.file;
-            var cldb = Am.classFile;
-            var cldbType = AssetHelper.FindAssetClassByID(cldb, info.curFileType);
-            var name = AssetHelper.GetAssetNameFast(thisFile, cldb, info); //handles both cldb and typetree
-            const string container = "";
-            string type;
-            var typeId = info.curFileType;
-            var pathId = info.index;
-            var size = (int)info.curFileSize;
-            const string modified = "";
-            ushort monoId = 0xFFFF;
-
-            var hasTypeTree = thisFile.typeTree.hasTypeTree;
-            if (hasTypeTree)
-            {
-                var ttType = AssetHelper.FindTypeTreeTypeByID(thisFile.typeTree, typeId);
-                if (ttType == null)
-                {
-                    type = $"0x{typeId:X8}";
-                }
-                else if (ttType.Children.Length != 0)
-                {
-                    type = ttType.Children[0].GetTypeString(ttType.stringTable);
-                }
-                else
-                {
-                    type = cldbType != null ?
-                        cldbType.name.GetString(cldb) : $"0x{typeId:X8}";
-                }
-            }
-            else
-            {
-                type = cldbType != null ?
-                    cldbType.name.GetString(cldb) : $"0x{typeId:X8}";
-            }
-
-            if (typeId == 0x72)
-            {
-                monoId = (ushort)(0xFFFFFFFF - info.curFileTypeOrIndex);
-            }
-
-            var item = new AssetItem
-            {
-                Name = name,
-                Container = container,
-                Type = type,
-                TypeID = typeId,
-                FileID = fileId,
-                PathID = pathId,
-                Size = size,
-                Modified = modified,
-                Position = info.absoluteFilePos,
-                MonoID = monoId
-            };
-
-            item.Cont = Workspace.MakeAssetContainer(item);
-            Extensions.GetAssetNameFast(cldb, item, out _, out var listName, out _);
-            item.ListName = listName;
+            Extensions.GetAssetItemFast(fileId, fileInst, Workspace.Am.classFile, info, out var item);
             Workspace.LoadedAssets.Add(item);
             assetList.Items.Add(new ListViewItem(item.ToArray()));
         }
@@ -237,6 +186,7 @@ namespace AssetsAdvancedEditor.Winforms
                 var fields = new List<AssetTypeValueField>();
                 foreach (var item in GetSelectedAssetItems())
                 {
+                    item.Cont ??= Workspace.MakeAssetContainer(item);
                     fields.Add(Workspace.GetBaseField(item));
                 }
                 return fields;

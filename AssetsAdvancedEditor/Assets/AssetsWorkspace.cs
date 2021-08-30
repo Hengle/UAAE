@@ -91,7 +91,7 @@ namespace AssetsAdvancedEditor.Assets
             {
                 if (item != null)
                 {
-                    item.Cont = MakeAssetContainer(item, previewStream);
+                    item.Cont = MakeAssetContainer(item);
                     UpdateAssetInfo(item, replacer);
                 }
             }
@@ -118,7 +118,6 @@ namespace AssetsAdvancedEditor.Assets
 
         public void UpdateAssetInfo(AssetItem item, AssetsReplacer replacer)
         {
-            item.Position = 0;
             Extensions.GetAssetNameFast(Am.classFile, item, out _, out var listName, out var name);
 
             item.Name = name;
@@ -127,23 +126,25 @@ namespace AssetsAdvancedEditor.Assets
             item.Modified = "*";
         }
 
-        //Existing assets
         public AssetContainer MakeAssetContainer(AssetItem item, bool forceFromCldb = false)
         {
             var fileInst = LoadedFiles[item.FileID];
-            var reader = fileInst.file.reader;
+            var assetId = new AssetID(fileInst.path, item.PathID);
+            AssetsFileReader reader;
+            if (NewAssetDatas.TryGetValue(assetId, out var ms))
+            {
+                reader = new AssetsFileReader(ms);
+                item.Position = reader.Position;
+            }
+            else
+            {
+                reader = fileInst.file.reader;
+                var info = fileInst.table.GetAssetInfo(item.Name, item.TypeID);
+                item.Position = info.absoluteFilePos;
+            }
+
             var templateField = GetTemplateField(item, forceFromCldb);
             var typeInst = new AssetTypeInstance(templateField, reader, item.Position);
-            return new AssetContainer(fileInst, typeInst);
-        }
-
-        //Newly created assets
-        public AssetContainer MakeAssetContainer(AssetItem item, Stream ms, bool forceFromCldb = false)
-        {
-            var fileInst = LoadedFiles[item.FileID];
-            var reader = new AssetsFileReader(ms);
-            var templateField = GetTemplateField(item, forceFromCldb);
-            var typeInst = new AssetTypeInstance(templateField, reader, 0);
             return new AssetContainer(reader, fileInst, typeInst);
         }
 
