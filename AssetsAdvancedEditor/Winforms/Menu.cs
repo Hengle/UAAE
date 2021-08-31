@@ -28,11 +28,12 @@ namespace AssetsAdvancedEditor.Winforms
         private void Menu_Load(object sender, EventArgs e)
         {
             Am = new AssetsManager();
-            if (File.Exists("classdata.tpk"))
+            var classDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "classdata.tpk");
+            if (File.Exists(classDataPath))
             {
                 try
                 {
-                    Am.LoadClassPackage("classdata.tpk");
+                    Am.LoadClassPackage(classDataPath);
                     if (Am.classPackage.valid) return;
                     MsgBoxUtils.ShowErrorDialog("Invalid classdata.tpk file.");
                 }

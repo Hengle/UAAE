@@ -82,21 +82,18 @@ namespace AssetsAdvancedEditor.Winforms
             }
 
             var id = 1;
-            foreach (var dep in MainInstance.dependencies)
+            foreach (var dep in MainInstance.dependencies.Where(dep => dep != null))
             {
-                if (dep != null)
+                dep.file.reader.bigEndian = false;
+                Workspace.LoadedFiles.Add(dep);
+                foreach (var inf in dep.table.Info)
                 {
-                    dep.file.reader.bigEndian = false;
-                    Workspace.LoadedFiles.Add(dep);
-                    foreach (var inf in dep.table.Info)
-                    {
-                        AddAssetItem(dep, inf, id);
-                    }
-                    id++;
+                    AddAssetItem(dep, inf, id);
                 }
+                id++;
             }
 
-            Workspace.GenerateAssetsFileLookup();
+            //Workspace.GenerateAssetsFileLookup();
         }
 
         private void AddAssetItem(AssetsFileInstance fileInst, AssetFileInfoEx info, int fileId = 0)
