@@ -95,11 +95,12 @@
             // boxDumpView
             // 
             this.boxDumpView.BackColor = System.Drawing.SystemColors.Window;
-            this.boxDumpView.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.boxDumpView.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.boxDumpView.Location = new System.Drawing.Point(0, 0);
             this.boxDumpView.Multiline = true;
             this.boxDumpView.Name = "boxDumpView";
             this.boxDumpView.ReadOnly = true;
+            this.boxDumpView.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.boxDumpView.Size = new System.Drawing.Size(398, 402);
             this.boxDumpView.TabIndex = 0;
             // 

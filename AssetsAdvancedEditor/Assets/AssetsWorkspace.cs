@@ -38,7 +38,7 @@ namespace AssetsAdvancedEditor.Assets
         {
             Am = am;
             Pm = new PluginManager(am);
-            Pm.LoadPluginsInDirectory("Plugins");
+            Pm.LoadPluginsInDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"));
             MainInstance = file;
             FromBundle = fromBundle;
 

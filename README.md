@@ -31,6 +31,7 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 * Plugins
   * Texture plugin
   * TextAsset plugin
+* Mod Installer Package Maker
 
 ## Todo
 This list may be incomplete!
@@ -60,7 +61,6 @@ This list may be incomplete!
 * Dump export/import in
   * JSON format
   * ~~XML format~~
-* ~~Plugin support~~
 * Plugins
   * ~~Texture plugin~~ (including sprite editor)
   * ~~TextAsset plugin~~
@@ -70,16 +70,13 @@ This list may be incomplete!
   * TerrainData plugin
   * Font plugin **(custom)** *
   * Prefab/Scene plugin **(custom)** *
-* ModInstaller and ModMaker
+* ModInstaller ~and MIPM~
 * Cldb/Tpk editor
 * Undo/Redo option
 * Edit button
   * Dump editor tab
   * Raw editor tab
   * ~~Asset editor (plugins)~~
-* ~~Bundle compression support~~
-* ~~Batch import/export assets~~
-* ~~Command line support~~
 * Blank assets file/bundle creation
 * Blank ResS/Resource file creation
 * Blank MonoScript creation
@@ -95,8 +92,12 @@ This list may be incomplete!
 * Install Visual Studio 2019 or newer
 * Build the solution. Here's a [guide](https://docs.microsoft.com/en-us/visualstudio/ide/walkthrough-building-an-application?view=vs-2019) on how to do it
 
-## Credits
-* [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET)
+## Libraries
+* UnityTools has borrowed code from nesrak1's [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET) project licensed under the [MIT license](https://github.com/nesrak1/AssetsTools.NET/blob/master/LICENSE)
+* UnityTools for assets reading/writing which uses [detex](https://github.com/hglm/detex) for DXT decoding
+* [ISPC](https://github.com/GameTechDev/ISPCTextureCompressor) for DXT encoding
+* [crnlib](https://github.com/Unity-Technologies/crunch/tree/unity) (crunch) for crunch decompressing and compressing
+* [PVRTexLib](https://developer.imaginationtech.com/downloads/) (PVRTexTool) for all other texture decoding and encoding
 
 ## Disclaimer
 **None of the repo, the tool, nor the repo owner is affiliated with, or sponsored or authorized by, Unity Technologies or its affiliates.**
