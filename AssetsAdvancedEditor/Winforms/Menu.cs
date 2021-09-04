@@ -79,8 +79,10 @@ namespace AssetsAdvancedEditor.Winforms
                     break;
                 }
                 case DetectedFileType.BundleFile:
+                {
                     LoadBundle(selectedFile);
                     break;
+                }
                 default:
                     MsgBoxUtils.ShowErrorDialog("Unable to read the file!\n" +
                                                 "Invalid file or unknown (unsupported) version.");

@@ -82,18 +82,19 @@ namespace AssetsAdvancedEditor.Winforms
             }
 
             var id = 1;
-            foreach (var dep in MainInstance.dependencies.Where(dep => dep != null))
+            foreach (var dep in MainInstance.dependencies)
             {
-                dep.file.reader.bigEndian = false;
-                Workspace.LoadedFiles.Add(dep);
-                foreach (var inf in dep.table.Info)
+                if (dep != null)
                 {
-                    AddAssetItem(dep, inf, id);
+                    dep.file.reader.bigEndian = false;
+                    Workspace.LoadedFiles.Add(dep);
+                    foreach (var inf in dep.table.Info)
+                    {
+                        AddAssetItem(dep, inf, id);
+                    }
+                    id++;
                 }
-                id++;
             }
-
-            //Workspace.GenerateAssetsFileLookup();
         }
 
         private void AddAssetItem(AssetsFileInstance fileInst, AssetFileInfoEx info, int fileId = 0)
@@ -334,11 +335,9 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void SaveFiles(bool overwrite = false)
         {
-            var newAssetsList = Workspace.NewAssets.Values.ToList();
-
             if (FromBundle)
             {
-                ModifiedFiles = WriteFilesToMemory(newAssetsList);
+                ModifiedFiles = WriteFilesInBundle();
                 Workspace.Modified = false;
                 ClearModified();
             }
@@ -350,19 +349,16 @@ namespace AssetsAdvancedEditor.Winforms
                                                                "Are you sure you want to continue?");
                     if (choice != DialogResult.Yes) return;
                 }
-                WriteFiles(newAssetsList, overwrite);
+                WriteFiles(overwrite);
                 Workspace.Modified = false;
                 ClearModified();
             }
         }
 
-        public void WriteFiles(List<AssetsReplacer> replacers, bool overwrite = false)
+        public void WriteFiles(bool overwrite = false)
         {
-            var lastFileId = replacers.Max(r => r.GetFileID());
-            for (var fileId = 0; fileId <= lastFileId; fileId++)
+            foreach (var (fileId, replacers) in Workspace.NewReplacers)
             {
-                var id = fileId;
-                var sortedAssetsList = replacers.Where(r => r.GetFileID() == id).ToList();  // sort the list of replacers by fileID
                 var fileInst = Workspace.LoadedFiles[fileId];
                 if (overwrite)
                 {
@@ -370,7 +366,7 @@ namespace AssetsAdvancedEditor.Winforms
                     var tempPath = Path.Combine(Path.GetTempPath(), fileInst.name);
                     using var fs = File.OpenWrite(tempPath);
                     using var writer = new AssetsFileWriter(fs);
-                    fileInst.file.Write(writer, 0, sortedAssetsList, 0);
+                    fileInst.file.Write(writer, 0, replacers, 0);
                     Am.UnloadAssetsFile(path);
                     fs.Close();
                     File.Replace(tempPath, path, path + ".backup");
@@ -392,25 +388,23 @@ namespace AssetsAdvancedEditor.Winforms
                     }
                     using var fs = File.OpenWrite(sfd.FileName);
                     using var writer = new AssetsFileWriter(fs);
-                    fileInst.file.Write(writer, 0, sortedAssetsList, 0);
+                    fileInst.file.Write(writer, 0, replacers, 0);
                 }
             }
         }
 
-        public Dictionary<BundleReplacer, MemoryStream> WriteFilesToMemory(List<AssetsReplacer> replacers)
+        public Dictionary<BundleReplacer, MemoryStream> WriteFilesInBundle()
         {
             var bunDict = new Dictionary<BundleReplacer, MemoryStream>();
-            var lastFileId = replacers.Max(r => r.GetFileID());
-            for (var fileId = 0; fileId <= lastFileId; fileId++)
+            foreach (var (fileId, replacers) in Workspace.NewReplacers)
             {
-                var id = fileId;
-                var sortedAssetsList = replacers.Where(r => r.GetFileID() == id).ToList();
-                using var ms = new MemoryStream();
-                using var writer = new AssetsFileWriter(ms);
+                var ms = new MemoryStream();
+                var writer = new AssetsFileWriter(ms);
                 var fileInst = Workspace.LoadedFiles[fileId];
 
-                fileInst.file.Write(writer, 0, sortedAssetsList, 0);
-                bunDict.Add(AssetModifier.CreateBundleReplacer(fileInst.name, true, ms.ToArray()), ms);
+                fileInst.file.Write(writer, 0, replacers, 0);
+                var data = ms.ToArray();
+                bunDict.Add(AssetModifier.CreateBundleReplacer(fileInst.name, true, data), new MemoryStream(data));
             }
             return bunDict;
         }

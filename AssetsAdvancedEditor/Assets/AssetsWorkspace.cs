@@ -26,6 +26,7 @@ namespace AssetsAdvancedEditor.Assets
         public AssetImporter Importer { get; }
         public AssetExporter Exporter { get; }
 
+        public Dictionary<int, List<AssetsReplacer>> NewReplacers { get; }
         public Dictionary<AssetID, AssetsReplacer> NewAssets { get; }
         public Dictionary<AssetID, Stream> NewAssetDatas { get; }
 
@@ -51,6 +52,7 @@ namespace AssetsAdvancedEditor.Assets
             Importer = new AssetImporter(this);
             Exporter = new AssetExporter(this);
 
+            NewReplacers = new Dictionary<int, List<AssetsReplacer>>();
             NewAssets = new Dictionary<AssetID, AssetsReplacer>();
             NewAssetDatas = new Dictionary<AssetID, Stream>();
 
@@ -64,13 +66,22 @@ namespace AssetsAdvancedEditor.Assets
         public void AddReplacer(ref AssetItem item, AssetsReplacer replacer, MemoryStream previewStream = null)
         {
             if (replacer == null) return;
-            var forInstance = LoadedFiles[replacer.GetFileID()];
+            var fileId = replacer.GetFileID();
+            var forInstance = LoadedFiles[fileId];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 
             if (NewAssets.ContainsKey(assetId))
                 RemoveReplacer(replacer);
 
             NewAssets[assetId] = replacer;
+            if (NewReplacers.ContainsKey(fileId))
+            {
+                NewReplacers[fileId].Add(replacer);
+            }
+            else
+            {
+                NewReplacers.Add(fileId, new List<AssetsReplacer> { replacer });
+            }
 
             if (previewStream == null)
             {
@@ -102,10 +113,12 @@ namespace AssetsAdvancedEditor.Assets
         public void RemoveReplacer(AssetsReplacer replacer, bool closePreviewStream = true)
         {
             if (replacer == null) return;
-            var forInstance = LoadedFiles[replacer.GetFileID()];
+            var fileId = replacer.GetFileID();
+            var forInstance = LoadedFiles[fileId];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
 
             NewAssets.Remove(assetId);
+            NewReplacers[fileId].Remove(replacer);
             if (NewAssetDatas.ContainsKey(assetId))
             {
                 if (closePreviewStream)
