@@ -301,14 +301,14 @@
             // MenuSave
             // 
             this.MenuSave.Name = "MenuSave";
-            this.MenuSave.Size = new System.Drawing.Size(135, 22);
+            this.MenuSave.Size = new System.Drawing.Size(180, 22);
             this.MenuSave.Text = "Save";
             this.MenuSave.Click += new System.EventHandler(this.MenuSave_Click);
             // 
             // MenuSaveAs
             // 
             this.MenuSaveAs.Name = "MenuSaveAs";
-            this.MenuSaveAs.Size = new System.Drawing.Size(135, 22);
+            this.MenuSaveAs.Size = new System.Drawing.Size(180, 22);
             this.MenuSaveAs.Text = "Save as...";
             this.MenuSaveAs.Click += new System.EventHandler(this.MenuSaveAs_Click);
             // 
@@ -317,9 +317,8 @@
             this.MenuModMaker.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuCreateStandaloneexeInstaller,
             this.MenuCreateInstallerPackageFile});
-            this.MenuModMaker.Enabled = false;
             this.MenuModMaker.Name = "MenuModMaker";
-            this.MenuModMaker.Size = new System.Drawing.Size(135, 22);
+            this.MenuModMaker.Size = new System.Drawing.Size(180, 22);
             this.MenuModMaker.Text = "Mod Maker";
             // 
             // MenuCreateStandaloneexeInstaller
@@ -333,11 +332,12 @@
             this.MenuCreateInstallerPackageFile.Name = "MenuCreateInstallerPackageFile";
             this.MenuCreateInstallerPackageFile.Size = new System.Drawing.Size(237, 22);
             this.MenuCreateInstallerPackageFile.Text = "Create installer package file";
+            this.MenuCreateInstallerPackageFile.Click += new System.EventHandler(this.MenuCreateInstallerPackageFile_Click);
             // 
             // MenuClose
             // 
             this.MenuClose.Name = "MenuClose";
-            this.MenuClose.Size = new System.Drawing.Size(135, 22);
+            this.MenuClose.Size = new System.Drawing.Size(180, 22);
             this.MenuClose.Text = "Close";
             this.MenuClose.Click += new System.EventHandler(this.MenuClose_Click);
             // 

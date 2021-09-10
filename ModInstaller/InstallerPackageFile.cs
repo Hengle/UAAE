@@ -179,7 +179,7 @@ namespace ModInstaller
                             var flag1 = reader.ReadBoolean(); //no idea, couldn't get it to be 1
                             if (flag1)
                             {
-                                throw new NotSupportedException("you just found a file with the mysterious flag1 set, send the file to nes");
+                                throw new NotSupportedException("You just found a file with the mysterious flag1 set, send the file to Igor55x");
                             }
 
                             var hasPropertiesHash = reader.ReadBoolean();

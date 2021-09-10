@@ -679,6 +679,11 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void MenuSaveAs_Click(object sender, EventArgs e) => SaveFiles();
 
+        private void MenuCreateInstallerPackageFile_Click(object sender, EventArgs e)
+        {
+            new ModMakerDialog(Workspace).ShowDialog();
+        }
+
         private void MenuClose_Click(object sender, EventArgs e)
         {
             if (Workspace.Modified) AskSaveChanges();

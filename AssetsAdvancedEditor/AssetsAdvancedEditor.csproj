@@ -30,6 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ModInstaller\ModInstaller.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="UnityTools">
       <HintPath>..\Libs\UnityTools.dll</HintPath>
     </Reference>

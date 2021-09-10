@@ -31,7 +31,7 @@ UAAE isn't so `advanced` because it is still missing a lot of features and may h
 * Plugins
   * Texture plugin
   * TextAsset plugin
-* Mod Installer Package Maker
+* Mod Maker
 
 ## Todo
 This list may be incomplete!
@@ -70,7 +70,7 @@ This list may be incomplete!
   * TerrainData plugin
   * Font plugin **(custom)** *
   * Prefab/Scene plugin **(custom)** *
-* ModInstaller ~and MIPM~
+* Mod Installer ~and Mod Maker~
 * Cldb/Tpk editor
 * Undo/Redo option
 * Edit button
