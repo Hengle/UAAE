@@ -24,12 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\AssetsAdvancedEditor\AssetsAdvancedEditor.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="UnityTools">
-      <HintPath>..\..\Libs\UnityTools.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\UnityTools\UnityTools.csproj" />
   </ItemGroup>
 
 <!-- this will only execute once while building the solution -->

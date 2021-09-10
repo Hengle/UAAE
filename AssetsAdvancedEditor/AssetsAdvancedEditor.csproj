@@ -31,12 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ModInstaller\ModInstaller.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="UnityTools">
-      <HintPath>..\Libs\UnityTools.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\UnityTools\UnityTools.csproj" />
   </ItemGroup>
 
   <Target Name="UAAEAfterBuild" AfterTargets="AfterBuild" Condition="'$(SolutionDir)' != '*Undefined*'">

@@ -7,12 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\AssetsAdvancedEditor\AssetsAdvancedEditor.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="UnityTools">
-      <HintPath>..\..\Libs\UnityTools.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\UnityTools\UnityTools.csproj" />
   </ItemGroup>
 
   <!-- there seems to be no flag for checking if building  -->

@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="UnityTools">
-      <HintPath>..\Libs\UnityTools.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\UnityTools\UnityTools.csproj" />
   </ItemGroup>
 
 </Project>
