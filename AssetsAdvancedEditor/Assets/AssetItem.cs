@@ -1,4 +1,6 @@
-﻿namespace AssetsAdvancedEditor.Assets
+﻿using UnityTools;
+
+namespace AssetsAdvancedEditor.Assets
 {
     public class AssetItem
     {
@@ -7,7 +9,7 @@
         public string ListName { get; set; }
         public string Container { get; set; }
         public string Type { get; set; }
-        public uint TypeID { get; set; }
+        public AssetClassID TypeID { get; set; }
         public int FileID { get; set; }
         public long PathID { get; set; }
         public long Size { get; set; }
@@ -22,7 +24,7 @@
                 ListName,
                 Container,
                 Type,
-                TypeID.ToString(),
+                ((int)TypeID).ToString(),
                 FileID.ToString(),
                 PathID.ToString(),
                 Size.ToString(),

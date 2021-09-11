@@ -4,24 +4,24 @@ namespace UnityTools
 {
     public static class AssetHelper
     {
-        public static uint FixAudioID(uint id)
+        public static AssetClassID FixAudioID(AssetClassID id)
         {
             switch (id)
             {
-                case 0xf1: //AudioMixerController
-                    id = 0xf0; //AudioMixer
+                case AssetClassID.AudioMixerController:
+                    id = AssetClassID.AudioMixer;
                     break;
-                case 0xf3: //AudioMixerGroupController
-                    id = 0x111; //AudioMixerGroup
+                case AssetClassID.AudioMixerGroupController:
+                    id = AssetClassID.AudioMixerGroup;
                     break;
-                case 0xf5: //AudioMixerSnapshotController
-                    id = 0x110; //AudioMixerSnapshot
+                case AssetClassID.AudioMixerSnapshotController:
+                    id = AssetClassID.AudioMixerSnapshot;
                     break;
             }
             return id;
         }
 
-        public static ClassDatabaseType FindAssetClassByID(ClassDatabaseFile cldb, uint id)
+        public static ClassDatabaseType FindAssetClassByID(ClassDatabaseFile cldb, AssetClassID id)
         {
             id = FixAudioID(id);
             foreach (var type in cldb.classes)
@@ -42,7 +42,7 @@ namespace UnityTools
             return null;
         }
 
-        public static Type_0D FindTypeTreeTypeByID(TypeTree typeTree, uint id)
+        public static Type_0D FindTypeTreeTypeByID(TypeTree typeTree, AssetClassID id)
         {
             foreach (var type in typeTree.unity5Types)
             {
@@ -52,17 +52,17 @@ namespace UnityTools
             return null;
         }
 
-        public static Type_07 FindTypeTreeType_07ByID(TypeTree typeTree, uint id)
+        public static Type_07 FindTypeTreeType_07ByID(TypeTree typeTree, AssetClassID id)
         {
             foreach (var type in typeTree.unity4Types)
             {
-                if (type.classId == id)
+                if (type.ClassID == id)
                     return type;
             }
             return null;
         }
 
-        public static Type_0D FindTypeTreeTypeByID(TypeTree typeTree, uint id, ushort scriptIndex)
+        public static Type_0D FindTypeTreeTypeByID(TypeTree typeTree, AssetClassID id, ushort scriptIndex)
         {
             foreach (var type in typeTree.unity5Types)
             {
@@ -186,7 +186,7 @@ namespace UnityTools
             }
             switch (info.curFileType)
             {
-                case 0x01:
+                case AssetClassID.GameObject:
                 {
                     reader.Position = info.absoluteFilePos;
                     var size = reader.ReadInt32();
@@ -195,7 +195,7 @@ namespace UnityTools
                     reader.Position += 4;
                     return reader.ReadCountStringInt32();
                 }
-                case 0x72:
+                case AssetClassID.MonoBehaviour:
                 {
                     reader.Position = info.absoluteFilePos;
                     reader.Position += 28;
@@ -227,7 +227,7 @@ namespace UnityTools
             return null;
         }
 
-        public static AssetFileInfoEx GetAssetInfo(this AssetsFileTable table, string name, uint typeId, bool caseSensitive = true)
+        public static AssetFileInfoEx GetAssetInfo(this AssetsFileTable table, string name, AssetClassID typeId, bool caseSensitive = true)
         {
             if (!caseSensitive)
                 name = name.ToLower();
@@ -244,7 +244,7 @@ namespace UnityTools
             return null;
         }
 
-        public static List<AssetFileInfoEx> GetAssetsOfType(this AssetsFileTable table, int typeId)
+        public static List<AssetFileInfoEx> GetAssetsOfType(this AssetsFileTable table, AssetClassID typeId)
         {
             var infos = new List<AssetFileInfoEx>();
             foreach (var info in table.Info)

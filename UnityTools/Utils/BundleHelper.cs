@@ -100,6 +100,21 @@ namespace UnityTools
             return newFile;
         }
 
+        public static AssetBundleFile UnpackBundleToStream(AssetBundleFile file, Stream stream, bool freeOriginalStream = true)
+        {
+            file.Unpack(file.reader, new AssetsFileWriter(stream));
+            stream.Position = 0;
+
+            var newFile = new AssetBundleFile();
+            newFile.Read(new AssetsFileReader(stream));
+
+            if (freeOriginalStream)
+            {
+                file.reader.Close();
+            }
+            return newFile;
+        }
+
         public static AssetBundleDirectoryInfo06 GetDirInfo(AssetBundleFile bundle, int index)
         {
             var dirInf = bundle.bundleInf6.dirInf;

@@ -2,13 +2,13 @@
 {
     public class Type_07
     {
-        public int classId;
+        public AssetClassID ClassID;
         public TypeField_07 @base;
 
         public void Read(bool hasTypeTree, AssetsFileReader reader, uint version, uint typeVersion = 0) // typeVersion not implemented yet
         {
             reader.bigEndian = true;
-            classId = reader.ReadInt32();
+            ClassID = (AssetClassID)reader.ReadInt32();
             @base = new TypeField_07();
             @base.Read(hasTypeTree, reader, version, typeVersion);
         }
@@ -16,7 +16,7 @@
         public void Write(bool hasTypeTree, AssetsFileWriter writer)
         {
             writer.bigEndian = true;
-            writer.Write(classId);
+            writer.Write((int)ClassID);
             @base.Write(hasTypeTree, writer);
         }
     }

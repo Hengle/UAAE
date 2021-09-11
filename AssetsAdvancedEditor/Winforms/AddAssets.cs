@@ -63,7 +63,7 @@ namespace AssetsAdvancedEditor.Winforms
                 return;
             }
             var type = boxTypeNameOrID.Text;
-            int typeId;
+            AssetClassID typeId;
             var createBlankAsset = chboxCreateBlankAssets.Checked;
 
             if (fileInst.file.typeTree.hasTypeTree)
@@ -94,7 +94,7 @@ namespace AssetsAdvancedEditor.Winforms
             var monoSelected = cboxTypePreset.SelectedIndex == 1;
 
             ushort monoId;
-            if (typeId != 0x72 || !monoSelected)
+            if (typeId != AssetClassID.MonoBehaviour || !monoSelected)
             {
                 monoId = ushort.MaxValue;
             }
@@ -128,7 +128,7 @@ namespace AssetsAdvancedEditor.Winforms
                 var item = new AssetItem
                 {
                     Type = type,
-                    TypeID = (uint)typeId,
+                    TypeID = typeId,
                     FileID = fileId,
                     PathID = pathId + i,
                     Size = assetBytes.Length,
@@ -141,16 +141,16 @@ namespace AssetsAdvancedEditor.Winforms
             DialogResult = DialogResult.OK;
         }
 
-        private bool TryParseClassDatabase(ref string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
+        private bool TryParseClassDatabase(ref string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out AssetClassID typeId)
         {
             templateField = null;
 
             var cldb = Workspace.Am.classFile;
             ClassDatabaseType cldbType;
             bool needsTypeId;
-            if (int.TryParse(type, out typeId))
+            if (Enum.TryParse(type, out typeId))
             {
-                cldbType = AssetHelper.FindAssetClassByID(cldb, (uint)typeId);
+                cldbType = AssetHelper.FindAssetClassByID(cldb, typeId);
                 needsTypeId = false;
             }
             else
@@ -174,8 +174,8 @@ namespace AssetsAdvancedEditor.Winforms
                 templateField = new AssetTypeTemplateField();
                 if (cldbType.fields.Count == 0)
                 {
-                    typeId = 0x01;
-                    cldbType = AssetHelper.FindAssetClassByID(cldb, 0x01);
+                    typeId = AssetClassID.GameObject;
+                    cldbType = AssetHelper.FindAssetClassByID(cldb, typeId);
                 }
                 type = cldbType.name.GetString(cldb);
                 templateField.FromClassDatabase(cldb, cldbType, 0);
@@ -183,16 +183,16 @@ namespace AssetsAdvancedEditor.Winforms
             return true;
         }
 
-        private static bool TryParseTypeTree(AssetsFileInstance fileInst, ref string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out int typeId)
+        private static bool TryParseTypeTree(AssetsFileInstance fileInst, ref string type, bool createBlankAsset, out AssetTypeTemplateField templateField, out AssetClassID typeId)
         {
             templateField = null;
 
             var tt = fileInst.file.typeTree;
             Type_0D ttType;
             bool needsTypeId;
-            if (int.TryParse(type, out typeId))
+            if (Enum.TryParse(type, out typeId))
             {
-                ttType = AssetHelper.FindTypeTreeTypeByID(tt, (uint)typeId);
+                ttType = AssetHelper.FindTypeTreeTypeByID(tt, typeId);
                 needsTypeId = false;
             }
             else
@@ -216,8 +216,8 @@ namespace AssetsAdvancedEditor.Winforms
                 templateField = new AssetTypeTemplateField();
                 if (ttType.ChildrenCount == 0)
                 {
-                    typeId = 0x01;
-                    ttType = AssetHelper.FindTypeTreeTypeByID(tt, 0x01);
+                    typeId = AssetClassID.GameObject;
+                    ttType = AssetHelper.FindTypeTreeTypeByID(tt, typeId);
                 }
                 type = ttType.Children[0].GetTypeString(ttType.stringTable);
                 templateField.From0D(ttType, 0);

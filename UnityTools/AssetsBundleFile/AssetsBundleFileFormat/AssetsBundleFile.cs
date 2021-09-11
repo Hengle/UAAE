@@ -150,7 +150,7 @@ namespace UnityTools
                 {
                     currentOffset += newInfo.decompressedSize;
                 }
-            
+
                 dirInfos.Add(newInfo);
             }
 

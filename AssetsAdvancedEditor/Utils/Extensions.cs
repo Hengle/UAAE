@@ -31,7 +31,7 @@ namespace AssetsAdvancedEditor.Utils
             const string modified = "";
             var monoId = ushort.MaxValue;
 
-            if (typeId is 0x72)
+            if (typeId is AssetClassID.MonoBehaviour)
             {
                 monoId = (ushort)(uint.MaxValue - info.curFileTypeOrIndex);
             }
@@ -51,7 +51,7 @@ namespace AssetsAdvancedEditor.Utils
 
             if (file.typeTree.hasTypeTree)
             {
-                var ttType = classId == 0x72 ?
+                var ttType = classId is AssetClassID.MonoBehaviour ?
                     AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, scriptIndex) :
                     AssetHelper.FindTypeTreeTypeByID(file.typeTree, classId);
 
@@ -183,7 +183,7 @@ namespace AssetsAdvancedEditor.Utils
 
             if (file.typeTree.hasTypeTree)
             {
-                var ttType = classId == 0x72 ?
+                var ttType = classId is AssetClassID.MonoBehaviour ?
                     AssetHelper.FindTypeTreeTypeByScriptIndex(file.typeTree, item.MonoID) :
                     AssetHelper.FindTypeTreeTypeByID(file.typeTree, classId);
 

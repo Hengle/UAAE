@@ -4,7 +4,7 @@ namespace UnityTools
 {
     public class AssetFileInfoEx : AssetFileInfo
     {
-        public uint curFileType;
+        public AssetClassID curFileType;
         public long absoluteFilePos;
 
         //recommend GetAssetNameFast if at possible

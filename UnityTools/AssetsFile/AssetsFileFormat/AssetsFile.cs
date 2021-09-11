@@ -88,7 +88,7 @@ namespace UnityTools
 
                     if (typeMeta != null)
                     {
-                        var cldbType = AssetHelper.FindAssetClassByID(typeMeta, (uint)replacerClassId);
+                        var cldbType = AssetHelper.FindAssetClassByID(typeMeta, replacerClassId);
                         if (cldbType != null)
                         {
                             type_0D = C2T5.Cldb2TypeTree(typeMeta, cldbType);

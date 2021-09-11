@@ -199,7 +199,7 @@ namespace AssetsAdvancedEditor.Assets
         {
             var cont = item.Cont;
             var fileInst = cont.FileInstance;
-            if (item.TypeID == 0x72)
+            if (item.TypeID is AssetClassID.MonoBehaviour)
             {
                 var tt = fileInst.file.typeTree;
                 //check if typetree data exists already

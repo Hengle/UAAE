@@ -146,7 +146,7 @@ namespace ModInstaller
                     var hasSerializedData = reader.ReadBoolean();
                     var fileId = reader.ReadInt32();
                     var pathId = reader.ReadInt64();
-                    var classId = reader.ReadInt32();
+                    var classId = (AssetClassID)reader.ReadInt32();
                     var monoScriptIndex = reader.ReadUInt16();
 
                     var preloadDependencies = new List<AssetPPtr>();

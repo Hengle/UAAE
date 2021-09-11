@@ -4,7 +4,7 @@ namespace UnityTools
 {
     public class Type_0D
     {
-        public int ClassID;
+        public AssetClassID ClassID;
 
         public bool IsStrippedType;
         public ushort ScriptIndex;
@@ -22,7 +22,7 @@ namespace UnityTools
 
         public void Read(bool hasTypeTree, AssetsFileReader reader, uint version)
         {
-            ClassID = reader.ReadInt32();
+            ClassID = (AssetClassID)reader.ReadInt32();
             if (version >= 0x10)
             {
                 IsStrippedType = reader.ReadBoolean();
@@ -37,7 +37,7 @@ namespace UnityTools
             //{
             //    ScriptHash = new Hash128(reader);
             //}
-            if (version < 0x11 && ClassID < 0 || version >= 0x11 && ClassID == 0x72)
+            if (version < 0x11 && ClassID < 0 || version >= 0x11 && ClassID is AssetClassID.MonoBehaviour)
             {
                 ScriptHash = new Hash128(reader);
             }
@@ -69,7 +69,7 @@ namespace UnityTools
 
         public void Write(bool hasTypeTree, AssetsFileWriter writer, uint version)
         {
-            writer.Write(ClassID);
+            writer.Write((int)ClassID);
             if (version >= 0x10)
             {
                 writer.Write(IsStrippedType);
@@ -80,7 +80,7 @@ namespace UnityTools
                 writer.Write(ScriptIndex);
             }
 
-            if (ClassID == 0x72)
+            if (ClassID is AssetClassID.MonoBehaviour)
             {
                 ScriptHash.Write(writer);
             }

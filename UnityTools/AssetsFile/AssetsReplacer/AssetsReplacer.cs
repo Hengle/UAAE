@@ -8,7 +8,7 @@ namespace UnityTools
 
         public abstract int GetFileID();
         public abstract long GetPathID();
-        public abstract int GetClassID();
+        public abstract AssetClassID GetClassID();
         public abstract ushort GetMonoScriptID();
         public abstract void SetMonoScriptID(ushort scriptId);
 

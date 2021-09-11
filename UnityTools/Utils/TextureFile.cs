@@ -38,7 +38,7 @@ namespace UnityTools
 
         public struct StreamingInfo
         {
-            public uint offset;
+            public ulong offset;
             public uint size;
             public string path;
         }
@@ -131,7 +131,7 @@ namespace UnityTools
 
             if (!(streamData = baseField.Get("m_StreamData")).IsDummy())
             {
-                texture.m_StreamData.offset = streamData.Get("offset").GetValue().AsUInt();
+                texture.m_StreamData.offset = streamData.Get("offset").GetValue().AsUInt64();
                 texture.m_StreamData.size = streamData.Get("size").GetValue().AsUInt();
                 texture.m_StreamData.path = streamData.Get("path").GetValue().AsString();
             }
@@ -139,11 +139,11 @@ namespace UnityTools
             return texture;
         }
 
-        //default setting for assetstools
+        //default setting for unitytools
         //usually you have to cd to the assets file
         public byte[] GetTextureData() => GetTextureData(Directory.GetCurrentDirectory());
 
-        //new functions since I didn't like the way assetstools handled it
+        //new functions since I didn't like the way unitytools handled it
         public byte[] GetTextureData(AssetsFileInstance inst) => GetTextureData(Path.GetDirectoryName(inst.path));
 
         public byte[] GetTextureData(AssetsFile file)
@@ -168,7 +168,7 @@ namespace UnityTools
                 if (File.Exists(fixedStreamPath))
                 {
                     Stream stream = File.OpenRead(fixedStreamPath);
-                    stream.Position = m_StreamData.offset;
+                    stream.Position = (long)m_StreamData.offset;
                     pictureData = new byte[m_StreamData.size];
                     stream.Read(pictureData, 0, (int)m_StreamData.size);
                 }

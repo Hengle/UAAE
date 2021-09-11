@@ -11,9 +11,9 @@ namespace UnityTools
             return Cldb2TypeTree(classes, type);
         }
 
-        public static Type_0D Cldb2TypeTree(ClassDatabaseFile classes, int id)
+        public static Type_0D Cldb2TypeTree(ClassDatabaseFile classes, AssetClassID id)
         {
-            var type = AssetHelper.FindAssetClassByID(classes, (uint)id);
+            var type = AssetHelper.FindAssetClassByID(classes, id);
             return Cldb2TypeTree(classes, type);
         }
 

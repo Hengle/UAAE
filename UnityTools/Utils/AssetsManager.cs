@@ -12,10 +12,18 @@ namespace UnityTools
         public bool useTemplateFieldCache = false;
         public ClassDatabasePackage classPackage;
         public ClassDatabaseFile classFile;
-        public List<AssetsFileInstance> files = new List<AssetsFileInstance>();
-        public List<BundleFileInstance> bundles = new List<BundleFileInstance>();
-        private Dictionary<uint, AssetTypeTemplateField> templateFieldCache = new Dictionary<uint, AssetTypeTemplateField>();
-        private Dictionary<string, AssetTypeTemplateField> monoTemplateFieldCache = new Dictionary<string, AssetTypeTemplateField>();
+        public List<AssetsFileInstance> files;
+        public List<BundleFileInstance> bundles;
+        private Dictionary<AssetClassID, AssetTypeTemplateField> templateFieldCache;
+        private Dictionary<string, AssetTypeTemplateField> monoTemplateFieldCache;
+
+        public AssetsManager()
+        {
+            files = new List<AssetsFileInstance>();
+            bundles = new List<BundleFileInstance>();
+            templateFieldCache = new Dictionary<AssetClassID, AssetTypeTemplateField>();
+            monoTemplateFieldCache = new Dictionary<string, AssetTypeTemplateField>();
+        }
 
         #region assets files
         public AssetsFileInstance LoadAssetsFile(Stream stream, string path, bool loadDeps, string root = "", BundleFileInstance bunInst = null)
@@ -117,6 +125,7 @@ namespace UnityTools
             }
             return bunInst;
         }
+
         public BundleFileInstance LoadBundleFile(FileStream stream, bool unpackIfPacked = true)
         {
             return LoadBundleFile(stream, Path.GetFullPath(stream.Name), unpackIfPacked);
@@ -135,7 +144,7 @@ namespace UnityTools
                 var bunInst = bundles[index];
                 bunInst.file.Close();
 
-                foreach (var assetsInst in bunInst.assetsFiles)
+                foreach (var assetsInst in bunInst.loadedAssetsFiles)
                 {
                     assetsInst.file.Close();
                 }
@@ -154,7 +163,7 @@ namespace UnityTools
                 {
                     bunInst.file.Close();
 
-                    foreach (var assetsInst in bunInst.assetsFiles)
+                    foreach (var assetsInst in bunInst.loadedAssetsFiles)
                     {
                         assetsInst.file.Close();
                     }
@@ -178,7 +187,7 @@ namespace UnityTools
                     var assetData = BundleHelper.LoadAssetDataFromBundle(bunInst.file, index);
                     var ms = new MemoryStream(assetData);
                     var assetsInst = LoadAssetsFile(ms, assetMemPath, loadDeps, bunInst: bunInst);
-                    bunInst.assetsFiles.Add(assetsInst);
+                    bunInst.loadedAssetsFiles.Add(assetsInst);
                     return assetsInst;
                 }
             }
@@ -383,7 +392,7 @@ namespace UnityTools
                 baseField = new AssetTypeTemplateField();
                 if (hasTypeTree && !forceFromCldb)
                 {
-                    baseField.From0D(AssetHelper.FindTypeTreeTypeByID(file.typeTree, fixedId, (ushort)scriptIndex), 0);
+                    baseField.From0D(AssetHelper.FindTypeTreeTypeByID(file.typeTree, fixedId, scriptIndex), 0);
                 }
                 else
                 {
@@ -407,7 +416,7 @@ namespace UnityTools
                 return null;
 
             string scriptName;
-            if (!inst.monoIdToName.ContainsKey((uint)scriptIndex))
+            if (!inst.monoIdToName.ContainsKey(scriptIndex))
             {
                 var scriptAti = GetExtAsset(inst, GetTypeInstance(inst.file, info).GetBaseField().Get("m_Script")).instance;
 
@@ -425,11 +434,11 @@ namespace UnityTools
                 }
 
                 scriptName = $"{assemblyName}.{scriptNamespace}.{scriptName}";
-                inst.monoIdToName[(uint)scriptIndex] = scriptName;
+                inst.monoIdToName[scriptIndex] = scriptName;
             }
             else
             {
-                scriptName = inst.monoIdToName[(uint)scriptIndex];
+                scriptName = inst.monoIdToName[scriptIndex];
             }
 
             if (monoTemplateFieldCache.ContainsKey(scriptName))

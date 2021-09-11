@@ -31,7 +31,7 @@ namespace Texture
                 if (File.Exists(fixedStreamPath))
                 {
                     Stream stream = File.OpenRead(fixedStreamPath);
-                    stream.Position = texFile.m_StreamData.offset;
+                    stream.Position = (long)texFile.m_StreamData.offset;
                     texFile.pictureData = new byte[texFile.m_StreamData.size];
                     stream.Read(texFile.pictureData, 0, (int)texFile.m_StreamData.size);
                 }
@@ -63,7 +63,7 @@ namespace Texture
                 foreach (var info in dirInf)
                 {
                     if (info.name != searchPath) continue;
-                    reader.Position = bundle.bundleHeader6.GetFileDataOffset() + info.offset + streamInfo.offset;
+                    reader.Position = bundle.bundleHeader6.GetFileDataOffset() + info.offset + (long)streamInfo.offset;
                     texFile.pictureData = reader.ReadBytes((int)streamInfo.size);
                     texFile.m_StreamData.offset = 0;
                     texFile.m_StreamData.size = 0;

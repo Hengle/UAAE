@@ -7,7 +7,7 @@ namespace UnityTools
     {
         private readonly int fileId;
         private readonly long pathId;
-        private readonly int classId;
+        private readonly AssetClassID classId;
         private readonly Stream stream;
         private readonly long offset;
         private readonly long size;
@@ -18,7 +18,7 @@ namespace UnityTools
         private ClassDatabaseType type;
         private List<AssetPPtr> preloadList;
 
-        public AssetsReplacerFromStream(int fileId, long pathId, int classId, ushort monoScriptIndex, Stream stream, long offset, long size)
+        public AssetsReplacerFromStream(int fileId, long pathId, AssetClassID classId, ushort monoScriptIndex, Stream stream, long offset, long size)
         {
             this.fileId = fileId;
             this.pathId = pathId;
@@ -35,7 +35,7 @@ namespace UnityTools
 
         public override long GetPathID() => pathId;
 
-        public override int GetClassID() => classId;
+        public override AssetClassID GetClassID() => classId;
 
         public override ushort GetMonoScriptID() => monoScriptIndex;
 
@@ -101,9 +101,8 @@ namespace UnityTools
 
         public override long Write(AssetsFileWriter writer)
         {
-            var assetData = new byte[size];
-            stream.Read(assetData, (int)offset, (int)size);
-            writer.Write(assetData);
+            writer.BaseStream.Position = offset;
+            stream.CopyToCompat(writer.BaseStream, size);
             return writer.Position;
         }
 
@@ -114,7 +113,7 @@ namespace UnityTools
             writer.Write((byte)1); //idk, always 1
             writer.Write(0); //always 0 even when fileid is something else
             writer.Write(GetPathID());
-            writer.Write(GetClassID());
+            writer.Write((int)GetClassID());
             writer.Write(GetMonoScriptID());
 
             writer.Write(preloadList.Count);

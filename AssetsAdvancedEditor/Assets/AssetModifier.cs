@@ -6,12 +6,12 @@ namespace AssetsAdvancedEditor.Assets
     {
         public static AssetsReplacer CreateAssetReplacer(AssetItem item, byte[] data)
         {
-            return new AssetsReplacerFromMemory(item.FileID, item.PathID, (int)item.TypeID, item.MonoID, data);
+            return new AssetsReplacerFromMemory(item.FileID, item.PathID, item.TypeID, item.MonoID, data);
         }
 
         public static AssetsReplacer CreateAssetRemover(AssetItem item)
         {
-            return new AssetsRemover(item.FileID, item.PathID, (int)item.TypeID, item.MonoID);
+            return new AssetsRemover(item.FileID, item.PathID, item.TypeID, item.MonoID);
         }
 
         public static BundleReplacer CreateBundleReplacer(string name, bool isSerialized, byte[] data)

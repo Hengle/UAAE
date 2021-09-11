@@ -123,7 +123,7 @@ namespace AssetsAdvancedEditor.Winforms
                 {
                     name = "Unnamed asset";
                 }
-                else if (typeId is 0x01 or 0x72)
+                else if (typeId is AssetClassID.GameObject or AssetClassID.MonoBehaviour)
                 {
                     name = $"{item.Type} {name}";
                 }
@@ -231,31 +231,32 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 name = "Unnamed asset";
             }
-            else if (details.TypeID is 0x01 or 0x72)
+            else if (details.TypeID is AssetClassID.GameObject or AssetClassID.MonoBehaviour)
             {
                 name = $"{details.Type} {name}";
             }
             boxName.Text = name;
             boxPathID.Text = details.PathID.ToString();
             boxFileID.Text = details.FileID.ToString();
-            if (details.TypeID != 0x72)
+            var typeId = (int)details.TypeID;
+            if (details.TypeID != AssetClassID.MonoBehaviour)
             {
-                if (uint.TryParse(details.Type, out var typeId))
+                if (Enum.TryParse(details.Type, out AssetClassID classId))
                 {
-                    boxType.Text = details.TypeID == typeId
-                        ? $@"0x{details.TypeID:X8}"
-                        : $@"0x{details.TypeID:X8} ({details.Type})";
+                    boxType.Text = details.TypeID == classId
+                        ? $@"0x{typeId:X8}"
+                        : $@"0x{typeId:X8} ({details.Type})";
                 }
                 else
                 {
-                    boxType.Text = $@"0x{details.TypeID:X8} ({details.Type})";
+                    boxType.Text = $@"0x{typeId:X8} ({details.Type})";
                 }
             }
             else
             {
                 boxType.Text = details.MonoID != ushort.MaxValue ?
                     $@"0x{details.MonoID:X8} ({details.Type})" :
-                    $@"0x{details.TypeID:X8} ({details.Type})";
+                    $@"0x{typeId:X8} ({details.Type})";
             }
         }
 

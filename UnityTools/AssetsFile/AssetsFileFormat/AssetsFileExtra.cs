@@ -4,11 +4,11 @@ namespace UnityTools
 {
     public class AssetsFileExtra
     {
-        public static bool HasName(uint type)
+        public static bool HasName(AssetClassID type)
         {
             //only assets that start with m_Name go here
             //not sure what to do about assets like gameobject
-            //last I checked, the list in assetstools was outdated
+            //last I checked, the list in unitytools was outdated
             //so it probably won't match up the same
             var allowed = new HashSet<uint>
             {
@@ -18,7 +18,7 @@ namespace UnityTools
                 0xDD, 0xE2, 0xE4, 0xEE, 0xF0, 0x102,0x10F,0x110,0x111,0x122,0x13F,
                 0x149,0x16B
             };
-            return allowed.Contains(type);
+            return allowed.Contains((uint)type);
         }
     }
 }

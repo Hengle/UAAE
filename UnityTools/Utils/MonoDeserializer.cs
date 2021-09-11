@@ -44,7 +44,7 @@ namespace UnityTools
             if (scriptIndex != 0xFFFF)
             {
                 var scriptAti = am.GetExtAsset(inst, mainAti.GetBaseField().Get("m_Script")).instance;
-                var scriptName = scriptAti.GetBaseField().Get("m_Name").GetValue().AsString();
+                var scriptName = scriptAti.GetBaseField().Get("m_ClassName").GetValue().AsString();
                 var scriptNamespace = scriptAti.GetBaseField().Get("m_Namespace").GetValue().AsString();
                 var assemblyName = scriptAti.GetBaseField().Get("m_AssemblyName").GetValue().AsString();
                 var assemblyPath = Path.Combine(managedPath, assemblyName);

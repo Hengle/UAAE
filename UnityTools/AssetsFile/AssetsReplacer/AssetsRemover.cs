@@ -6,11 +6,11 @@ namespace UnityTools
     {
         private readonly int fileID;
         private readonly long pathID;
-        private readonly int classID;
+        private readonly AssetClassID classID;
         private ushort monoScriptIndex;
 
         //why is classid and monoscriptindex in the constructor if they go unused?
-        public AssetsRemover(int fileID, long pathID, int classID, ushort monoScriptIndex = 0xFFFF)
+        public AssetsRemover(int fileID, long pathID, AssetClassID classID, ushort monoScriptIndex = 0xFFFF)
         {
             this.fileID = fileID;
             this.pathID = pathID;
@@ -29,7 +29,7 @@ namespace UnityTools
         {
             return pathID;
         }
-        public override int GetClassID()
+        public override AssetClassID GetClassID()
         {
             return classID;
         }
@@ -97,7 +97,7 @@ namespace UnityTools
             writer.Write((byte)1); //idk, always 1
             writer.Write(0); //always 0 even when fileid is something else
             writer.Write(pathID);
-            writer.Write(classID);
+            writer.Write((int)classID);
             writer.Write(monoScriptIndex);
             writer.Write(0); //flags, which are ignored since this is a remover
 

@@ -32,16 +32,16 @@ namespace UnityTools
                 {
                     if (assetFileInfoSet.curFileTypeOrIndex < 0)
                     {
-                        assetFileInfoSet.curFileType = 0x72;
+                        assetFileInfoSet.curFileType = AssetClassID.MonoBehaviour;
                     }
                     else
                     {
-                        assetFileInfoSet.curFileType = (uint)assetFileInfoSet.curFileTypeOrIndex;
+                        assetFileInfoSet.curFileType = (AssetClassID)assetFileInfoSet.curFileTypeOrIndex;
                     }
                 }
                 else
                 {
-                    assetFileInfoSet.curFileType = (uint)file.typeTree.unity5Types[assetFileInfoSet.curFileTypeOrIndex].ClassID;
+                    assetFileInfoSet.curFileType = file.typeTree.unity5Types[assetFileInfoSet.curFileTypeOrIndex].ClassID;
                 }
                 Info[i] = assetFileInfoSet;
             }

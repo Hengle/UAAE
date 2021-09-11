@@ -6,7 +6,7 @@ namespace UnityTools
     {
         private readonly int fileId;
         private readonly long pathId;
-        private readonly int classId;
+        private readonly AssetClassID classId;
         private readonly byte[] buffer;
         private ushort monoScriptIndex;
         private Hash128 propertiesHash;
@@ -15,7 +15,7 @@ namespace UnityTools
         private ClassDatabaseType type;
         private List<AssetPPtr> preloadList;
 
-        public AssetsReplacerFromMemory(int fileId, long pathId, int classId, ushort monoScriptIndex, byte[] buffer)
+        public AssetsReplacerFromMemory(int fileId, long pathId, AssetClassID classId, ushort monoScriptIndex, byte[] buffer)
         {
             this.fileId = fileId;
             this.pathId = pathId;
@@ -36,7 +36,7 @@ namespace UnityTools
         {
             return pathId;
         }
-        public override int GetClassID()
+        public override AssetClassID GetClassID()
         {
             return classId;
         }
@@ -114,14 +114,14 @@ namespace UnityTools
             writer.Write((byte)1); //idk, always 1
             writer.Write(0); //always 0 even when fileid is something else
             writer.Write(GetPathID());
-            writer.Write(GetClassID());
+            writer.Write((int)GetClassID());
             writer.Write(GetMonoScriptID());
 
             writer.Write(preloadList.Count);
-            for (var i = 0; i < preloadList.Count; i++)
+            foreach (var PPtr in preloadList)
             {
-                writer.Write(preloadList[i].fileID);
-                writer.Write(preloadList[i].pathID);
+                writer.Write(PPtr.fileID);
+                writer.Write(PPtr.pathID);
             }
 
             //flag1, unknown

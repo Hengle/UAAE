@@ -4,7 +4,7 @@ namespace UnityTools
 {
     public class ClassDatabaseType
     {
-        public int classId;
+        public AssetClassID classId;
         public int baseClass;
         public ClassDatabaseFileString name;
         public ClassDatabaseFileString assemblyFileName;
@@ -12,7 +12,7 @@ namespace UnityTools
         public List<ClassDatabaseTypeField> fields;
         public void Read(AssetsFileReader reader, int version, byte flags)
         {
-            classId = reader.ReadInt32();
+            classId = (AssetClassID)reader.ReadInt32();
             baseClass = reader.ReadInt32();
             name = new ClassDatabaseFileString();
             name.Read(reader);
@@ -32,7 +32,7 @@ namespace UnityTools
         }
         public void Write(AssetsFileWriter writer, int version, byte flags)
         {
-            writer.Write(classId);
+            writer.Write((int)classId);
             writer.Write(baseClass);
             name.Write(writer);
             if ((flags & 1) != 0)
