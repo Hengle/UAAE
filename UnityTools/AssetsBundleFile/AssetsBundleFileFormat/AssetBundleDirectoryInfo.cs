@@ -7,7 +7,7 @@
         public uint Flags;
         public string Name;
 
-        public void Read(AssetsFileReader reader, uint version)
+        public void Read(AssetsFileReader reader, uint version = 6)
         {
             if (version >= 6)
             {
