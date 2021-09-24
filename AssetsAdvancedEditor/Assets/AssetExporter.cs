@@ -139,7 +139,7 @@ namespace AssetsAdvancedEditor.Assets
                 EnumValueTypes.UInt8 => "UInt8",
                 EnumValueTypes.Int8 => "SInt8",
                 EnumValueTypes.UInt16 => "UInt16",
-                EnumValueTypes.Int16 => "Int16",
+                EnumValueTypes.Int16 => "SInt16",
                 EnumValueTypes.UInt32 => "unsigned int",
                 EnumValueTypes.Int32 => "int",
                 EnumValueTypes.UInt64 => "UInt64",

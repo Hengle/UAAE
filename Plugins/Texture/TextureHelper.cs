@@ -10,10 +10,10 @@ namespace Texture
         public static AssetTypeInstance GetByteArrayTexture(AssetsWorkspace workspace, AssetItem tex)
         {
             var textureTemp = workspace.GetTemplateField(tex);
-            var image_data = textureTemp.children.FirstOrDefault(f => f.name == "image data");
-            if (image_data == null)
+            var imageData = textureTemp.children.FirstOrDefault(f => f.name == "image data");
+            if (imageData == null)
                 return null;
-            image_data.valueType = EnumValueTypes.ByteArray;
+            imageData.valueType = EnumValueTypes.ByteArray;
             var texTypeInst = new AssetTypeInstance(new[] { textureTemp }, tex.Cont.FileReader, tex.Position);
             return texTypeInst;
         }
@@ -58,12 +58,12 @@ namespace Texture
 
                 var bundle = parentBundle.file;
 
-                var reader = bundle.reader;
-                var dirInf = bundle.bundleInf6.dirInf;
+                var reader = bundle.Reader;
+                var dirInf = bundle.Metadata.DirectoryInfo;
                 foreach (var info in dirInf)
                 {
-                    if (info.name != searchPath) continue;
-                    reader.Position = bundle.bundleHeader6.GetFileDataOffset() + info.offset + (long)streamInfo.offset;
+                    if (info.Name != searchPath) continue;
+                    reader.Position = bundle.Header.GetFileDataOffset() + info.Offset + (long)streamInfo.offset;
                     texFile.pictureData = reader.ReadBytes((int)streamInfo.size);
                     texFile.m_StreamData.offset = 0;
                     texFile.m_StreamData.size = 0;

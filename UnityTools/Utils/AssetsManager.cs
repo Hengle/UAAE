@@ -176,13 +176,13 @@ namespace UnityTools
 
         public AssetsFileInstance LoadAssetsFileFromBundle(BundleFileInstance bunInst, int index, bool loadDeps = false)
         {
-            var dirInf = bunInst.file.bundleInf6.dirInf[index];
-            var assetMemPath = Path.Combine(bunInst.path, dirInf.name);
+            var dirInf = bunInst.file.Metadata.DirectoryInfo[index];
+            var assetMemPath = Path.Combine(bunInst.path, dirInf.Name);
 
             var listIndex = files.FindIndex(f => string.Equals(f.path, Path.GetFullPath(assetMemPath), StringComparison.CurrentCultureIgnoreCase));
             if (listIndex == -1)
             {
-                if (bunInst.file.IsAssetsFile(bunInst.file.reader, dirInf))
+                if (bunInst.file.IsAssetsFile(bunInst.file.Reader, dirInf))
                 {
                     var assetData = BundleHelper.LoadAssetDataFromBundle(bunInst.file, index);
                     var ms = new MemoryStream(assetData);
@@ -199,10 +199,10 @@ namespace UnityTools
         }
         public AssetsFileInstance LoadAssetsFileFromBundle(BundleFileInstance bunInst, string name, bool loadDeps = false)
         {
-            var dirInf = bunInst.file.bundleInf6.dirInf;
+            var dirInf = bunInst.file.Metadata.DirectoryInfo;
             for (var i = 0; i < dirInf.Length; i++)
             {
-                if (dirInf[i].name == name)
+                if (dirInf[i].Name == name)
                 {
                     return LoadAssetsFileFromBundle(bunInst, i, loadDeps);
                 }
@@ -262,7 +262,7 @@ namespace UnityTools
                 if (!files.Any(f => string.Equals(Path.GetFileName(f.path), Path.GetFileName(depPath), StringComparison.CurrentCultureIgnoreCase)))
                 {
                     var bunPath = Path.GetFileName(depPath);
-                    var bunIndex = Array.FindIndex(ofBundle.file.bundleInf6.dirInf, d => Path.GetFileName(d.name) == bunPath);
+                    var bunIndex = Array.FindIndex(ofBundle.file.Metadata.DirectoryInfo, d => Path.GetFileName(d.Name) == bunPath);
 
                     //by default, the directory of an assets file is the bundle's file path (somepath\bundle.unity3d\file.assets)
                     //we back out again to get the directory the bundle is in

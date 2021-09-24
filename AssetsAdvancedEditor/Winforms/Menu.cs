@@ -131,11 +131,11 @@ namespace AssetsAdvancedEditor.Winforms
             btnRemove.Enabled = true;
             btnInfo.Enabled = true;
 
-            var infos = BundleInst.file.bundleInf6.dirInf;
+            var infos = BundleInst.file.Metadata.DirectoryInfo;
             cboxBundleContents.Items.Clear();
             foreach (var info in infos)
             {
-                cboxBundleContents.Items.Add(info.name);
+                cboxBundleContents.Items.Add(info.Name);
             }
             cboxBundleContents.SelectedIndex = 0;
             lblFileName.Text = BundleInst.name;
@@ -218,7 +218,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (BundleInst == null || cboxBundleContents.SelectedItem == null) return;
             var index = cboxBundleContents.SelectedIndex;
 
-            var bunAssetName = BundleInst.file.bundleInf6.dirInf[index].name;
+            var bunAssetName = BundleInst.file.Metadata.DirectoryInfo[index].Name;
             var assetData = BundleHelper.LoadAssetDataFromBundle(BundleInst.file, index);
 
             var sfd = new SaveFileDialog
@@ -269,7 +269,7 @@ namespace AssetsAdvancedEditor.Winforms
             var index = cboxBundleContents.SelectedIndex;
 
             var dirInf = BundleHelper.GetDirInfo(BundleInst.file, index);
-            var bunAssetName = dirInf.name;
+            var bunAssetName = dirInf.Name;
 
             //When we make a modification to an assets file in the bundle,
             //we replace the assets file in the manager. This way, all we
@@ -289,7 +289,7 @@ namespace AssetsAdvancedEditor.Winforms
 
             //warning: does not update if you import an assets file onto
             //a file that wasn't originally an assets file
-            var isAssetsFile = BundleInst.file.IsAssetsFile(BundleInst.file.reader, dirInf);
+            var isAssetsFile = BundleInst.file.IsAssetsFile(dirInf);
 
             if (isAssetsFile)
             {

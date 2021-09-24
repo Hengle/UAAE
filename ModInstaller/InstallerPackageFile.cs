@@ -171,8 +171,8 @@ namespace ModInstaller
                         //adder/replacer?
                         case 2:
                         {
-                            Hash128 propertiesHash = null;
-                            Hash128 scriptHash = null;
+                            Hash128 propertiesHash;
+                            var scriptHash = new Hash128();
                             ClassDatabaseFile classData = null;
                             AssetsReplacer replacer;
 

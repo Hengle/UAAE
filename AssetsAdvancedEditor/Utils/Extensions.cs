@@ -306,33 +306,33 @@ namespace AssetsAdvancedEditor.Utils
 
         public static bool IsBundleDataCompressed(this AssetBundleFile bundle)
         {
-            var reader = bundle.reader;
-            reader.Position = bundle.bundleHeader6.GetBundleInfoOffset();
+            var reader = bundle.Reader;
+            reader.Position = bundle.Header.GetBundleInfoOffset();
             MemoryStream blocksInfoStream;
-            var compressedSize = (int)bundle.bundleHeader6.compressedSize;
+            var compressedSize = (int)bundle.Header.CompressedSize;
             byte[] uncompressedBytes;
-            switch (bundle.bundleHeader6.GetCompressionType())
+            switch (bundle.Header.GetCompressionType())
             {
-                case 1:
+                case AssetBundleCompressionType.Lzma:
                 {
-                    uncompressedBytes = new byte[bundle.bundleHeader6.decompressedSize];
+                    uncompressedBytes = new byte[bundle.Header.DecompressedSize];
                     using (var ms = new MemoryStream(reader.ReadBytes(compressedSize)))
                     {
                         var decoder = SevenZipHelper.StreamDecompress(ms, compressedSize);
-                        decoder.Read(uncompressedBytes, 0, (int)bundle.bundleHeader6.decompressedSize);
+                        decoder.Read(uncompressedBytes, 0, (int)bundle.Header.DecompressedSize);
                         decoder.Dispose();
                     }
                     blocksInfoStream = new MemoryStream(uncompressedBytes);
                     break;
                 }
-                case 2:
-                case 3:
+                case AssetBundleCompressionType.Lz4:
+                case AssetBundleCompressionType.Lz4HC:
                 {
-                    uncompressedBytes = new byte[bundle.bundleHeader6.decompressedSize];
+                    uncompressedBytes = new byte[bundle.Header.DecompressedSize];
                     using (var ms = new MemoryStream(reader.ReadBytes(compressedSize)))
                     {
                         var decoder = new Lz4DecoderStream(ms);
-                        decoder.Read(uncompressedBytes, 0, (int)bundle.bundleHeader6.decompressedSize);
+                        decoder.Read(uncompressedBytes, 0, (int)bundle.Header.DecompressedSize);
                         decoder.Dispose();
                     }
                     blocksInfoStream = new MemoryStream(uncompressedBytes);
@@ -345,18 +345,18 @@ namespace AssetsAdvancedEditor.Utils
                 }
             }
 
-            var uncompressedInf = bundle.bundleInf6;
-            if (bundle.bundleHeader6.GetCompressionType() != 0)
+            var uncompressedMetadata = bundle.Metadata;
+            if (bundle.Header.GetCompressionType() != 0)
             {
                 using var memReader = new AssetsFileReader(blocksInfoStream)
                 {
                     Position = 0
                 };
-                uncompressedInf = new AssetBundleBlockAndDirectoryList06();
-                uncompressedInf.Read(0, memReader);
+                uncompressedMetadata = new AssetBundleMetadata();
+                uncompressedMetadata.Read(0, memReader);
             }
 
-            return uncompressedInf.blockInf.Any(inf => inf.GetCompressionType() != 0);
+            return uncompressedMetadata.BlocksInfo.Any(inf => inf.GetCompressionType() != 0);
         }
     }
 }

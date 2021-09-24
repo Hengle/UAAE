@@ -157,7 +157,6 @@ namespace UnityTools.Compression.LZ4
                 goto readExLiteralLength;
 
             phase = DecodePhase.CopyLiteral;
-            goto copyLiteral;
 
             copyLiteral:
             var nReadLit = litLen < nToRead ? litLen : nToRead;
@@ -192,7 +191,6 @@ namespace UnityTools.Compression.LZ4
                 goto finish;
 
             phase = DecodePhase.ReadOffset;
-            goto readOffset;
 
             readOffset:
             if (inBufPos + 1 < inBufEnd)
@@ -210,7 +208,6 @@ namespace UnityTools.Compression.LZ4
             if (matLen == 15 + 4)
             {
                 phase = DecodePhase.ReadExMatchLength;
-                goto readExMatchLength;
             }
             else
             {
@@ -236,7 +233,6 @@ namespace UnityTools.Compression.LZ4
                 goto readExMatchLength;
 
             phase = DecodePhase.CopyMatch;
-            goto copyMatch;
 
             copyMatch:
             var nCpyMat = matLen < nToRead ? matLen : nToRead;
@@ -432,15 +428,12 @@ namespace UnityTools.Compression.LZ4
         {
         }
 
-        public override long Length
-        {
-            get { throw new NotSupportedException(); }
-        }
+        public override long Length => throw new NotSupportedException();
 
         public override long Position
         {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
         }
 
         public override long Seek(long offset, SeekOrigin origin)

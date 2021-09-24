@@ -18,7 +18,7 @@ namespace UnityTools
             name = Path.Combine(root, Path.GetFileName(path));
             file = new AssetBundleFile();
             file.Read(new AssetsFileReader(stream), true);
-            if (file.bundleHeader6.GetCompressionType() != 0 && unpackIfPacked)
+            if (file.Header.GetCompressionType() != 0 && unpackIfPacked)
             {
                 file = BundleHelper.UnpackBundle(file);
             }
@@ -31,7 +31,7 @@ namespace UnityTools
             name = Path.Combine(root, Path.GetFileName(path));
             file = new AssetBundleFile();
             file.Read(new AssetsFileReader(stream), true);
-            if (file.bundleHeader6.GetCompressionType() != 0 && unpackIfPacked)
+            if (file.Header.GetCompressionType() != 0 && unpackIfPacked)
             {
                 file = BundleHelper.UnpackBundle(file);
             }

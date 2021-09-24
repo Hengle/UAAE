@@ -161,10 +161,10 @@ namespace AssetsAdvancedEditor.Assets
                 Console.WriteLine($@"Decompressing {file}...");
                 var bun = DecompressBundle(file, decompFile);
 
-                var entryCount = bun.bundleInf6.dirInf.Length;
+                var entryCount = bun.Metadata.DirectoryCount;
                 for (var i = 0; i < entryCount; i++)
                 {
-                    var name = bun.bundleInf6.dirInf[i].name;
+                    var name = bun.Metadata.DirectoryInfo[i].Name;
                     var data = BundleHelper.LoadAssetDataFromBundle(bun, i);
                     var outName = Path.Combine(filePath ?? Environment.CurrentDirectory, flags.Contains("-keepnames") ? $"{name}.assets" : $"{Path.GetFileName(file)}_{name}.assets");
                     Console.WriteLine($@"Exporting {outName}...");
@@ -204,10 +204,10 @@ namespace AssetsAdvancedEditor.Assets
                 var reps = new List<BundleReplacer>();
                 var streams = new List<Stream>();
 
-                var entryCount = bun.bundleInf6.dirInf.Length;
+                var entryCount = bun.Metadata.DirectoryCount;
                 for (var i = 0; i < entryCount; i++)
                 {
-                    var name = bun.bundleInf6.dirInf[i].name;
+                    var name = bun.Metadata.DirectoryInfo[i].Name;
                     var matchName = Path.Combine(file, $"{Path.GetFileName(file)}_{name}.assets");
 
                     if (File.Exists(matchName))
@@ -241,7 +241,7 @@ namespace AssetsAdvancedEditor.Assets
                     stream.Close();
 
                 bun.Close();
-                bun.reader.Close();
+                bun.Reader.Close();
 
                 File.WriteAllBytes(file, data);
 
@@ -256,11 +256,11 @@ namespace AssetsAdvancedEditor.Assets
         {
             var mainFileName = GetMainFileName(args);
             var flags = GetFlags(args);
-            var compType = AssetBundleCompressionType.LZ4;
+            var compType = AssetBundleCompressionType.Lz4;
             if (flags.Contains("-lz4"))
-                compType = AssetBundleCompressionType.LZ4;
+                compType = AssetBundleCompressionType.Lz4;
             else if (flags.Contains("-lzma"))
-                compType = AssetBundleCompressionType.LZMA;
+                compType = AssetBundleCompressionType.Lzma;
             
             var destFileName = GetDestFileName(args);
             if (destFileName == string.Empty)
@@ -275,7 +275,7 @@ namespace AssetsAdvancedEditor.Assets
             var bun = DecompressBundle(file, null);
             var fs = File.OpenWrite(compFile);
             using var writer = new AssetsFileWriter(fs);
-            bun.Pack(bun.reader, writer, compType);
+            bun.Pack(bun.Reader, writer, compType);
         }
 
         private static void Decompress(IReadOnlyList<string> args)
@@ -297,7 +297,7 @@ namespace AssetsAdvancedEditor.Assets
             var reader = new AssetsFileReader(fs);
 
             bun.Read(reader, true);
-            if (bun.bundleHeader6.GetCompressionType() != 0)
+            if (bun.Header.GetCompressionType() != 0)
             {
                 Stream nfs = decompFile switch
                 {

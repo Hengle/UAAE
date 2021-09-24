@@ -22,9 +22,9 @@ namespace AssetsAdvancedEditor.Winforms
             if (BundleInst == null) return;
             AssetBundleCompressionType compType;
             if (rbtnLZ4.Checked)
-                compType = AssetBundleCompressionType.LZ4;
+                compType = AssetBundleCompressionType.Lz4;
             else if (rbtnLZMA.Checked)
-                compType = AssetBundleCompressionType.LZMA;
+                compType = AssetBundleCompressionType.Lzma;
             else
             {
                 MsgBoxUtils.ShowErrorDialog("You didn't choose any compression method!\n" +
@@ -62,7 +62,7 @@ namespace AssetsAdvancedEditor.Winforms
         {
             using var fs = File.OpenWrite(path);
             using var writer = new AssetsFileWriter(fs);
-            bundleInst.file.Pack(bundleInst.file.reader, writer, compType);
+            bundleInst.file.Pack(bundleInst.file.Reader, writer, compType);
         }
     }
 }

@@ -18,16 +18,16 @@ namespace AssetsAdvancedEditor.Winforms
         private void BundleLoader_Load(object sender, EventArgs e)
         {
             if (BundleInst == null) return;
-            var compType = BundleInst.file.bundleHeader6.GetCompressionType();
+            var compType = BundleInst.file.Header.GetCompressionType();
             switch (compType)
             {
-                case 0:
+                case AssetBundleCompressionType.None:
                     lblCompType.Text = @"None";
                     break;
-                case 1:
+                case AssetBundleCompressionType.Lzma:
                     lblCompType.Text = @"LZMA";
                     break;
-                case 2 or 3:
+                case AssetBundleCompressionType.Lz4 or AssetBundleCompressionType.Lz4HC:
                     lblCompType.Text = @"LZ4";
                     break;
                 default:
@@ -55,8 +55,8 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnDecompress_Click(object sender, EventArgs e)
         {
             if (BundleInst == null) return;
-            var bunDecomp = new BundleDecompression(BundleInst);
-            if (bunDecomp.ShowDialog() != DialogResult.OK)
+            var dialog = new BundleDecompression(BundleInst);
+            if (dialog.ShowDialog() != DialogResult.OK)
             {
                 DialogResult = DialogResult.Cancel;
                 return;
@@ -65,7 +65,7 @@ namespace AssetsAdvancedEditor.Winforms
             lblNote.Text = @"Decompressing...";
             btnDecompress.Enabled = false;
             btnCompress.Enabled = false;
-            bunDecomp.Bw.RunWorkerCompleted += delegate
+            dialog.Bw.RunWorkerCompleted += delegate
             {
                 lblNote.Text = @"Done. Click Load to open the bundle.";
                 btnDecompress.Enabled = false;

@@ -127,20 +127,20 @@ namespace UnityTools
             //flag1, unknown
             writer.Write((byte)0);
             //flag2
-            if (propertiesHash.data != null)
+            if (propertiesHash.Data != null)
             {
                 writer.Write((byte)1);
-                writer.Write(propertiesHash.data);
+                writer.Write(propertiesHash.Data);
             }
             else
             {
                 writer.Write((byte)0);
             }
             //flag3
-            if (scriptIdHash.data != null)
+            if (scriptIdHash.Data != null)
             {
                 writer.Write((byte)1);
-                writer.Write(scriptIdHash.data);
+                writer.Write(scriptIdHash.Data);
             }
             else
             {

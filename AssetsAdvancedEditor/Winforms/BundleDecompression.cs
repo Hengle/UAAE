@@ -82,28 +82,28 @@ namespace AssetsAdvancedEditor.Winforms
         private void DecompressToFile(string savePath)
         {
             var bundleStream = File.Open(savePath, FileMode.Create);
-            BundleInst.file.Unpack(BundleInst.file.reader, new AssetsFileWriter(bundleStream));
+            BundleInst.file.Unpack(BundleInst.file.Reader, new AssetsFileWriter(bundleStream));
 
             bundleStream.Position = 0;
 
             var newBundle = new AssetBundleFile();
             newBundle.Read(new AssetsFileReader(bundleStream));
 
-            BundleInst.file.reader.Close();
+            BundleInst.file.Reader.Close();
             BundleInst.file = newBundle;
         }
 
         private void DecompressToMemory()
         {
             var bundleStream = new MemoryStream();
-            BundleInst.file.Unpack(BundleInst.file.reader, new AssetsFileWriter(bundleStream));
+            BundleInst.file.Unpack(BundleInst.file.Reader, new AssetsFileWriter(bundleStream));
 
             bundleStream.Position = 0;
 
             var newBundle = new AssetBundleFile();
             newBundle.Read(new AssetsFileReader(bundleStream));
 
-            BundleInst.file.reader.Close();
+            BundleInst.file.Reader.Close();
             BundleInst.file = newBundle;
         }
     }

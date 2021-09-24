@@ -9,9 +9,9 @@ namespace UnityTools
     {
         public static byte[] LoadAssetDataFromBundle(AssetBundleFile bundle, int index)
         {
-            var reader = bundle.reader;
-            var start = (int)(bundle.bundleHeader6.GetFileDataOffset() + bundle.bundleInf6.dirInf[index].offset);
-            var length = (int)bundle.bundleInf6.dirInf[index].decompressedSize;
+            var reader = bundle.Reader;
+            var start = (int)(bundle.Header.GetFileDataOffset() + bundle.Metadata.DirectoryInfo[index].Offset);
+            var length = (int)bundle.Metadata.DirectoryInfo[index].DecompressedSize;
             reader.Position = start;
             return reader.ReadBytes(length);
         }
@@ -26,11 +26,11 @@ namespace UnityTools
 
         public static AssetsFile LoadAssetFromBundle(AssetBundleFile bundle, string name)
         {
-            var dirInf = bundle.bundleInf6.dirInf;
+            var dirInf = bundle.Metadata.DirectoryInfo;
             for (var i = 0; i < dirInf.Length; i++)
             {
                 var info = dirInf[i];
-                if (info.name == name)
+                if (info.Name == name)
                 {
                     return LoadAssetFromBundle(bundle, i);
                 }
@@ -40,11 +40,11 @@ namespace UnityTools
 
         public static byte[] LoadAssetDataFromBundle(AssetBundleFile bundle, string name)
         {
-            var dirInf = bundle.bundleInf6.dirInf;
+            var dirInf = bundle.Metadata.DirectoryInfo;
             for (var i = 0; i < dirInf.Length; i++)
             {
                 var info = dirInf[i];
-                if (info.name == name)
+                if (info.Name == name)
                 {
                     return LoadAssetDataFromBundle(bundle, i);
                 }
@@ -55,8 +55,8 @@ namespace UnityTools
         public static List<AssetsFile> LoadAllAssetsFromBundle(AssetBundleFile bundle)
         {
             var files = new List<AssetsFile>();
-            var reader = bundle.reader;
-            var dirInf = bundle.bundleInf6.dirInf;
+            var reader = bundle.Reader;
+            var dirInf = bundle.Metadata.DirectoryInfo;
             for (var i = 0; i < dirInf.Length; i++)
             {
                 var info = dirInf[i];
@@ -71,8 +71,8 @@ namespace UnityTools
         public static List<byte[]> LoadAllAssetsDataFromBundle(AssetBundleFile bundle)
         {
             var files = new List<byte[]>();
-            var reader = bundle.reader;
-            var dirInf = bundle.bundleInf6.dirInf;
+            var reader = bundle.Reader;
+            var dirInf = bundle.Metadata.DirectoryInfo;
             for (var i = 0; i < dirInf.Length; i++)
             {
                 var info = dirInf[i];
@@ -87,7 +87,7 @@ namespace UnityTools
         public static AssetBundleFile UnpackBundle(AssetBundleFile file, bool freeOriginalStream = true)
         {
             var ms = new MemoryStream();
-            file.Unpack(file.reader, new AssetsFileWriter(ms));
+            file.Unpack(file.Reader, new AssetsFileWriter(ms));
             ms.Position = 0;
 
             var newFile = new AssetBundleFile();
@@ -95,14 +95,14 @@ namespace UnityTools
 
             if (freeOriginalStream)
             {
-                file.reader.Close();
+                file.Reader.Close();
             }
             return newFile;
         }
 
         public static AssetBundleFile UnpackBundleToStream(AssetBundleFile file, Stream stream, bool freeOriginalStream = true)
         {
-            file.Unpack(file.reader, new AssetsFileWriter(stream));
+            file.Unpack(file.Reader, new AssetsFileWriter(stream));
             stream.Position = 0;
 
             var newFile = new AssetBundleFile();
@@ -110,23 +110,23 @@ namespace UnityTools
 
             if (freeOriginalStream)
             {
-                file.reader.Close();
+                file.Reader.Close();
             }
             return newFile;
         }
 
-        public static AssetBundleDirectoryInfo06 GetDirInfo(AssetBundleFile bundle, int index)
+        public static AssetBundleDirectoryInfo GetDirInfo(AssetBundleFile bundle, int index)
         {
-            var dirInf = bundle.bundleInf6.dirInf;
+            var dirInf = bundle.Metadata.DirectoryInfo;
             return dirInf[index];
         }
 
-        public static AssetBundleDirectoryInfo06 GetDirInfo(AssetBundleFile bundle, string name)
+        public static AssetBundleDirectoryInfo GetDirInfo(AssetBundleFile bundle, string name)
         {
-            var dirInf = bundle.bundleInf6.dirInf;
+            var dirInf = bundle.Metadata.DirectoryInfo;
             foreach (var info in dirInf)
             {
-                if (info.name == name)
+                if (info.Name == name)
                 {
                     return info;
                 }
@@ -136,31 +136,31 @@ namespace UnityTools
 
         public static void UnpackInfoOnly(this AssetBundleFile bundle)
         {
-            var reader = bundle.reader;
+            var reader = bundle.Reader;
 
             reader.Position = 0;
             if (!bundle.Read(reader, true))
                 return;
 
-            reader.Position = bundle.bundleHeader6.GetBundleInfoOffset();
+            reader.Position = bundle.Header.GetBundleInfoOffset();
             MemoryStream blocksInfoStream;
-            var compressedSize = (int)bundle.bundleHeader6.compressedSize;
-            switch (bundle.bundleHeader6.GetCompressionType())
+            var compressedSize = (int)bundle.Header.CompressedSize;
+            switch (bundle.Header.GetCompressionType())
             {
-                case 1:
+                case AssetBundleCompressionType.Lzma:
                 {
                     using var mstream = new MemoryStream(reader.ReadBytes(compressedSize));
                     blocksInfoStream = SevenZipHelper.StreamDecompress(mstream);
                     break;
                 }
-                case 2:
-                case 3:
+                case AssetBundleCompressionType.Lz4:
+                case AssetBundleCompressionType.Lz4HC:
                 {
-                    var uncompressedBytes = new byte[bundle.bundleHeader6.decompressedSize];
-                    using (var mstream = new MemoryStream(reader.ReadBytes(compressedSize)))
+                    var uncompressedBytes = new byte[bundle.Header.DecompressedSize];
+                    using (var ms = new MemoryStream(reader.ReadBytes(compressedSize)))
                     {
-                        var decoder = new Lz4DecoderStream(mstream);
-                        decoder.Read(uncompressedBytes, 0, (int)bundle.bundleHeader6.decompressedSize);
+                        var decoder = new Lz4DecoderStream(ms);
+                        decoder.Read(uncompressedBytes, 0, (int)bundle.Header.DecompressedSize);
                         decoder.Dispose();
                     }
                     blocksInfoStream = new MemoryStream(uncompressedBytes);
@@ -170,13 +170,13 @@ namespace UnityTools
                     blocksInfoStream = null;
                     break;
             }
-            if (bundle.bundleHeader6.GetCompressionType() != 0)
+            if (bundle.Header.GetCompressionType() != 0)
             {
                 using var memReader = new AssetsFileReader(blocksInfoStream)
                 {
                     Position = 0
                 };
-                bundle.bundleInf6.Read(0, memReader);
+                bundle.Metadata.Read(0, memReader);
             }
         }
     }
