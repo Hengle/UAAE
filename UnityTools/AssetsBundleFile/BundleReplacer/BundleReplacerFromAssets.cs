@@ -25,26 +25,19 @@ namespace UnityTools
             this.fileId = fileId;
             this.bundleListIndex = bundleListIndex;
         }
-        public override BundleReplacementType GetReplacementType()
-        {
-            return BundleReplacementType.AddOrModify;
-        }
-        public override int GetBundleListIndex()
-        {
-            return bundleListIndex;
-        }
-        public override string GetOriginalEntryName()
-        {
-            return oldName;
-        }
-        public override string GetEntryName()
-        {
-            return newName;
-        }
-        public override long GetSize()
-        {
-            return -1; //todo
-        }
+
+        public override BundleReplacementType GetReplacementType() => BundleReplacementType.AddOrModify;
+
+        public override int GetBundleListIndex() => bundleListIndex;
+
+        public override string GetOriginalEntryName() => oldName;
+
+        public override string GetEntryName() => newName;
+
+        public override bool HasSerializedData() => true;
+
+        public override long GetSize() => -1; //todo
+
         public override bool Init(AssetsFileReader entryReader, long entryPos, long entrySize, ClassDatabaseFile typeMeta = null)
         {
             if (assetsFile != null)
@@ -64,11 +57,9 @@ namespace UnityTools
             }
             return true;
         }
-        public override void Uninit()
-        {
-            assetsFile.Close();
-            return;
-        }
+
+        public override void Uninit() => assetsFile.Close();
+
         public override long Write(AssetsFileWriter writer)
         {
             //memorystream for alignment issue
@@ -78,13 +69,14 @@ namespace UnityTools
             writer.Write(ms.ToArray());
             return writer.Position;
         }
+
         public override long WriteReplacer(AssetsFileWriter writer)
         {
             writer.Write((short)4); //replacer type
             writer.Write((byte)0); //file type (0 bundle, 1 assets)
             writer.WriteCountStringInt16(oldName);
             writer.WriteCountStringInt16(newName);
-            writer.Write((byte)1); //probably hasSerializedData
+            writer.Write(HasSerializedData());
             writer.Write((long)replacers.Count);
             foreach (var replacer in replacers)
             {
@@ -92,10 +84,6 @@ namespace UnityTools
             }
 
             return writer.Position;
-        }
-        public override bool HasSerializedData()
-        {
-            return true;
         }
     }
 }

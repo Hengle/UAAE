@@ -74,7 +74,7 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void LoadAssetsToList()
         {
-            MainInstance.file.reader.bigEndian = false;
+            MainInstance.file.reader.BigEndian = false;
             Workspace.LoadedFiles.Add(MainInstance);
             foreach (var info in MainInstance.table.Info)
             {
@@ -86,7 +86,7 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 if (dep != null)
                 {
-                    dep.file.reader.bigEndian = false;
+                    dep.file.reader.BigEndian = false;
                     Workspace.LoadedFiles.Add(dep);
                     foreach (var inf in dep.table.Info)
                     {

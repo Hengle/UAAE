@@ -7,13 +7,13 @@ namespace UnityTools
         /// <summary>
         /// Bundle signature such as UnityFS, UnityRaw, UnityWeb or UnityArchive
         /// </summary>
-        public string Signature;
+        public AssetBundleType Signature;
         /// <summary>
         /// Bundle generation
         /// </summary>
         public uint Version;
         /// <summary>
-        /// Minimal unity version to support .assets files
+        /// Minimum unity version to support .assets files
         /// </summary>
         public string MinUnityVersion;
         /// <summary>
@@ -35,13 +35,13 @@ namespace UnityTools
         /// </summary>
         public uint DecompressedSize;
         /// <summary>
-        /// Header's flags
+        /// Header's flags (equal to 0x00 if not UnityFS)
         /// </summary>
         public uint Flags;
         /// <summary>
         /// ???
         /// </summary>
-        public byte Unknown1;
+        public byte Unknown1; // bool???
         #endregion
 
         #region For version 3 and up
@@ -58,7 +58,7 @@ namespace UnityTools
         /// </summary>
         public uint MinimumStreamedBytes;
         /// <summary>
-        /// Offset to the first .assets file in DirectoriesInfo
+        /// Offset to the first .assets file in DirectoryInfo
         /// </summary>
         public uint DataOffset;
         /// <summary>
@@ -78,13 +78,14 @@ namespace UnityTools
         /// <summary>
         /// ???
         /// </summary>
-        public byte Unknown2; // guess this is a boolean
+        public byte Unknown2; // bool???
         #endregion
 
         public void Read(AssetsFileReader reader)
         {
-            reader.bigEndian = true;
-            Signature = reader.ReadNullTerminated();
+            reader.BigEndian = true;
+            reader.Header = this;
+            Net35Polyfill.TryParse(reader.ReadNullTerminated(), out Signature);
             Version = reader.ReadUInt32();
             MinUnityVersion = reader.ReadNullTerminated();
             UnityVersion = reader.ReadNullTerminated();
@@ -94,7 +95,7 @@ namespace UnityTools
                 CompressedSize = reader.ReadUInt32();
                 DecompressedSize = reader.ReadUInt32();
                 Flags = reader.ReadUInt32();
-                if (Signature != "UnityFS")
+                if (Signature != AssetBundleType.UnityFS)
                 {
                     Unknown1 = reader.ReadByte();
                 }
@@ -136,8 +137,9 @@ namespace UnityTools
 
         public void Write(AssetsFileWriter writer)
         {
-            writer.bigEndian = true;
-            writer.WriteNullTerminated(Signature);
+            writer.BigEndian = true;
+            writer.Header = this;
+            writer.WriteNullTerminated(Signature.ToString());
             writer.Write(Version);
             writer.WriteNullTerminated(MinUnityVersion);
             writer.WriteNullTerminated(UnityVersion);
@@ -147,7 +149,7 @@ namespace UnityTools
                 writer.Write(CompressedSize);
                 writer.Write(DecompressedSize);
                 writer.Write(Flags);
-                if (Signature != "UnityFS")
+                if (Signature != AssetBundleType.UnityFS)
                 {
                     writer.Write(Unknown1);
                 }
@@ -204,13 +206,13 @@ namespace UnityTools
                 if (IsOldWebPluginCompatibility())
                     return ((ret + 0x0A) + 15) >> 4 << 4;
 
-                return ((ret + Signature.Length + 1) + 15) >> 4 << 4;
+                return ((ret + Signature.ToString().Length + 1) + 15) >> 4 << 4;
             }
 
             if (IsOldWebPluginCompatibility())
                 return ret + 0x0A;
 
-            return ret + Signature.Length + 1;
+            return ret + Signature.ToString().Length + 1;
         }
 
         public long GetFileDataOffset()
@@ -218,16 +220,16 @@ namespace UnityTools
             long ret = 0;
             switch (Signature)
             {
-                case "UnityArchive":
+                case AssetBundleType.UnityArchive:
                     return CompressedSize;
-                case "UnityFS":
-                case "UnityWeb":
+                case AssetBundleType.UnityFS:
+                case AssetBundleType.UnityWeb:
                 {
                     ret = MinUnityVersion.Length + UnityVersion.Length + 0x1A;
                     if (IsOldWebPluginCompatibility())
                         ret += 0x0A;
                     else
-                        ret += Signature.Length + 1;
+                        ret += Signature.ToString().Length + 1;
                     break;
                 }
             }

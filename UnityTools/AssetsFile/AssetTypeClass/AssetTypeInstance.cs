@@ -7,7 +7,7 @@
         public byte[] memoryToClear;
         public AssetTypeInstance(AssetTypeTemplateField[] baseFields, AssetsFileReader reader, long filePos)
         {
-            reader.bigEndian = false;
+            reader.BigEndian = false;
             reader.Position = filePos;
             this.baseFieldCount = baseFields.Length;
             this.baseFields = new AssetTypeValueField[baseFieldCount];

@@ -7,9 +7,9 @@
         public uint Flags;
         public string Name;
 
-        public void Read(AssetsFileReader reader, uint version = 6)
+        public void Read(AssetsFileReader reader)
         {
-            if (version >= 6)
+            if (reader.Header.Version >= 6)
             {
                 Offset = reader.ReadInt64();
                 DecompressedSize = reader.ReadInt64();
@@ -26,10 +26,19 @@
 
         public void Write(AssetsFileWriter writer)
         {
-            writer.Write(Offset);
-            writer.Write(DecompressedSize);
-            writer.Write(Flags);
-            writer.WriteNullTerminated(Name);
+            if (writer.Header.Version >= 6)
+            {
+                writer.Write(Offset);
+                writer.Write(DecompressedSize);
+                writer.Write(Flags);
+                writer.WriteNullTerminated(Name);
+            }
+            else
+            {
+                writer.WriteNullTerminated(Name);
+                writer.Write(Offset);
+                writer.Write(DecompressedSize);
+            }
         }
 
         public long GetAbsolutePos(AssetBundleHeader header)

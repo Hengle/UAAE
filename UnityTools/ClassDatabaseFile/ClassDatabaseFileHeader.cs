@@ -19,7 +19,7 @@ namespace UnityTools
         public uint stringTablePos;
         public void Read(AssetsFileReader reader)
         {
-            reader.bigEndian = false;
+            reader.BigEndian = false;
             header = reader.ReadStringLength(4);
             if (header != "cldb")
                 throw new Exception("header not detected. is this a cldb file?");
@@ -55,7 +55,7 @@ namespace UnityTools
         }
         public void Write(AssetsFileWriter writer)
         {
-            writer.bigEndian = false;
+            writer.BigEndian = false;
             writer.Write(Encoding.ASCII.GetBytes(header));
             writer.Write(fileVersion);
             if (fileVersion == 4)

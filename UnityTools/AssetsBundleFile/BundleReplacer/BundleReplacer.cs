@@ -9,6 +9,9 @@
         public abstract string GetOriginalEntryName();
         public abstract string GetEntryName();
 
+        //todo, what does this affect
+        public abstract bool HasSerializedData();
+
         //doc says this value isn't reliable, most likely referring to the FromAssets replacer?
         //anyway, that makes this basically useless if we don't know all values so this just goes unused
         public abstract long GetSize();
@@ -25,9 +28,6 @@
         public abstract long Write(AssetsFileWriter writer);
 
         public abstract long WriteReplacer(AssetsFileWriter writer);
-
-        //todo, what does this affect
-        public abstract bool HasSerializedData();
 
         public static BundleReplacer ReadBundleReplacer(AssetsFileReader reader)
         {

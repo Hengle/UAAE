@@ -26,7 +26,7 @@ namespace AssetsAdvancedEditor.Assets
             using var ms = new MemoryStream();
             Writer = new AssetsFileWriter(ms)
             {
-                bigEndian = false
+                BigEndian = false
             };
             try
             {

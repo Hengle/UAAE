@@ -12,7 +12,7 @@ namespace UnityTools
         public AssetBundleHeader Header;
         public AssetBundleMetadata Metadata;
 
-        public AssetsFileReader Reader; // todo, AssetBundleReader
+        public AssetsFileReader Reader;
 
         public void Close() => Reader.Close();
 
@@ -21,7 +21,7 @@ namespace UnityTools
         {
             Reader = reader;
             Header = new AssetBundleHeader();
-            Header.Read(reader);
+            Header.Read(Reader);
 
             Metadata = new AssetBundleMetadata();
             if (Header.GetCompressionType() != 0)
@@ -135,7 +135,7 @@ namespace UnityTools
                     {
                         Offset = currentOffset,
                         DecompressedSize = replacer.GetSize(),
-                        Flags = 0x04, //idk it just works (tm)
+                        Flags = (uint)(replacer.HasSerializedData() ? 0x04 : 0x00),
                         Name = replacer.GetEntryName()
                     };
                     currentOffset += info.DecompressedSize;

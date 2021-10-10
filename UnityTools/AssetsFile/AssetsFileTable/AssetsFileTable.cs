@@ -19,7 +19,7 @@ namespace UnityTools
             File = file;
             Reader = file.reader;
             ReaderPar = file.readerPar;
-            Reader.bigEndian = file.header.Endianness;
+            Reader.BigEndian = file.header.Endianness;
             Reader.Position = file.AssetTablePos;
             InfoCount = file.AssetCount;
             Info = new AssetFileInfoEx[InfoCount];

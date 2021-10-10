@@ -44,7 +44,7 @@
 
         public void Read(bool hasTypeTree, AssetsFileReader reader, uint version, uint typeVersion = 0) // typeVersion not implemented yet
         {
-            reader.bigEndian = true;
+            reader.BigEndian = true;
             Type = reader.ReadNullTerminated();
             Name = reader.ReadNullTerminated();
             ByteSize = reader.ReadUInt32();
@@ -68,7 +68,7 @@
 
         public void Write(bool hasTypeTree, AssetsFileWriter writer)
         {
-            writer.bigEndian = true;
+            writer.BigEndian = true;
             writer.WriteNullTerminated(Type);
             writer.WriteNullTerminated(Name);
             writer.Write(ByteSize);

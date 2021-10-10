@@ -12,51 +12,41 @@
         public BundleReplacerFromMemory(string oldName, string newName, bool hasSerializedData, byte[] buffer, long size, int bundleListIndex = -1)
         {
             this.oldName = oldName;
-            if (newName == null)
-                this.newName = oldName;
-            else
-                this.newName = newName;
+            this.newName = newName ?? oldName;
             this.hasSerializedData = hasSerializedData;
             this.buffer = buffer;
-            if (size == -1)
-                this.size = buffer.Length;
-            else
-                this.size = size;
+            this.size = size == -1 ? buffer.Length : size;
             this.bundleListIndex = bundleListIndex;
         }
-        public override BundleReplacementType GetReplacementType()
-        {
-            return BundleReplacementType.AddOrModify;
-        }
-        public override int GetBundleListIndex()
-        {
-            return bundleListIndex;
-        }
-        public override string GetOriginalEntryName()
-        {
-            return oldName;
-        }
-        public override string GetEntryName()
-        {
-            return newName;
-        }
-        public override long GetSize()
-        {
-            return size;
-        }
+
+        public override BundleReplacementType GetReplacementType() => BundleReplacementType.AddOrModify;
+
+        public override int GetBundleListIndex() => bundleListIndex;
+
+        public override string GetOriginalEntryName() => oldName;
+
+        public override string GetEntryName() => newName;
+
+        public override bool HasSerializedData() => hasSerializedData;
+
+        public override long GetSize() => size;
+
         public override bool Init(AssetsFileReader entryReader, long entryPos, long entrySize, ClassDatabaseFile typeMeta = null)
         {
             return true;
         }
+
         public override void Uninit()
         {
             return;
         }
+
         public override long Write(AssetsFileWriter writer)
         {
             writer.Write(buffer);
             return writer.Position;
         }
+
         public override long WriteReplacer(AssetsFileWriter writer)
         {
             writer.Write((short)3); //replacer type
@@ -68,10 +58,6 @@
             Write(writer);
 
             return writer.Position;
-        }
-        public override bool HasSerializedData()
-        {
-            return hasSerializedData;
         }
     }
 }

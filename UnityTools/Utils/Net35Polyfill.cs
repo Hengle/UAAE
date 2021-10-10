@@ -22,5 +22,13 @@ namespace UnityTools
                 bytes -= read;
             }
         }
+
+        //https://stackoverflow.com/a/15017429
+        public static bool TryParse<TEnum>(string value, out TEnum result) where TEnum : struct, IConvertible
+        {
+            var retValue = value != null && Enum.IsDefined(typeof(TEnum), value);
+            result = retValue ? (TEnum)Enum.Parse(typeof(TEnum), value) : default;
+            return retValue;
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace UnityTools
 
                 newReader = new AssetsFileReader(ms)
                 {
-                    bigEndian = false
+                    BigEndian = false
                 };
             }
 

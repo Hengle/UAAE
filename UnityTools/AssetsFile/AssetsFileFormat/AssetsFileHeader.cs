@@ -1,7 +1,7 @@
 ﻿namespace UnityTools
 {
     /// <summary>
-    /// The assets file header is found at the beginning of an .assets, .asset, .sharedassets, etc. file. The header is always using big endian byte order.
+    /// The assets file header is found at the beginning of an .assets, .asset, sharedassetsn.assets, leveln files. The header is always using big endian byte order.
     /// </summary>
     public class AssetsFileHeader
     {
@@ -71,7 +71,7 @@
                 FileSize = reader.ReadInt64();
                 DataOffset = reader.ReadInt64();
             }
-            reader.bigEndian = Endianness;
+            reader.BigEndian = Endianness;
             if (Version < 0x16) return;
             unknown = reader.ReadUInt32(); //seen as 0x00 everywhere
             FromBundle = reader.ReadUInt32(); //seen as 0x1b in bundles and 0x00 everywhere else
@@ -79,7 +79,7 @@
 
         public void Write(AssetsFileWriter writer)
         {
-            writer.bigEndian = true;
+            writer.BigEndian = true;
             if (Version >= 0x16)
             {
                 writer.Write(0);
@@ -112,7 +112,7 @@
                 writer.Write(FileSize);
                 writer.Write(DataOffset);
             }
-            writer.bigEndian = Endianness;
+            writer.BigEndian = Endianness;
             if (Version >= 0x16)
             {
                 writer.Write(unknown);

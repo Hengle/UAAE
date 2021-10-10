@@ -19,7 +19,7 @@ namespace UnityTools
             byte[] data;
             using var ms = new MemoryStream();
             using var w = new AssetsFileWriter(ms);
-            w.bigEndian = bigEndian;
+            w.BigEndian = bigEndian;
             instance.Write(w);
             data = ms.ToArray();
             return data;
@@ -117,7 +117,7 @@ namespace UnityTools
             byte[] data;
             using var ms = new MemoryStream();
             using var w = new AssetsFileWriter(ms);
-            w.bigEndian = bigEndian;
+            w.BigEndian = bigEndian;
             valueField.Write(w);
             data = ms.ToArray();
             return data;

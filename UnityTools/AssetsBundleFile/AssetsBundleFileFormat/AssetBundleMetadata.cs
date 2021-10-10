@@ -15,36 +15,68 @@
         {
             reader.Position = filePos;
             Hash = new Hash128(reader);
-            BlockCount = reader.ReadInt32();
-            BlocksInfo = new AssetBundleBlockInfo[BlockCount];
-            for (var i = 0; i < BlockCount; i++)
+            if (reader.Header.Version >= 6)
             {
-                BlocksInfo[i] = new AssetBundleBlockInfo();
-                BlocksInfo[i].Read(reader);
-            }
+                BlockCount = reader.ReadInt32();
+                BlocksInfo = new AssetBundleBlockInfo[BlockCount];
+                for (var i = 0; i < BlockCount; i++)
+                {
+                    BlocksInfo[i] = new AssetBundleBlockInfo();
+                    BlocksInfo[i].Read(reader);
+                }
 
-            DirectoryCount = reader.ReadInt32();
-            DirectoryInfo = new AssetBundleDirectoryInfo[DirectoryCount];
-            for (var i = 0; i < DirectoryCount; i++)
+                if (reader.Header.IsBlocksAndDirectoryInfoCombined())
+                {
+                    DirectoryCount = reader.ReadInt32();
+                    DirectoryInfo = new AssetBundleDirectoryInfo[DirectoryCount];
+                    for (var i = 0; i < DirectoryCount; i++)
+                    {
+                        DirectoryInfo[i] = new AssetBundleDirectoryInfo();
+                        DirectoryInfo[i].Read(reader);
+                    }
+                }
+            }
+            else
             {
-                DirectoryInfo[i] = new AssetBundleDirectoryInfo();
-                DirectoryInfo[i].Read(reader);
+                DirectoryCount = reader.ReadInt32();
+                DirectoryInfo = new AssetBundleDirectoryInfo[DirectoryCount];
+                for (var i = 0; i < DirectoryCount; i++)
+                {
+                    DirectoryInfo[i] = new AssetBundleDirectoryInfo();
+                    DirectoryInfo[i].Read(reader);
+                }
+                reader.Align();
             }
         }
 
         public void Write(AssetsFileWriter writer)
         {
             Hash.Write(writer);
-            writer.Write(BlockCount);
-            for (var i = 0; i < BlockCount; i++)
+            if (writer.Header.Version >= 6)
             {
-                BlocksInfo[i].Write(writer);
-            }
+                writer.Write(BlockCount);
+                for (var i = 0; i < BlockCount; i++)
+                {
+                    BlocksInfo[i].Write(writer);
+                }
 
-            writer.Write(DirectoryCount);
-            for (var i = 0; i < DirectoryCount; i++)
+                if (writer.Header.IsBlocksAndDirectoryInfoCombined())
+                {
+                    writer.Write(DirectoryCount);
+                    for (var i = 0; i < DirectoryCount; i++)
+                    {
+                        DirectoryInfo[i].Write(writer);
+                    }
+                }
+            }
+            else
             {
-                DirectoryInfo[i].Write(writer);
+                writer.Write(DirectoryCount);
+                for (var i = 0; i < DirectoryCount; i++)
+                {
+                    DirectoryInfo[i].Write(writer);
+                }
+                writer.Align();
             }
         }
     }

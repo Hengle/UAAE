@@ -66,7 +66,7 @@ namespace UnityTools
 
                     newReader = new AssetsFileReader(ms)
                     {
-                        bigEndian = false
+                        BigEndian = false
                     };
                 }
                 for (var i = 0; i < header.fileCount; i++)
@@ -117,7 +117,7 @@ namespace UnityTools
                     }
 
                     newReader = new AssetsFileReader(ms);
-                    newReader.bigEndian = false;
+                    newReader.BigEndian = false;
                 }
             }
             stringTable = newReader.ReadBytes((int)header.stringTableLenUncompressed);

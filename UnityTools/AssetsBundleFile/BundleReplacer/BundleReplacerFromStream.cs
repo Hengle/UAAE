@@ -15,53 +15,43 @@ namespace UnityTools
         public BundleReplacerFromStream(string oldName, string newName, bool hasSerializedData, Stream stream, long offset, long size, int bundleListIndex = -1)
         {
             this.oldName = oldName;
-            if (newName == null)
-                this.newName = oldName;
-            else
-                this.newName = newName;
+            this.newName = newName ?? oldName;
             this.hasSerializedData = hasSerializedData;
             this.stream = stream;
             this.offset = offset;
-            if (size == -1)
-                this.size = stream.Length;
-            else
-                this.size = size;
+            this.size = size == -1 ? stream.Length : size;
             this.bundleListIndex = bundleListIndex;
         }
-        public override BundleReplacementType GetReplacementType()
-        {
-            return BundleReplacementType.AddOrModify;
-        }
-        public override int GetBundleListIndex()
-        {
-            return bundleListIndex;
-        }
-        public override string GetOriginalEntryName()
-        {
-            return oldName;
-        }
-        public override string GetEntryName()
-        {
-            return newName;
-        }
-        public override long GetSize()
-        {
-            return size;
-        }
+
+        public override BundleReplacementType GetReplacementType() => BundleReplacementType.AddOrModify;
+
+        public override int GetBundleListIndex() => bundleListIndex;
+
+        public override string GetOriginalEntryName() => oldName;
+
+        public override string GetEntryName() => newName;
+
+        public override bool HasSerializedData() => hasSerializedData;
+
+        public override long GetSize() => size;
+
         public override bool Init(AssetsFileReader entryReader, long entryPos, long entrySize, ClassDatabaseFile typeMeta = null)
         {
             return true;
         }
+        
         public override void Uninit()
         {
             return;
         }
+
         public override long Write(AssetsFileWriter writer)
         {
             writer.BaseStream.Position = offset;
             stream.CopyToCompat(writer.BaseStream, size);
             return writer.Position;
         }
+
         public override long WriteReplacer(AssetsFileWriter writer)
         {
             writer.Write((short)2); //replacer type
@@ -73,10 +63,6 @@ namespace UnityTools
             Write(writer);
 
             return writer.Position;
-        }
-        public override bool HasSerializedData()
-        {
-            return hasSerializedData;
         }
     }
 }

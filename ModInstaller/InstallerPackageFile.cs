@@ -17,7 +17,7 @@ namespace ModInstaller
 
         public bool Read(AssetsFileReader reader, bool prefReplacersInMemory = false)
         {
-            reader.bigEndian = false;
+            reader.BigEndian = false;
 
             magic = reader.ReadStringLength(4);
             if (magic != "EMIP")
@@ -73,7 +73,7 @@ namespace ModInstaller
 
         public void Write(AssetsFileWriter writer)
         {
-            writer.bigEndian = false;
+            writer.BigEndian = false;
 
             writer.Write(Encoding.ASCII.GetBytes(magic));
 
@@ -171,8 +171,8 @@ namespace ModInstaller
                         //adder/replacer?
                         case 2:
                         {
-                            Hash128 propertiesHash;
-                            var scriptHash = new Hash128();
+                            var propertiesHash = new Hash128(new byte[16]);
+                            var scriptHash = new Hash128(new byte[16]);
                             ClassDatabaseFile classData = null;
                             AssetsReplacer replacer;
 
@@ -208,20 +208,24 @@ namespace ModInstaller
                                 replacer = new AssetsReplacerFromMemory(fileId, pathId, classId, monoScriptIndex, data);
                             }
                             else
-                            {
+                            { 
                                 replacer = new AssetsReplacerFromStream(fileId, pathId, classId, monoScriptIndex, reader.BaseStream, reader.Position, size);
                                 reader.Position += size;
                             }
 
-                            if (propertiesHash != null)
+                            if (hasPropertiesHash)
+                            {
                                 replacer.SetPropertiesHash(propertiesHash);
-                            if (scriptHash != null)
+                            }
+                            if (hasScriptHash)
+                            {
                                 replacer.SetScriptIDHash(scriptHash);
-                            if (scriptHash != null)
                                 replacer.SetTypeInfo(classData, null, false); //idk what the last two are supposed to do
+                            }
                             if (preloadDependencyCount != 0)
+                            {
                                 replacer.SetPreloadDependencies(preloadDependencies);
-
+                            }
                             return replacer;
                         }
                     }

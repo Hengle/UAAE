@@ -13,7 +13,7 @@ namespace UnityTools
         public List<ClassDatabaseFileRef> files;
         public void Read(AssetsFileReader reader)
         {
-            reader.bigEndian = false;
+            reader.BigEndian = false;
             magic = reader.ReadStringLength(4);
             fileVersion = reader.ReadByte();
             compressionType = reader.ReadByte();
