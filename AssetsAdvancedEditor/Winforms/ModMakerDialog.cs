@@ -22,8 +22,6 @@ namespace AssetsAdvancedEditor.Winforms
             InitializeComponent();
             FromBundle = workspace.FromBundle;
             Workspace = workspace;
-            affectedBundleFiles = new TreeNode("Affected bundles");
-            affectedAssetsFiles = new TreeNode("Affected assets files");
             filesItems = new List<ModMakerItem>();
             filesDict = new Dictionary<string, ModMakerItem>();
             PopulateTree();
@@ -31,38 +29,34 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void PopulateTree()
         {
+            affectedBundleFiles = new TreeNode("Affected bundles");
+            affectedAssetsFiles = new TreeNode("Affected assets files");
+
+            affectedFilesList.Nodes.Add(affectedBundleFiles);
+            affectedFilesList.Nodes.Add(affectedAssetsFiles);
+
             var rootPath = boxModBaseFolderPath.Text;
             if (string.IsNullOrEmpty(rootPath))
             {
                 rootPath = Workspace.AssetsRootDir;
             }
 
+            TreeNode curNode = null;
             foreach (var (assetId, replacer) in Workspace.NewAssets)
             {
                 var file = assetId.fileName;
-                var fileNode = new TreeNode(file);
                 if (!filesDict.ContainsKey(file))
                 {
                     var newFileItem = new ModMakerItem(file, rootPath);
                     filesItems.Add(newFileItem);
                     filesDict.Add(file, newFileItem);
-                    if (FromBundle)
-                    {
-                        affectedBundleFiles.Nodes.Add(fileNode);
-                    }
-                    else
-                    {
-                        affectedAssetsFiles.Nodes.Add(fileNode);
-                    }
+                    curNode = affectedAssetsFiles.Nodes.Add(file);
                 }
 
                 var modMakerReplacer = new ModMakerReplacerItem(assetId, replacer);
                 filesDict[file].Replacers.Add(modMakerReplacer);
-                fileNode.Nodes.Add(modMakerReplacer.DisplayText);
+                curNode?.Nodes.Add(modMakerReplacer.DisplayText);
             }
-
-            affectedFilesList.Nodes.Add(affectedBundleFiles);
-            affectedFilesList.Nodes.Add(affectedAssetsFiles);
         }
 
         private void BuildEmip(string path)
@@ -94,8 +88,8 @@ namespace AssetsAdvancedEditor.Winforms
                 emip.affectedFiles.Add(desc);
             }
 
-            var fs = File.OpenWrite(path);
-            var writer = new AssetsFileWriter(fs);
+            using var fs = File.OpenWrite(path);
+            using var writer = new AssetsFileWriter(fs);
             emip.Write(writer);
         }
 

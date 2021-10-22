@@ -323,6 +323,7 @@
             // 
             // MenuCreateStandaloneexeInstaller
             // 
+            this.MenuCreateStandaloneexeInstaller.Enabled = false;
             this.MenuCreateStandaloneexeInstaller.Name = "MenuCreateStandaloneexeInstaller";
             this.MenuCreateStandaloneexeInstaller.Size = new System.Drawing.Size(237, 22);
             this.MenuCreateStandaloneexeInstaller.Text = "Create standalone .exe installer";
