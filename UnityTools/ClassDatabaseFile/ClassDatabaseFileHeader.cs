@@ -9,12 +9,12 @@ namespace UnityTools
         public byte fileVersion;
 
         public byte flags;
-        public byte compressionType; //0 - none, 1 - lz4
+        public byte compressionType;
         public uint compressedSize, uncompressedSize;
 
         public byte unityVersionCount;
         public string[] unityVersions;
-        
+
         public uint stringTableLen;
         public uint stringTablePos;
         public void Read(AssetsFileReader reader)
@@ -22,7 +22,8 @@ namespace UnityTools
             reader.BigEndian = false;
             header = reader.ReadStringLength(4);
             if (header != "cldb")
-                throw new Exception("header not detected. is this a cldb file?");
+                throw new Exception("Invalid classdata header! Are you sure this is a cldb file?");
+
             fileVersion = reader.ReadByte();
             flags = 0;
             if (fileVersion == 4)
@@ -53,6 +54,7 @@ namespace UnityTools
             stringTableLen = reader.ReadUInt32();
             stringTablePos = reader.ReadUInt32();
         }
+
         public void Write(AssetsFileWriter writer)
         {
             writer.BigEndian = false;
@@ -63,7 +65,6 @@ namespace UnityTools
             switch (fileVersion)
             {
                 case 1:
-                    writer.Write((byte)0);
                     break;
                 case 2:
                     writer.Write(compressionType);

@@ -52,21 +52,16 @@ namespace UnityTools
             return null;
         }
 
-        public static Type_07 FindTypeTreeType_07ByID(TypeTree typeTree, AssetClassID id)
-        {
-            foreach (var type in typeTree.unity4Types)
-            {
-                if (type.ClassID == id)
-                    return type;
-            }
-            return null;
-        }
-
         public static Type_0D FindTypeTreeTypeByID(TypeTree typeTree, AssetClassID id, ushort scriptIndex)
         {
             foreach (var type in typeTree.unity5Types)
             {
+                //5.5+
                 if (type.ClassID == id && type.ScriptIndex == scriptIndex)
+                    return type;
+                //5.4-
+                if (type.ClassID < 0 && id is AssetClassID.MonoBehaviour &&
+                    (AssetClassID)(type.ScriptIndex - 0x10000) == type.ClassID)
                     return type;
             }
             return null;
@@ -106,7 +101,9 @@ namespace UnityTools
 
             if (file.typeTree.hasTypeTree)
             {
-                var ttType = file.typeTree.unity5Types[info.curFileTypeOrIndex];
+                var scriptId = GetScriptIndex(file, info);
+                var ttType = FindTypeTreeTypeByID(file.typeTree, info.curFileType, scriptId);
+
                 var ttTypeName = ttType.Children[0].GetTypeString(ttType.stringTable);
                 if (ttType.Children.Length == 0) return type.name.GetString(cldb); //fallback to cldb
                 if (ttType.Children.Length > 1 && ttType.Children[1].GetNameString(ttType.stringTable) == "m_Name")

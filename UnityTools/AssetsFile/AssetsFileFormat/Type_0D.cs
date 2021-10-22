@@ -28,15 +28,8 @@ namespace UnityTools
                 IsStrippedType = reader.ReadBoolean();
             }
 
-            if (version >= 0x11)
-            {
-                ScriptIndex = reader.ReadUInt16();
-            }
+            ScriptIndex = version >= 0x11 ? reader.ReadUInt16() : (ushort)0xffff;
 
-            //if (ScriptIndex >= 0)
-            //{
-            //    ScriptHash = new Hash128(reader);
-            //}
             if (version < 0x11 && ClassID < 0 || version >= 0x11 && ClassID is AssetClassID.MonoBehaviour)
             {
                 ScriptHash = new Hash128(reader);
@@ -80,7 +73,7 @@ namespace UnityTools
                 writer.Write(ScriptIndex);
             }
 
-            if (ClassID is AssetClassID.MonoBehaviour)
+            if (version < 0x11 && ClassID < 0 || version >= 0x11 && ClassID is AssetClassID.MonoBehaviour)
             {
                 ScriptHash.Write(writer);
             }

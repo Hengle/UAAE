@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace UnityTools
 {
@@ -20,7 +21,7 @@ namespace UnityTools
             stringTableOffset = reader.ReadUInt32();
             stringTableLenUncompressed = reader.ReadUInt32();
             stringTableLenCompressed = reader.ReadUInt32();
-            if (fileVersion == 1)
+            if (fileVersion == 1) //is this even right?
                 fileBlockSize = reader.ReadUInt32();
             else
                 fileBlockSize = 0;
@@ -34,6 +35,28 @@ namespace UnityTools
                     length = reader.ReadUInt32(),
                     name = reader.ReadStringLength(15)
                 });
+            }
+        }
+        public void Write(AssetsFileWriter writer)
+        {
+            writer.BigEndian = false;
+            writer.Write(Encoding.ASCII.GetBytes(magic));
+            writer.Write(fileVersion);
+            writer.Write(compressionType);
+            writer.Write(stringTableOffset);
+            writer.Write(stringTableLenUncompressed);
+            writer.Write(stringTableLenCompressed);
+            if (fileVersion == 1)
+                writer.Write(fileBlockSize);
+            writer.Write(fileCount);
+            for (var i = 0; i < fileCount; i++)
+            {
+                var fileRef = files[i];
+                writer.Write(fileRef.offset);
+                writer.Write(fileRef.length);
+
+                var fixedFileName = fileRef.name.PadRight(15, '\0').Substring(0, 15);
+                writer.Write(Encoding.ASCII.GetBytes(fixedFileName));
             }
         }
     }

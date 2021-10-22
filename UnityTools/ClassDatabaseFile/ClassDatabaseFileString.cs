@@ -12,30 +12,15 @@
         public bool fromStringTable;
         public string GetString(ClassDatabaseFile file)
         {
-            if (fromStringTable)
-            {
-                return AssetsFileReader.ReadNullTerminatedArray(file.stringTable, str.stringTableOffset);
-            }
-            else
-            {
-                return str.@string;
-            }
+            return fromStringTable ? AssetsFileReader.ReadNullTerminatedArray(file.stringTable, str.stringTableOffset) : str.@string;
         }
+
         public void Read(AssetsFileReader reader)
         {
             fromStringTable = true;
             str.stringTableOffset = reader.ReadUInt32();
-            if (str.stringTableOffset != 0xFFFFFFFF)
-            {
-                fromStringTable = true;
-            }
-            else
-            {
-                //untested, probably wrong
-                fromStringTable = false;
-                str.@string = reader.ReadCountString();
-            }
         }
+
         public void Write(AssetsFileWriter writer)
         {
             writer.Write(str.stringTableOffset);

@@ -1,6 +1,6 @@
 ﻿namespace UnityTools
 {
-    public enum AssetClassID
+    public enum AssetClassID : uint
     {
         Object = 0,
         GameObject = 1,
