@@ -146,7 +146,19 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void btnRemoveChange_Click(object sender, EventArgs e)
         {
-            // todo
+            var choice = MsgBoxUtils.ShowWarningDialog("Are you sure you want to remove the selected change?");
+            if (choice != DialogResult.Yes) return;
+
+            var remNode = affectedFilesList.SelectedNode;
+            if (remNode.Parent != null)
+            {
+                filesDict.Remove(remNode.Parent.Text);
+                remNode.Remove();
+                foreach (var mmItem in filesItems)
+                {
+                    mmItem.Replacers.RemoveAll(r => r.DisplayText == remNode.Text);
+                }
+            }
         }
 
         private void btnOK_Click(object sender, EventArgs e)
