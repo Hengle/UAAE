@@ -28,23 +28,24 @@ namespace AssetsAdvancedEditor.Winforms
         private void Menu_Load(object sender, EventArgs e)
         {
             Am = new AssetsManager();
-            var classDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "classdata.tpk");
+            const string releaseClassData = "classdata_release.tpk";
+            var classDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, releaseClassData);
             if (File.Exists(classDataPath))
             {
                 try
                 {
                     Am.LoadClassPackage(classDataPath);
                     if (Am.classPackage.valid) return;
-                    MsgBoxUtils.ShowErrorDialog("Invalid classdata.tpk file.");
+                    MsgBoxUtils.ShowErrorDialog($"Invalid {releaseClassData} file.");
                 }
                 catch (Exception ex)
                 {
-                    MsgBoxUtils.ShowErrorDialog("Can't load classdata.tpk:\n" + ex);
+                    MsgBoxUtils.ShowErrorDialog($"Can't load {releaseClassData}:\n" + ex);
                 }
             }
             else
             {
-                MsgBoxUtils.ShowErrorDialog("Missing classdata.tpk by exe.\n" +
+                MsgBoxUtils.ShowErrorDialog($"Missing {releaseClassData} by exe.\n" +
                                             "Please make sure it exists.");
             }
             Close();
