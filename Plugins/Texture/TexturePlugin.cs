@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using AssetsAdvancedEditor.Plugins;
-using Texture.Options;
+using Plugins.Texture.Options;
 
-namespace Texture
+namespace Plugins.Texture
 {
     public class TexturePlugin : IPlugin
     {

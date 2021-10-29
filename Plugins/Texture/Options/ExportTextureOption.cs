@@ -8,7 +8,7 @@ using AssetsAdvancedEditor.Plugins;
 using AssetsAdvancedEditor.Utils;
 using UnityTools;
 
-namespace Texture.Options
+namespace Plugins.Texture.Options
 {
     public class ExportTextureOption : PluginOption
     {

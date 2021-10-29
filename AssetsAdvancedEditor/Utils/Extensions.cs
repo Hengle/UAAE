@@ -15,10 +15,11 @@ namespace AssetsAdvancedEditor.Utils
             return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
         }
 
-        public static void GetAssetItemFast(int fileId, AssetsFileInstance fileInst, ClassDatabaseFile cldb, AssetFileInfoEx info, out AssetItem item)
+        public static void GetAssetItemFast(int fileId, AssetsFileInstance fileInst, AssetsWorkspace workspace, AssetFileInfoEx info, out AssetItem item)
         {
             var file = fileInst.file;
             var classId = info.curFileType;
+            var cldb = workspace.Am.classFile;
             var cldbType = AssetHelper.FindAssetClassByID(cldb, classId);
             var reader = file.reader;
             string name;
@@ -38,6 +39,7 @@ namespace AssetsAdvancedEditor.Utils
 
             item = new AssetItem
             {
+                Cont = workspace.MakeAssetContainer(fileId, info),
                 ListName = "Unnamed asset",
                 Container = container,
                 TypeID = typeId,

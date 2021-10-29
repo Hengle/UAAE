@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using AssetsAdvancedEditor.Assets;
 using UnityTools;
@@ -18,7 +17,7 @@ namespace AssetsAdvancedEditor.Plugins
             Am = am;
         }
 
-        public bool LoadPlugin(string path)
+        public bool LoadPluginsLibrary(string path)
         {
             var asm = Assembly.LoadFrom(path);
             foreach (var type in asm.GetTypes())
@@ -34,15 +33,6 @@ namespace AssetsAdvancedEditor.Plugins
                 return true;
             }
             return false;
-        }
-
-        public void LoadPluginsInDirectory(string directory)
-        {
-            Directory.CreateDirectory(directory);
-            foreach (var file in Directory.EnumerateFiles(directory, "*.dll"))
-            {
-                LoadPlugin(file);
-            }
         }
 
         public List<PluginMenuInfo> GetSupportedPlugins(List<AssetItem> selectedItems)

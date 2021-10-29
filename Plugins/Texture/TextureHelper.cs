@@ -3,7 +3,7 @@ using System.Linq;
 using AssetsAdvancedEditor.Assets;
 using UnityTools;
 
-namespace Texture
+namespace Plugins.Texture
 {
     public static class TextureHelper
     {

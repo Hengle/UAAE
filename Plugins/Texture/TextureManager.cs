@@ -5,7 +5,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Size = System.Drawing.Size;
 
-namespace Texture
+namespace Plugins.Texture
 {
     public class TextureManager
     {

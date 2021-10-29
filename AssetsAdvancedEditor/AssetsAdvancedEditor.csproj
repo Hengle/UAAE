@@ -39,7 +39,6 @@
       <ReleaseFiles Include="$(SolutionDir)ReleaseFiles\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(ReleaseFiles)" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
-    <MakeDir Directories="$(OutputPath)Plugins" ContinueOnError="true" />
   </Target>
   
   <Target Name="UAAEAfterPublish" AfterTargets="Publish" Condition="'$(SolutionDir)' != '*Undefined*'">
@@ -47,7 +46,6 @@
       <ReleaseFiles Include="$(SolutionDir)ReleaseFiles\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(ReleaseFiles)" DestinationFolder="$(PublishDir)" ContinueOnError="true" />
-    <MakeDir Directories="$(PublishDir)Plugins" ContinueOnError="true" />
   </Target>
 
 </Project>

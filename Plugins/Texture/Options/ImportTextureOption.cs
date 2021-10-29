@@ -9,7 +9,7 @@ using AssetsAdvancedEditor.Utils;
 using AssetsAdvancedEditor.Winforms;
 using UnityTools;
 
-namespace Texture.Options
+namespace Plugins.Texture.Options
 {
     public class ImportTextureOption : PluginOption
     {

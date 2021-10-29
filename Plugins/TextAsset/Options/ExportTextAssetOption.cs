@@ -6,7 +6,7 @@ using AssetsAdvancedEditor.Plugins;
 using AssetsAdvancedEditor.Utils;
 using UnityTools;
 
-namespace TextAsset.Options
+namespace Plugins.TextAsset.Options
 {
     public class ExportTextAssetOption : PluginOption
     {

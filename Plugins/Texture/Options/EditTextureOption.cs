@@ -5,7 +5,7 @@ using AssetsAdvancedEditor.Assets;
 using AssetsAdvancedEditor.Plugins;
 using UnityTools;
 
-namespace Texture.Options
+namespace Plugins.Texture.Options
 {
     public class EditTextureOption : PluginOption
     {
@@ -32,9 +32,7 @@ namespace Texture.Options
         {
             var item = selectedItems[0];
 
-            var texField = item.Cont.HasInstance ?
-                TextureHelper.GetByteArrayTexture(workspace, item).GetBaseField() :
-                item.Cont.TypeInstance.GetBaseField();
+            var texField = TextureHelper.GetByteArrayTexture(workspace, item).GetBaseField();
 
             var texFile = TextureFile.ReadTextureFile(texField);
             var editTexDialog = new EditTextureDialog(texFile, texField);

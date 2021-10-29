@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using AssetsAdvancedEditor.Plugins;
-using TextAsset.Options;
+using Plugins.TextAsset.Options;
 
-namespace TextAsset
+namespace Plugins.TextAsset
 {
     public class TextAssetPlugin : IPlugin
     {

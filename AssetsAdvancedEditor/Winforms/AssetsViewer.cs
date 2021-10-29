@@ -99,7 +99,7 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void AddAssetItem(AssetsFileInstance fileInst, AssetFileInfoEx info, int fileId = 0)
         {
-            Extensions.GetAssetItemFast(fileId, fileInst, Workspace.Am.classFile, info, out var item);
+            Extensions.GetAssetItemFast(fileId, fileInst, Workspace, info, out var item);
             Workspace.LoadedAssets.Add(item);
             assetList.Items.Add(new ListViewItem(item.ToArray()));
         }

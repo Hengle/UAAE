@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Texture
+namespace Plugins.Texture
 {
     public class PInvoke
     {

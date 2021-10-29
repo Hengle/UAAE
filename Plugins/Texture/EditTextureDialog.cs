@@ -8,7 +8,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using Image = SixLabors.ImageSharp.Image;
 
-namespace Texture
+namespace Plugins.Texture
 {
     public partial class EditTextureDialog : Form
     {

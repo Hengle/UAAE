@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityTools;
 
-namespace Texture
+namespace Plugins.Texture
 {
     public class TextureWrapper
     {

@@ -7,7 +7,7 @@ using AssetsAdvancedEditor.Utils;
 using AssetsAdvancedEditor.Winforms;
 using UnityTools;
 
-namespace TextAsset.Options
+namespace Plugins.TextAsset.Options
 {
     public class ImportTextAssetOption : PluginOption
     {

@@ -39,7 +39,7 @@ namespace AssetsAdvancedEditor.Assets
         {
             Am = am;
             Pm = new PluginManager(am);
-            Pm.LoadPluginsInDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"));
+            Pm.LoadPluginsLibrary(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins.dll"));
             MainInstance = file;
             FromBundle = fromBundle;
 
@@ -139,6 +139,13 @@ namespace AssetsAdvancedEditor.Assets
             item.Modified = "*";
         }
 
+        public AssetContainer MakeAssetContainer(int fileId, AssetFileInfoEx info, bool forceFromCldb = false)
+        {
+            var fileInst = LoadedFiles[fileId];
+            var typeInst = Am.GetTypeInstance(fileInst, info, forceFromCldb);
+            return new AssetContainer(fileInst, typeInst);
+        }
+
         public AssetContainer MakeAssetContainer(AssetItem item, bool forceFromCldb = false)
         {
             var fileInst = LoadedFiles[item.FileID];
@@ -152,8 +159,6 @@ namespace AssetsAdvancedEditor.Assets
             else
             {
                 reader = fileInst.file.reader;
-                var info = fileInst.table.GetAssetInfo(item.Name, item.TypeID);
-                item.Position = info.absoluteFilePos;
             }
 
             var templateField = GetTemplateField(item, forceFromCldb);

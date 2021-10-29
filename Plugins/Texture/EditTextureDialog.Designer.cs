@@ -1,5 +1,4 @@
-﻿
-namespace Texture
+﻿namespace Plugins.Texture
 {
     partial class EditTextureDialog
     {
@@ -126,7 +125,7 @@ namespace Texture
             // lblIsReadable
             // 
             this.lblIsReadable.AutoSize = true;
-            this.lblIsReadable.Location = new System.Drawing.Point(11, 100);
+            this.lblIsReadable.Location = new System.Drawing.Point(11, 101);
             this.lblIsReadable.Name = "lblIsReadable";
             this.lblIsReadable.Size = new System.Drawing.Size(63, 15);
             this.lblIsReadable.TabIndex = 6;
@@ -355,7 +354,7 @@ namespace Texture
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
-            // EditDialog
+            // EditTextureDialog
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -397,7 +396,7 @@ namespace Texture
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "EditDialog";
+            this.Name = "EditTextureDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Edit Texture2D";
             this.ResumeLayout(false);

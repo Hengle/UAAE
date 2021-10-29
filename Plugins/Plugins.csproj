@@ -17,16 +17,16 @@
     <Optimize>false</Optimize>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <ProjectReference Include="..\..\AssetsAdvancedEditor\AssetsAdvancedEditor.csproj" />
-    <ProjectReference Include="..\..\UnityTools\UnityTools.csproj" />
+    <ProjectReference Include="..\AssetsAdvancedEditor\AssetsAdvancedEditor.csproj" />
+    <ProjectReference Include="..\UnityTools\UnityTools.csproj" />
   </ItemGroup>
-
+  
 <!-- this will only execute once while building the solution -->
   <!-- this should set UAAENativeConfig with the config, but  -->
   <!-- the actual copying has to be copy and pasted to work    -->
@@ -75,8 +75,8 @@
 
     <!-- build textoolwrap for linux with make -->
     <Exec Condition="'$(UAAENativeConfig)' == 'linux-x64' OR '$(UAAENativeConfig)' == 'linux-x86'" Command="make" WorkingDirectory="$(SolutionDir)TexToolWrap" />
-    
-    <Message Importance="High" Text="TEXTUREPLUGIN BUILD INFO" />
+	
+    <Message Importance="High" Text="PLUGINS BUILD INFO" />
     <Message Importance="High" Text="  ONWINDOWS: $([MSBuild]::IsOsPlatform(Windows))" />
     <Message Importance="High" Text="  PLATFORM: $(Platform)" />
     <Message Importance="High" Text="  CONFIG: $(UAAENativeConfig)" />
@@ -96,11 +96,11 @@
     <Copy SourceFiles="$(PVRTexToolBinDir)" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
     <Copy SourceFiles="$(ISPCBinDir)" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
     <Copy SourceFiles="$(CrunchBinDir)" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
-    
-    <!-- copy texture plugin -->
-    <Copy SourceFiles="$(OutputPath)Texture.dll" DestinationFolder="$(UAAEBinDir)Plugins" ContinueOnError="true" />
+	
+    <!-- copy plugins lib -->
+    <Copy SourceFiles="$(OutputPath)Plugins.dll" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
   </Target>
-  
+	
   <!-- publish event -->
   <Target Name="CopyLibrariesPublish" DependsOnTargets="BuildNativeAndSetConfig" AfterTargets="Publish" Condition="'$(SolutionDir)' != '*Undefined*'">    
     <PropertyGroup>
@@ -112,9 +112,9 @@
     <Copy SourceFiles="$(PVRTexToolBinDir)" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
     <Copy SourceFiles="$(ISPCBinDir)" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
     <Copy SourceFiles="$(CrunchBinDir)" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
-    
-    <!-- copy texture plugin -->
-    <Copy SourceFiles="$(OutputPath)Texture.dll" DestinationFolder="$(UAAEBinDir)Plugins" ContinueOnError="true" />
+	
+    <!-- copy plugins lib -->
+    <Copy SourceFiles="$(OutputPath)Plugins.dll" DestinationFolder="$(UAAEBinDir)" ContinueOnError="true" />
   </Target>
 
 </Project>

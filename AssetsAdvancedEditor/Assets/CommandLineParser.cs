@@ -316,7 +316,6 @@ namespace AssetsAdvancedEditor.Assets
                 bun = new AssetBundleFile();
                 bun.Read(reader);
             }
-
             return bun;
         }
     }
