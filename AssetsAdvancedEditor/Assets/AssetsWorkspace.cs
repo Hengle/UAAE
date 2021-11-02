@@ -65,7 +65,7 @@ namespace AssetsAdvancedEditor.Assets
 
         public void AddReplacer(ref AssetItem item, AssetsReplacer replacer, MemoryStream previewStream = null)
         {
-            if (replacer == null) return;
+            if (item == null || replacer == null) return;
             var fileId = replacer.GetFileID();
             var forInstance = LoadedFiles[fileId];
             var assetId = new AssetID(forInstance.path, replacer.GetPathID());
@@ -100,11 +100,11 @@ namespace AssetsAdvancedEditor.Assets
             }
             else
             {
-                if (item != null)
-                {
-                    item.Cont = MakeAssetContainer(item);
-                    UpdateAssetInfo(item, replacer);
-                }
+                var reader = new AssetsFileReader(previewStream);
+                reader.BigEndian = false;
+                item.Position = 0L;
+                item.Cont = new AssetContainer(reader, forInstance);
+                UpdateAssetInfo(ref item, replacer);
             }
 
             Modified = true;
@@ -129,8 +129,9 @@ namespace AssetsAdvancedEditor.Assets
             Modified = NewAssets.Count != 0;
         }
 
-        public void UpdateAssetInfo(AssetItem item, AssetsReplacer replacer)
+        public void UpdateAssetInfo(ref AssetItem item, AssetsReplacer replacer)
         {
+            if (item == null || replacer == null) return;
             Extensions.GetAssetNameFast(Am.classFile, item, out _, out var listName, out var name);
 
             item.Name = name;
@@ -139,31 +140,17 @@ namespace AssetsAdvancedEditor.Assets
             item.Modified = "*";
         }
 
-        public AssetContainer MakeAssetContainer(int fileId, AssetFileInfoEx info, bool forceFromCldb = false)
+        public void MakeAssetContainer(ref AssetItem item, bool onlyInfo = false, bool forceFromCldb = false)
         {
-            var fileInst = LoadedFiles[fileId];
-            var typeInst = Am.GetTypeInstance(fileInst, info, forceFromCldb);
-            return new AssetContainer(fileInst, typeInst);
-        }
-
-        public AssetContainer MakeAssetContainer(AssetItem item, bool forceFromCldb = false)
-        {
-            var fileInst = LoadedFiles[item.FileID];
-            var assetId = new AssetID(fileInst.path, item.PathID);
-            AssetsFileReader reader;
-            if (NewAssetDatas.TryGetValue(assetId, out var ms))
+            if (item == null) return;
+            var cont = item.Cont;
+            if (!onlyInfo && !cont.HasInstance)
             {
-                reader = new AssetsFileReader(ms);
-                item.Position = reader.Position;
+                var templateField = GetTemplateField(item, forceFromCldb);
+                var typeInst = new AssetTypeInstance(templateField, cont.FileReader, item.Position);
+                cont = new AssetContainer(cont, typeInst);
             }
-            else
-            {
-                reader = fileInst.file.reader;
-            }
-
-            var templateField = GetTemplateField(item, forceFromCldb);
-            var typeInst = new AssetTypeInstance(templateField, reader, item.Position);
-            return new AssetContainer(reader, fileInst, typeInst);
+            item.Cont = cont;
         }
 
         public AssetContainer GetAssetContainer(int fileId, long pathId)

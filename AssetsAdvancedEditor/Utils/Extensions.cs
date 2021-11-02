@@ -39,7 +39,6 @@ namespace AssetsAdvancedEditor.Utils
 
             item = new AssetItem
             {
-                Cont = workspace.MakeAssetContainer(fileId, info),
                 ListName = "Unnamed asset",
                 Container = container,
                 TypeID = typeId,

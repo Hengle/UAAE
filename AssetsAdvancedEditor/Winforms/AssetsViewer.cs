@@ -100,6 +100,7 @@ namespace AssetsAdvancedEditor.Winforms
         private void AddAssetItem(AssetsFileInstance fileInst, AssetFileInfoEx info, int fileId = 0)
         {
             Extensions.GetAssetItemFast(fileId, fileInst, Workspace, info, out var item);
+            item.Cont = new AssetContainer(fileInst);
             Workspace.LoadedAssets.Add(item);
             assetList.Items.Add(new ListViewItem(item.ToArray()));
         }
@@ -169,12 +170,14 @@ namespace AssetsAdvancedEditor.Winforms
 
         private List<AssetItem> GetSelectedAssetItems()
         {
-            var assetItem = new List<AssetItem>();
+            var assetItems = new List<AssetItem>();
             foreach (int index in assetList.SelectedIndices)
             {
-                assetItem.Add(Workspace.LoadedAssets[index]);
+                var item = Workspace.LoadedAssets[index];
+                Workspace.MakeAssetContainer(ref item);
+                assetItems.Add(item);
             }
-            return assetItem;
+            return assetItems;
         }
 
         private List<AssetTypeValueField> GetSelectedFields()
@@ -184,7 +187,6 @@ namespace AssetsAdvancedEditor.Winforms
                 var fields = new List<AssetTypeValueField>();
                 foreach (var item in GetSelectedAssetItems())
                 {
-                    item.Cont ??= Workspace.MakeAssetContainer(item);
                     fields.Add(Workspace.GetBaseField(item));
                 }
                 return fields;
@@ -568,7 +570,6 @@ namespace AssetsAdvancedEditor.Winforms
                     Importer.ImportRawAsset(selectedFilePath, affectedItem) :
                     Importer.ImportDump(selectedFilePath, affectedItem, DumpType.TXT);
 
-                if (replacer == null) continue;
                 Workspace.AddReplacer(ref affectedItem, replacer);
             }
         }
@@ -620,7 +621,6 @@ namespace AssetsAdvancedEditor.Winforms
                     Importer.ImportRawAsset(selectedFilePath, affectedItem) :
                     Importer.ImportDump(selectedFilePath, affectedItem, DumpType.TXT);
 
-                if (replacer == null) continue;
                 Workspace.AddReplacer(ref affectedItem, replacer);
             }
         }
@@ -635,7 +635,6 @@ namespace AssetsAdvancedEditor.Winforms
             if (ofd.ShowDialog() != DialogResult.OK) return;
 
             var replacer = Importer.ImportDump(ofd.FileName, selectedItem, DumpType.TXT);
-            if (replacer == null) return;
             Workspace.AddReplacer(ref selectedItem, replacer);
         }
 

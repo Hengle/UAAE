@@ -32,7 +32,12 @@ namespace Plugins.Texture.Options
         {
             var item = selectedItems[0];
 
-            var texField = TextureHelper.GetByteArrayTexture(workspace, item).GetBaseField();
+            if (!item.Cont.HasInstance)
+            {
+                item.Cont = new AssetContainer(item.Cont, TextureHelper.GetByteArrayTexture(workspace, item));
+            }
+
+            var texField = item.Cont.TypeInstance.GetBaseField();
 
             var texFile = TextureFile.ReadTextureFile(texField);
             var editTexDialog = new EditTextureDialog(texFile, texField);
