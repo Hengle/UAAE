@@ -9,9 +9,9 @@ namespace UnityTools
         //AssetTypeInstance
         public static void Write(this AssetTypeInstance instance, AssetsFileWriter writer)
         {
-            for (var i = 0; i < instance.baseFieldCount; i++)
+            for (var i = 0; i < instance.BaseFieldCount; i++)
             {
-                instance.baseFields[i].Write(writer);
+                instance.BaseFields[i].Write(writer);
             }
         }
         public static byte[] WriteToByteArray(this AssetTypeInstance instance, bool bigEndian = false)
