@@ -27,7 +27,7 @@ namespace UnityTools
         {
             var valueField = new AssetTypeValueField
             {
-                childrenCount = -1
+                ChildrenCount = -1
             };
             return valueField;
         }
@@ -44,8 +44,7 @@ namespace UnityTools
             if (index < 0 || index >= BaseFieldCount)
                 return false;
             var valueField = GetBaseField(index);
-            valueField.children = children.ToArray(); // todo, [] -> List<>
-            valueField.childrenCount = children.Count;
+            valueField.SetChildrenList(children);
             return true;
         }
     }

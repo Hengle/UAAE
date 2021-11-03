@@ -27,88 +27,88 @@ namespace UnityTools
         //AssetTypeValueField
         public static void Write(this AssetTypeValueField valueField, AssetsFileWriter writer, int depth = 0)
         {
-            if (valueField.templateField.isArray)
+            if (valueField.TemplateField.isArray)
             {
-                if (valueField.templateField.valueType == EnumValueTypes.ByteArray)
+                if (valueField.TemplateField.valueType == EnumValueTypes.ByteArray)
                 {
-                    var byteArray = valueField.value.value.asByteArray;
+                    var byteArray = valueField.Value.value.asByteArray;
 
                     byteArray.size = (uint)byteArray.data.Length;
                     writer.Write(byteArray.size);
                     writer.Write(byteArray.data);
-                    if (valueField.templateField.align) writer.Align();
+                    if (valueField.TemplateField.align) writer.Align();
                 }
                 else
                 {
-                    var array = valueField.value.value.asArray;
+                    var array = valueField.Value.value.asArray;
 
-                    array.size = valueField.childrenCount;
+                    array.size = valueField.ChildrenCount;
                     writer.Write(array.size);
                     for (var i = 0; i < array.size; i++)
                     {
                         valueField[i].Write(writer, depth + 1);
                     }
-                    if (valueField.templateField.align) writer.Align();
+                    if (valueField.TemplateField.align) writer.Align();
                 }
             }
             else
             {
-                if (valueField.childrenCount == 0)
+                if (valueField.ChildrenCount == 0)
                 {
-                    switch (valueField.templateField.valueType)
+                    switch (valueField.TemplateField.valueType)
                     {
                         case EnumValueTypes.Int8:
-                            writer.Write(valueField.value.value.asInt8);
-                            if (valueField.templateField.align) writer.Align();
+                            writer.Write(valueField.Value.value.asInt8);
+                            if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.UInt8:
-                            writer.Write(valueField.value.value.asUInt8);
-                            if (valueField.templateField.align) writer.Align();
+                            writer.Write(valueField.Value.value.asUInt8);
+                            if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.Bool:
-                            writer.Write(valueField.value.value.asBool);
-                            if (valueField.templateField.align) writer.Align();
+                            writer.Write(valueField.Value.value.asBool);
+                            if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.Int16:
-                            writer.Write(valueField.value.value.asInt16);
-                            if (valueField.templateField.align) writer.Align();
+                            writer.Write(valueField.Value.value.asInt16);
+                            if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.UInt16:
-                            writer.Write(valueField.value.value.asUInt16);
-                            if (valueField.templateField.align) writer.Align();
+                            writer.Write(valueField.Value.value.asUInt16);
+                            if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.Int32:
-                            writer.Write(valueField.value.value.asInt32);
+                            writer.Write(valueField.Value.value.asInt32);
                             break;
                         case EnumValueTypes.UInt32:
-                            writer.Write(valueField.value.value.asUInt32);
+                            writer.Write(valueField.Value.value.asUInt32);
                             break;
                         case EnumValueTypes.Int64:
-                            writer.Write(valueField.value.value.asInt64);
+                            writer.Write(valueField.Value.value.asInt64);
                             break;
                         case EnumValueTypes.UInt64:
-                            writer.Write(valueField.value.value.asUInt64);
+                            writer.Write(valueField.Value.value.asUInt64);
                             break;
                         case EnumValueTypes.Float:
-                            writer.Write(valueField.value.value.asFloat);
+                            writer.Write(valueField.Value.value.asFloat);
                             break;
                         case EnumValueTypes.Double:
-                            writer.Write(valueField.value.value.asDouble);
+                            writer.Write(valueField.Value.value.asDouble);
                             break;
                         case EnumValueTypes.String:
-                            writer.Write(valueField.value.value.asString.Length);
-                            writer.Write(valueField.value.value.asString);
+                            writer.Write(valueField.Value.value.asString.Length);
+                            writer.Write(valueField.Value.value.asString);
                             writer.Align();
                             break;
                     }
                 }
                 else
                 {
-                    for (var i = 0; i < valueField.childrenCount; i++)
+                    for (var i = 0; i < valueField.ChildrenCount; i++)
                     {
                         valueField[i].Write(writer, depth + 1);
                     }
-                    if (valueField.templateField.align) writer.Align();
+                    if (valueField.TemplateField.align) writer.Align();
                 }
             }
         }

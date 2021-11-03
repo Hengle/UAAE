@@ -4,7 +4,7 @@
     {
         public static AssetTypeValueField DefaultValueFieldFromArrayTemplate(AssetTypeValueField arrayField)
         {
-            return DefaultValueFieldFromArrayTemplate(arrayField.templateField);
+            return DefaultValueFieldFromArrayTemplate(arrayField.TemplateField);
         }
 
         public static AssetTypeValueField DefaultValueFieldFromArrayTemplate(AssetTypeTemplateField arrayField)
@@ -38,10 +38,10 @@
 
             var root = new AssetTypeValueField
             {
-                children = valueChildren,
-                childrenCount = valueChildren.Length,
-                templateField = templateField,
-                value = defaultValue
+                Children = valueChildren,
+                ChildrenCount = valueChildren.Length,
+                TemplateField = templateField,
+                Value = defaultValue
             };
             return root;
         }

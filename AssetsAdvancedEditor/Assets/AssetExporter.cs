@@ -68,7 +68,7 @@ namespace AssetsAdvancedEditor.Assets
 
         private void RecurseTextDump(AssetTypeValueField field, int depth = 0)
         {
-            var template = field.GetTemplateField();
+            var template = field.TemplateField;
             var align = template.align ? "1" : "0";
             var typeName = template.type;
             var fieldName = template.name;
@@ -92,26 +92,26 @@ namespace AssetsAdvancedEditor.Assets
                 var sizeAlign = sizeTemplate.align ? "1" : "0";
                 var sizeTypeName = sizeTemplate.type;
                 var sizeFieldName = sizeTemplate.name;
-                var size = field.GetValue().AsArray().size;
+                var size = field.Value.AsArray().size;
                 Writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName} ({size} {(size != 1 ? "items" : "item")})");
                 Writer.WriteLine($"{new string(' ', depth + 1)}{sizeAlign} {sizeTypeName} {sizeFieldName} = {size}");
-                for (var i = 0; i < field.childrenCount; i++)
+                for (var i = 0; i < field.ChildrenCount; i++)
                 {
                     Writer.WriteLine($"{new string(' ', depth + 1)}[{i}]");
-                    RecurseTextDump(field.children[i], depth + 2);
+                    RecurseTextDump(field.Children[i], depth + 2);
                 }
             }
             else
             {
                 var value = "";
-                if (field.GetValue() != null)
+                if (field.Value != null)
                 {
-                    var evt = field.GetValue().GetValueType();
+                    var evt = field.Value.GetValueType();
                     if (evt == EnumValueTypes.String)
                     {
                         //only replace \ with \\ but not " with \" lol
                         //you just have to find the last "
-                        var fixedStr = field.GetValue().AsString()
+                        var fixedStr = field.Value.AsString()
                             .Replace("\\", "\\\\")
                             .Replace("\r", "\\r")
                             .Replace("\n", "\\n");
@@ -119,14 +119,14 @@ namespace AssetsAdvancedEditor.Assets
                     }
                     else if (1 <= (int)evt && (int)evt <= 12)
                     {
-                        value = $" = {field.GetValue().AsString()}";
+                        value = $" = {field.Value.AsString()}";
                     }
                 }
                 Writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName}{value}");
 
-                for (var i = 0; i < field.childrenCount; i++)
+                for (var i = 0; i < field.ChildrenCount; i++)
                 {
-                    RecurseTextDump(field.children[i], depth + 1);
+                    RecurseTextDump(field.Children[i], depth + 1);
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace AssetsAdvancedEditor.Assets
 
         private XmlNode RecurseXmlDump(AssetTypeValueField field)
         {
-            var template = field.GetTemplateField();
+            var template = field.TemplateField;
             var align = template.align ? "True" : "False";
             var typeName = template.type;
             var fieldName = template.name;
@@ -171,8 +171,8 @@ namespace AssetsAdvancedEditor.Assets
                 typeName = template.valueType.ToString();
             }
 
-            var hasValue = field.GetValue() != null;
-            var nodeName = hasValue ? field.GetValue().GetValueType().ToString() : "Object";
+            var hasValue = field.Value != null;
+            var nodeName = hasValue ? field.Value.GetValueType().ToString() : "Object";
             var e = Doc.CreateElement(isArray ? "Array" : nodeName);
             e.SetAttribute("align", align);
 
@@ -188,28 +188,28 @@ namespace AssetsAdvancedEditor.Assets
                 var sizeAlign = sizeTemplate.align ? "True" : "False";
                 var sizeTypeName = sizeTemplate.type;
                 var sizeFieldName = sizeTemplate.name;
-                var size = field.GetValue().AsArray().size;
+                var size = field.Value.AsArray().size;
                 e.SetAttribute("size", size.ToString());
                 e.SetAttribute("sizeAlign", sizeAlign);
                 e.SetAttribute("sizeTypeName", sizeTypeName);
                 e.SetAttribute("sizeFieldName", sizeFieldName);
-                for (var i = 0; i < field.childrenCount; i++)
+                for (var i = 0; i < field.ChildrenCount; i++)
                 {
-                    var result = RecurseXmlDump(field.children[i]);
+                    var result = RecurseXmlDump(field.Children[i]);
                     e.AppendChild(result);
                 }
             }
             else
             {
                 var value = "";
-                if (field.GetValue() != null)
+                if (field.Value != null)
                 {
-                    var evt = field.GetValue().GetValueType();
+                    var evt = field.Value.GetValueType();
                     if (evt == EnumValueTypes.String)
                     {
                         //only replace \ with \\ but not " with \" lol
                         //you just have to find the last "
-                        var fixedStr = field.GetValue().AsString()
+                        var fixedStr = field.Value.AsString()
                             .Replace("\\", "\\\\")
                             .Replace("\r", "\\r")
                             .Replace("\n", "\\n");
@@ -217,15 +217,15 @@ namespace AssetsAdvancedEditor.Assets
                     }
                     else if (1 <= (int)evt && (int)evt <= 12)
                     {
-                        value = field.GetValue().AsString();
+                        value = field.Value.AsString();
                     }
                     var text = Doc.CreateTextNode(value);
                     e.AppendChild(text);
                 }
 
-                for (var i = 0; i < field.childrenCount; i++)
+                for (var i = 0; i < field.ChildrenCount; i++)
                 {
-                    var result = RecurseXmlDump(field.children[i]);
+                    var result = RecurseXmlDump(field.Children[i]);
                     e.AppendChild(result);
                 }
             }

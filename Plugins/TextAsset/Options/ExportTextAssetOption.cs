@@ -46,7 +46,7 @@ namespace Plugins.TextAsset.Options
             foreach (var item in selectedItems)
             {
                 var baseField = workspace.GetBaseField(item);
-                var strBytes = baseField.Get("m_Script").GetValue().AsStringBytes();
+                var strBytes = baseField.Get("m_Script").Value.AsStringBytes();
                 var name = Extensions.ReplaceInvalidFileNameChars(item.Name);
                 if (string.IsNullOrEmpty(name))
                 {
@@ -75,7 +75,7 @@ namespace Plugins.TextAsset.Options
                 return false;
 
             var baseField = workspace.GetBaseField(selectedItem);
-            var strBytes = baseField.Get("m_Script").GetValue().AsStringBytes();
+            var strBytes = baseField.Get("m_Script").Value.AsStringBytes();
             var file = sfd.FileName;
             File.WriteAllBytes(file, strBytes);
             return true;

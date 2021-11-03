@@ -86,47 +86,47 @@ namespace Plugins.Texture
             var encodedBytes = TextureManager.EncodeTexture(imgBytes, tex.m_Width, tex.m_Height, format);
 
             var m_StreamData = texField.Get("m_StreamData");
-            m_StreamData.Get("offset").GetValue().Set(0);
-            m_StreamData.Get("size").GetValue().Set(0);
-            m_StreamData.Get("path").GetValue().Set("");
+            m_StreamData.Get("offset").Value.Set(0);
+            m_StreamData.Get("size").Value.Set(0);
+            m_StreamData.Get("path").Value.Set("");
 
             var image_data = texField.Get("image data");
-            image_data.GetValue().type = EnumValueTypes.ByteArray;
-            image_data.templateField.valueType = EnumValueTypes.ByteArray;
+            image_data.Value.type = EnumValueTypes.ByteArray;
+            image_data.TemplateField.valueType = EnumValueTypes.ByteArray;
             var byteArray = new AssetTypeByteArray
             {
                 size = (uint)encodedBytes.Length,
                 data = encodedBytes
             };
-            image_data.GetValue().Set(byteArray);
+            image_data.Value.Set(byteArray);
 
-            texField.Get("m_ColorSpace").GetValue().Set(cboxColorSpace.SelectedIndex);
-            texField.Get("m_LightmapFormat").GetValue().Set(tboxLightmapFormat.Text);
+            texField.Get("m_ColorSpace").Value.Set(cboxColorSpace.SelectedIndex);
+            texField.Get("m_LightmapFormat").Value.Set(tboxLightmapFormat.Text);
 
             var m_TextureSettings = texField.Get("m_TextureSettings");
-            m_TextureSettings.Get("m_FilterMode").GetValue().Set(cboxFilterMode.SelectedIndex);
-            m_TextureSettings.Get("m_Aniso").GetValue().Set(tboxAniso.Text);
-            m_TextureSettings.Get("m_MipBias").GetValue().Set(tboxMipMapBias.Text);
-            m_TextureSettings.Get("m_WrapU").GetValue().Set(cboxWrapU.SelectedIndex);
-            m_TextureSettings.Get("m_WrapV").GetValue().Set(cboxWrapV.SelectedIndex);
-            m_TextureSettings.Get("m_WrapW").GetValue().Set(1);
+            m_TextureSettings.Get("m_FilterMode").Value.Set(cboxFilterMode.SelectedIndex);
+            m_TextureSettings.Get("m_Aniso").Value.Set(tboxAniso.Text);
+            m_TextureSettings.Get("m_MipBias").Value.Set(tboxMipMapBias.Text);
+            m_TextureSettings.Get("m_WrapU").Value.Set(cboxWrapU.SelectedIndex);
+            m_TextureSettings.Get("m_WrapV").Value.Set(cboxWrapV.SelectedIndex);
+            m_TextureSettings.Get("m_WrapW").Value.Set(1);
 
-            texField.Get("m_TextureDimension").GetValue().Set(2);
+            texField.Get("m_TextureDimension").Value.Set(2);
 
-            texField.Get("m_ImageCount").GetValue().Set(1);
+            texField.Get("m_ImageCount").Value.Set(1);
 
-            texField.Get("m_IsReadable").GetValue().Set(false);
+            texField.Get("m_IsReadable").Value.Set(false);
 
-            texField.Get("m_MipCount").GetValue().Set(1);
+            texField.Get("m_MipCount").Value.Set(1);
 
-            texField.Get("m_TextureFormat").GetValue().Set((int)format);
+            texField.Get("m_TextureFormat").Value.Set((int)format);
 
-            texField.Get("m_CompleteImageSize").GetValue().Set(encodedBytes.Length);
+            texField.Get("m_CompleteImageSize").Value.Set(encodedBytes.Length);
 
-            texField.Get("m_Width").GetValue().Set(tex.m_Width);
-            texField.Get("m_Height").GetValue().Set(tex.m_Height);
+            texField.Get("m_Width").Value.Set(tex.m_Width);
+            texField.Get("m_Height").Value.Set(tex.m_Height);
 
-            texField.Get("m_Name").GetValue().Set(tboxTextureName.Text);
+            texField.Get("m_Name").Value.Set(tboxTextureName.Text);
         }
     }
 }

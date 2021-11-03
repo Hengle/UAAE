@@ -1,69 +1,59 @@
-﻿namespace UnityTools
+﻿using System.Collections.Generic;
+
+namespace UnityTools
 {
     public class AssetTypeValueField
     {
-        public AssetTypeTemplateField templateField;
+        public AssetTypeTemplateField TemplateField;
 
-        public int childrenCount;
-        public AssetTypeValueField[] children;
-        public AssetTypeValue value;
+        public int ChildrenCount;
+        public List<AssetTypeValueField> Children;
+        public AssetTypeValue Value;
 
-        public void Read(AssetTypeValue value, AssetTypeTemplateField template, AssetTypeValueField[] children)
+        public void Read(AssetTypeValue value, AssetTypeTemplateField template, List<AssetTypeValueField> children)
         {
-            templateField = template;
-            this.childrenCount = children.Length;
-            this.children = children;
-            this.value = value;
+            TemplateField = template;
+            ChildrenCount = children.Count;
+            Children = children;
+            Value = value;
         }
         ///public ulong Write(AssetsFileWriter writer, FileStream writerPar, ulong filePos);
-
-        //ASSETSTOOLS_API void Clear();
 
         public AssetTypeValueField this[string name]
         {
             get
             {
-                foreach (var atvf in children)
+                foreach (var valueField in Children)
                 {
-                    if (atvf.templateField.name == name)
+                    if (valueField.TemplateField.name == name)
                     {
-                        return atvf;
+                        return valueField;
                     }
                 }
                 return AssetTypeInstance.GetDummyAssetTypeField();
             }
-            set { }
         }
 
-        public AssetTypeValueField this[int index]
+        public AssetTypeValueField this[int index] => Children[index];
+
+        public AssetTypeValueField Get(string name) => this[name];
+        public AssetTypeValueField Get(int index) => this[index];
+
+        public string GetName() => TemplateField.name;
+        public string GetFieldType() => TemplateField.type;
+        public void SetChildrenList(List<AssetTypeValueField> children)
         {
-            get { return children[index]; }
-            set { }
+            Children = children;
+            ChildrenCount = children.Count;
         }
 
-        public AssetTypeValueField Get(string name) { return (this)[name]; }
-        public AssetTypeValueField Get(int index) { return (this)[index]; }
-
-        public string GetName() { return templateField.name; }
-        public string GetFieldType() { return templateField.type; }
-        public AssetTypeValue GetValue() { return value; }
-        public AssetTypeTemplateField GetTemplateField() { return templateField; }
-        public AssetTypeValueField[] GetChildrenList() { return children; }
-        public void SetChildrenList(AssetTypeValueField[] children) { this.children = children; this.childrenCount = children.Length; }
-
-        public int GetChildrenCount() { return childrenCount; }
-
-        public bool IsDummy()
-        {
-            return childrenCount == -1;
-        }
+        public bool IsDummy() => ChildrenCount == -1;
 
         ///public ulong GetByteSize(ulong filePos = 0);
 
         public static EnumValueTypes GetValueTypeByTypeName(string type)
         {
-            type = type.ToLower();
-            switch (type)
+            switch (type.ToLower())
             {
                 case "string":
                     return EnumValueTypes.String;

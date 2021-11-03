@@ -161,8 +161,8 @@ namespace AssetsAdvancedEditor.Assets
 
         public AssetContainer GetAssetContainer(AssetTypeValueField pptrField)
         {
-            var fileId = pptrField.Get("m_FileID").GetValue().AsInt();
-            var pathId = pptrField.Get("m_PathID").GetValue().AsInt64();
+            var fileId = pptrField.Get("m_FileID").Value.AsInt();
+            var pathId = pptrField.Get("m_PathID").Value.AsInt64();
             return GetAssetContainer(fileId, pathId);
         }
 
@@ -233,9 +233,9 @@ namespace AssetsAdvancedEditor.Assets
                     return null;
 
                 var scriptBaseField = monoScriptCont.TypeInstance.GetBaseField();
-                var scriptName = scriptBaseField.Get("m_Name").GetValue().AsString();
-                var scriptNamespace = scriptBaseField.Get("m_Namespace").GetValue().AsString();
-                var assemblyName = scriptBaseField.Get("m_AssemblyName").GetValue().AsString();
+                var scriptName = scriptBaseField.Get("m_Name").Value.AsString();
+                var scriptNamespace = scriptBaseField.Get("m_Namespace").Value.AsString();
+                var assemblyName = scriptBaseField.Get("m_AssemblyName").Value.AsString();
                 var assemblyPath = Path.Combine(managedPath, assemblyName);
 
                 if (scriptNamespace != string.Empty)

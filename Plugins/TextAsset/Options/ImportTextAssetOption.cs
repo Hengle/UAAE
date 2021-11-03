@@ -55,7 +55,7 @@ namespace Plugins.TextAsset.Options
                     var item = batchItem.Item;
                     var baseField = workspace.GetBaseField(batchItem.Item);
                     var strBytes = File.ReadAllBytes(batchItem.ImportFile);
-                    baseField.Get("m_Script").GetValue().Set(strBytes);
+                    baseField.Get("m_Script").Value.Set(strBytes);
                     var savedAsset = baseField.WriteToByteArray();
                     var replacer = AssetModifier.CreateAssetReplacer(item, savedAsset);
                     workspace.AddReplacer(ref item, replacer, new MemoryStream(savedAsset));
@@ -76,7 +76,7 @@ namespace Plugins.TextAsset.Options
 
             var baseField = workspace.GetBaseField(selectedItem);
             var strBytes = File.ReadAllBytes(sfd.FileName);
-            baseField.Get("m_Script").GetValue().Set(strBytes);
+            baseField.Get("m_Script").Value.Set(strBytes);
             var savedAsset = baseField.WriteToByteArray();
             var replacer = AssetModifier.CreateAssetReplacer(selectedItem, savedAsset);
             workspace.AddReplacer(ref selectedItem, replacer, new MemoryStream(savedAsset));

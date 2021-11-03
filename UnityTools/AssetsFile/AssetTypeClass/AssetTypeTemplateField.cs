@@ -51,6 +51,7 @@ namespace UnityTools
             }
             return true;
         }
+
         public bool FromClassDatabase(ClassDatabaseFile file, ClassDatabaseType type, uint fieldIndex)
         {
             var field = type.fields[(int)fieldIndex];
@@ -91,7 +92,7 @@ namespace UnityTools
         {
             var valueField = new AssetTypeValueField
             {
-                templateField = this
+                TemplateField = this
             };
             valueField = ReadType(reader, valueField);
             return valueField;
@@ -99,45 +100,45 @@ namespace UnityTools
 
         public AssetTypeValueField ReadType(AssetsFileReader reader, AssetTypeValueField valueField)
         {
-            if (valueField.templateField.isArray)
+            if (valueField.TemplateField.isArray)
             {
-                if (valueField.templateField.childrenCount == 2)
+                if (valueField.TemplateField.childrenCount == 2)
                 {
-                    var sizeType = valueField.templateField.children[0].valueType;
+                    var sizeType = valueField.TemplateField.children[0].valueType;
                     if (sizeType is EnumValueTypes.Int32 or EnumValueTypes.UInt32)
                     {
-                        if (valueField.templateField.valueType == EnumValueTypes.ByteArray)
+                        if (valueField.TemplateField.valueType == EnumValueTypes.ByteArray)
                         {
-                            valueField.childrenCount = 0;
-                            valueField.children = new AssetTypeValueField[0];
+                            valueField.ChildrenCount = 0;
+                            valueField.Children = new List<AssetTypeValueField>();
                             var size = reader.ReadInt32();
                             var data = reader.ReadBytes(size);
-                            if (valueField.templateField.align) reader.Align();
+                            if (valueField.TemplateField.align) reader.Align();
                             var byteArray = new AssetTypeByteArray
                             {
                                 size = (uint)size,
                                 data = data
                             };
-                            valueField.value = new AssetTypeValue(EnumValueTypes.ByteArray, byteArray);
+                            valueField.Value = new AssetTypeValue(EnumValueTypes.ByteArray, byteArray);
                         }
                         else
                         {
-                            valueField.childrenCount = reader.ReadInt32();
-                            valueField.children = new AssetTypeValueField[valueField.childrenCount];
-                            for (var i = 0; i < valueField.childrenCount; i++)
+                            valueField.ChildrenCount = reader.ReadInt32();
+                            valueField.Children = new List<AssetTypeValueField>(valueField.ChildrenCount);
+                            for (var i = 0; i < valueField.ChildrenCount; i++)
                             {
-                                valueField.children[i] = new AssetTypeValueField
+                                valueField.Children[i] = new AssetTypeValueField
                                 {
-                                    templateField = valueField.templateField.children[1]
+                                    TemplateField = valueField.TemplateField.children[1]
                                 };
-                                valueField.children[i] = ReadType(reader, valueField.children[i]);
+                                valueField.Children[i] = ReadType(reader, valueField.Children[i]);
                             }
-                            if (valueField.templateField.align) reader.Align();
+                            if (valueField.TemplateField.align) reader.Align();
                             var assetArray = new AssetTypeArray
                             {
-                                size = valueField.childrenCount
+                                size = valueField.ChildrenCount
                             };
-                            valueField.value = new AssetTypeValue(EnumValueTypes.Array, assetArray);
+                            valueField.Value = new AssetTypeValue(EnumValueTypes.Array, assetArray);
                         }
                     }
                     else
@@ -152,71 +153,71 @@ namespace UnityTools
             }
             else
             {
-                var valType = valueField.templateField.valueType;
-                if (valType != 0) valueField.value = new AssetTypeValue(valType, null);
+                var valType = valueField.TemplateField.valueType;
+                if (valType != 0) valueField.Value = new AssetTypeValue(valType, null);
                 if (valType == EnumValueTypes.String)
                 {
                     var length = reader.ReadInt32();
-                    valueField.value.Set(reader.ReadBytes(length));
+                    valueField.Value.Set(reader.ReadBytes(length));
                     reader.Align();
                 }
                 else
                 {
-                    valueField.childrenCount = valueField.templateField.childrenCount;
-                    if (valueField.childrenCount == 0)
+                    valueField.ChildrenCount = valueField.TemplateField.childrenCount;
+                    if (valueField.ChildrenCount == 0)
                     {
-                        valueField.children = new AssetTypeValueField[0];
-                        switch (valueField.templateField.valueType)
+                        valueField.Children = new List<AssetTypeValueField>();
+                        switch (valueField.TemplateField.valueType)
                         {
                             case EnumValueTypes.Int8:
-                                valueField.value.Set(reader.ReadSByte());
-                                if (valueField.templateField.align) reader.Align();
+                                valueField.Value.Set(reader.ReadSByte());
+                                if (valueField.TemplateField.align) reader.Align();
                                 break;
                             case EnumValueTypes.UInt8:
                             case EnumValueTypes.Bool:
-                                valueField.value.Set(reader.ReadByte());
-                                if (valueField.templateField.align) reader.Align();
+                                valueField.Value.Set(reader.ReadByte());
+                                if (valueField.TemplateField.align) reader.Align();
                                 break;
                             case EnumValueTypes.Int16:
-                                valueField.value.Set(reader.ReadInt16());
-                                if (valueField.templateField.align) reader.Align();
+                                valueField.Value.Set(reader.ReadInt16());
+                                if (valueField.TemplateField.align) reader.Align();
                                 break;
                             case EnumValueTypes.UInt16:
-                                valueField.value.Set(reader.ReadUInt16());
-                                if (valueField.templateField.align) reader.Align();
+                                valueField.Value.Set(reader.ReadUInt16());
+                                if (valueField.TemplateField.align) reader.Align();
                                 break;
                             case EnumValueTypes.Int32:
-                                valueField.value.Set(reader.ReadInt32());
+                                valueField.Value.Set(reader.ReadInt32());
                                 break;
                             case EnumValueTypes.UInt32:
-                                valueField.value.Set(reader.ReadUInt32());
+                                valueField.Value.Set(reader.ReadUInt32());
                                 break;
                             case EnumValueTypes.Int64:
-                                valueField.value.Set(reader.ReadInt64());
+                                valueField.Value.Set(reader.ReadInt64());
                                 break;
                             case EnumValueTypes.UInt64:
-                                valueField.value.Set(reader.ReadUInt64());
+                                valueField.Value.Set(reader.ReadUInt64());
                                 break;
                             case EnumValueTypes.Float:
-                                valueField.value.Set(reader.ReadSingle());
+                                valueField.Value.Set(reader.ReadSingle());
                                 break;
                             case EnumValueTypes.Double:
-                                valueField.value.Set(reader.ReadDouble());
+                                valueField.Value.Set(reader.ReadDouble());
                                 break;
                         }
                     }
                     else
                     {
-                        valueField.children = new AssetTypeValueField[valueField.childrenCount];
-                        for (var i = 0; i < valueField.childrenCount; i++)
+                        valueField.Children = new List<AssetTypeValueField>(valueField.ChildrenCount);
+                        for (var i = 0; i < valueField.ChildrenCount; i++)
                         {
-                            valueField.children[i] = new AssetTypeValueField
+                            valueField.Children[i] = new AssetTypeValueField
                             {
-                                templateField = valueField.templateField.children[i]
+                                TemplateField = valueField.TemplateField.children[i]
                             };
-                            valueField.children[i] = ReadType(reader, valueField.children[i]);
+                            valueField.Children[i] = ReadType(reader, valueField.Children[i]);
                         }
-                        if (valueField.templateField.align) reader.Align();
+                        if (valueField.TemplateField.align) reader.Align();
                     }
                 }
             }

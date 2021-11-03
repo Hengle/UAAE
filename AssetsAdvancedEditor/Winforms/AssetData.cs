@@ -28,14 +28,14 @@ namespace AssetsAdvancedEditor.Winforms
 
         private static void RecursiveTreeLoad(AssetTypeValueField assetField, TreeNode node)
         {
-            if (assetField.childrenCount <= 0) return;
-            foreach (var children in assetField.children)
+            if (assetField.ChildrenCount <= 0) return;
+            foreach (var children in assetField.Children)
             {
                 if (children == null) return;
                 var value = "";
-                if (children.GetValue() != null)
+                if (children.Value != null)
                 {
-                    var evt = children.GetValue().GetValueType();
+                    var evt = children.Value.GetValueType();
                     var quote = "";
                     if (evt == EnumValueTypes.String)
                     {
@@ -43,12 +43,12 @@ namespace AssetsAdvancedEditor.Winforms
                     }
                     if (1 <= (int)evt && (int)evt <= 12)
                     {
-                        value = $" = {quote}{children.GetValue().AsString()}{quote}";
+                        value = $" = {quote}{children.Value.AsString()}{quote}";
                     }
-                    var isOneItem = children.childrenCount == 1;
+                    var isOneItem = children.ChildrenCount == 1;
                     if (evt is EnumValueTypes.Array or EnumValueTypes.ByteArray)
                     {
-                        value = $" ({children.childrenCount} {(isOneItem ? "item" : "items")})";
+                        value = $" ({children.ChildrenCount} {(isOneItem ? "item" : "items")})";
                     }
                 }
 
