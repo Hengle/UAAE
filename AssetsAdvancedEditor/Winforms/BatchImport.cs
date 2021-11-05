@@ -50,8 +50,9 @@ namespace AssetsAdvancedEditor.Winforms
         {
             return batchType switch
             {
-                BatchImportType.Dump => new[] {".dat", ".txt"},
-                BatchImportType.Image => new[] {".png", ".tga"},
+                BatchImportType.Dump => new[] { ".dat", ".txt" },
+                BatchImportType.Image => new[] { ".png", ".tga" },
+                BatchImportType.Mesh => new[] { ".fbx" },
                 _ => null
             };
         }

@@ -47,6 +47,24 @@ namespace UnityTools
             ChildrenCount = children.Count;
         }
 
+        public void AddChildren(AssetTypeValueField children)
+        {
+            Children.Add(children);
+            ChildrenCount++;
+        }
+
+        public void RemoveChildren(AssetTypeValueField children)
+        {
+            Children.Remove(children);
+            ChildrenCount--;
+        }
+
+        public void RemoveChildren(int index)
+        {
+            Children.RemoveAt(index);
+            ChildrenCount--;
+        }
+
         public bool IsDummy() => ChildrenCount == -1;
 
         ///public ulong GetByteSize(ulong filePos = 0);

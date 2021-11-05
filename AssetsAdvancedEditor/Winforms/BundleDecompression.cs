@@ -76,6 +76,7 @@ namespace AssetsAdvancedEditor.Winforms
             catch (Exception ex)
             {
                 MsgBoxUtils.ShowErrorDialog("Something went wrong when unpacking the bundle:\n" + ex);
+                DialogResult = DialogResult.Abort;
             }
         }
 

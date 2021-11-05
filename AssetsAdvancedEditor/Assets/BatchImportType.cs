@@ -3,6 +3,7 @@
     public enum BatchImportType
     {
         Dump,
-        Image
+        Image,
+        Mesh
     }
 }

@@ -84,7 +84,6 @@ namespace UnityTools
         public void Read(AssetsFileReader reader)
         {
             reader.BigEndian = true;
-            reader.Header = this;
             Net35Polyfill.TryParse(reader.ReadNullTerminated(), out Signature);
             Version = reader.ReadUInt32();
             MinUnityVersion = reader.ReadNullTerminated();
@@ -138,7 +137,6 @@ namespace UnityTools
         public void Write(AssetsFileWriter writer)
         {
             writer.BigEndian = true;
-            writer.Header = this;
             writer.WriteNullTerminated(Signature.ToString());
             writer.Write(Version);
             writer.WriteNullTerminated(MinUnityVersion);

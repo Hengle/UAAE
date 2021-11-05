@@ -32,7 +32,7 @@ namespace UnityTools
                 Close();
                 return false;
             }
-            Metadata.Read(Header.GetBundleInfoOffset(), reader);
+            Metadata.Read(Header.GetBundleInfoOffset(), reader, Header);
             return true;
         }
 
@@ -148,7 +148,7 @@ namespace UnityTools
             //write the listings
             var bundleInfPos = writer.Position;
             newBundleInf6.DirectoryInfo = dirInfos.ToArray(); //this is only here to allocate enough space so it's fine if it's inaccurate
-            newBundleInf6.Write(writer);
+            newBundleInf6.Write(writer, Header);
 
             var assetDataPos = writer.Position;
 
@@ -191,7 +191,7 @@ namespace UnityTools
             newBundleInf6.BlocksInfo[0].DecompressedSize = assetSize;
             newBundleInf6.BlocksInfo[0].CompressedSize = assetSize;
             newBundleInf6.DirectoryInfo = dirInfos.ToArray();
-            newBundleInf6.Write(writer);
+            newBundleInf6.Write(writer, Header);
 
             var infoSize = (uint)(assetDataPos - bundleInfPos);
 
@@ -248,7 +248,7 @@ namespace UnityTools
                     {
                         Position = 0
                     };
-                    Metadata.Read(0, memReader);
+                    Metadata.Read(0, memReader, Header);
                 }
                 var newBundleHeader6 = new AssetBundleHeader
                 {
@@ -297,7 +297,7 @@ namespace UnityTools
                 {
                     writer.Align16();
                 }
-                newBundleInf6.Write(writer);
+                newBundleInf6.Write(writer, Header);
 
                 reader.Position = Header.GetFileDataOffset();
                 for (var i = 0; i < newBundleInf6.BlockCount; i++)
@@ -446,7 +446,7 @@ namespace UnityTools
             using (var memStream = new MemoryStream())
             {
                 var afw = new AssetsFileWriter(memStream);
-                newBlockAndDirList.Write(afw);
+                newBlockAndDirList.Write(afw, Header);
                 bundleInfoBytes = memStream.ToArray();
             }
 

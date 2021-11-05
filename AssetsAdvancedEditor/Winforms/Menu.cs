@@ -165,6 +165,11 @@ namespace AssetsAdvancedEditor.Winforms
             Am.UnloadAllBundleFiles();
 
             cboxBundleContents.Items.Clear();
+            cboxBundleContents.Enabled = false;
+            btnExport.Enabled = false;
+            btnImport.Enabled = false;
+            btnRemove.Enabled = false;
+            btnInfo.Enabled = false;
 
             lblFileName.Text = @"No file opened.";
         }

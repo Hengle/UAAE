@@ -7,9 +7,9 @@
         public uint Flags;
         public string Name;
 
-        public void Read(AssetsFileReader reader)
+        public void Read(AssetsFileReader reader, uint version)
         {
-            if (reader.Header.Version >= 6)
+            if (version >= 6)
             {
                 Offset = reader.ReadInt64();
                 DecompressedSize = reader.ReadInt64();
@@ -24,9 +24,9 @@
             }
         }
 
-        public void Write(AssetsFileWriter writer)
+        public void Write(AssetsFileWriter writer, uint version)
         {
-            if (writer.Header.Version >= 6)
+            if (version >= 6)
             {
                 writer.Write(Offset);
                 writer.Write(DecompressedSize);

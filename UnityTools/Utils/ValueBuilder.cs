@@ -1,4 +1,6 @@
-﻿namespace UnityTools
+﻿using System.Collections.Generic;
+
+namespace UnityTools
 {
     public class ValueBuilder
     {
@@ -19,15 +21,15 @@
         public static AssetTypeValueField DefaultValueFieldFromTemplate(AssetTypeTemplateField templateField)
         {
             var templateChildren = templateField.children;
-            AssetTypeValueField[] valueChildren;
+            List<AssetTypeValueField> valueChildren;
             if (templateField.isArray ||
                 templateField.valueType is EnumValueTypes.String)
             {
-                valueChildren = new AssetTypeValueField[0];
+                valueChildren = new List<AssetTypeValueField>();
             }
             else
             {
-                valueChildren = new AssetTypeValueField[templateChildren.Length];
+                valueChildren = new List<AssetTypeValueField>(templateChildren.Length);
                 for (var i = 0; i < templateChildren.Length; i++)
                 {
                     valueChildren[i] = DefaultValueFieldFromTemplate(templateChildren[i]);
@@ -39,7 +41,7 @@
             var root = new AssetTypeValueField
             {
                 Children = valueChildren,
-                ChildrenCount = valueChildren.Length,
+                ChildrenCount = valueChildren.Count,
                 TemplateField = templateField,
                 Value = defaultValue
             };

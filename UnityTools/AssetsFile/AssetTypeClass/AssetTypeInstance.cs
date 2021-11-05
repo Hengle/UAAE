@@ -19,7 +19,7 @@ namespace UnityTools
             for (var i = 0; i < BaseFieldCount; i++)
             {
                 var valueField = baseFields[i].MakeValue(reader);
-                BaseFields[i] = valueField;
+                BaseFields.Add(valueField);
             }
         }
 

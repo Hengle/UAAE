@@ -354,7 +354,7 @@ namespace AssetsAdvancedEditor.Utils
                     Position = 0
                 };
                 uncompressedMetadata = new AssetBundleMetadata();
-                uncompressedMetadata.Read(0, memReader);
+                uncompressedMetadata.Read(0, memReader, bundle.Header);
             }
 
             return uncompressedMetadata.BlocksInfo.Any(inf => inf.GetCompressionType() != 0);

@@ -11,11 +11,11 @@
         public int DirectoryCount;
         public AssetBundleDirectoryInfo[] DirectoryInfo;
 
-        public void Read(long filePos, AssetsFileReader reader)
+        public void Read(long filePos, AssetsFileReader reader, AssetBundleHeader header)
         {
             reader.Position = filePos;
             Hash = new Hash128(reader);
-            if (reader.Header.Version >= 6)
+            if (header.Version >= 6)
             {
                 BlockCount = reader.ReadInt32();
                 BlocksInfo = new AssetBundleBlockInfo[BlockCount];
@@ -25,14 +25,14 @@
                     BlocksInfo[i].Read(reader);
                 }
 
-                if (reader.Header.IsBlocksAndDirectoryInfoCombined())
+                if (header.IsBlocksAndDirectoryInfoCombined())
                 {
                     DirectoryCount = reader.ReadInt32();
                     DirectoryInfo = new AssetBundleDirectoryInfo[DirectoryCount];
                     for (var i = 0; i < DirectoryCount; i++)
                     {
                         DirectoryInfo[i] = new AssetBundleDirectoryInfo();
-                        DirectoryInfo[i].Read(reader);
+                        DirectoryInfo[i].Read(reader, header.Version);
                     }
                 }
             }
@@ -43,16 +43,16 @@
                 for (var i = 0; i < DirectoryCount; i++)
                 {
                     DirectoryInfo[i] = new AssetBundleDirectoryInfo();
-                    DirectoryInfo[i].Read(reader);
+                    DirectoryInfo[i].Read(reader, header.Version);
                 }
                 reader.Align();
             }
         }
 
-        public void Write(AssetsFileWriter writer)
+        public void Write(AssetsFileWriter writer, AssetBundleHeader header)
         {
             Hash.Write(writer);
-            if (writer.Header.Version >= 6)
+            if (header.Version >= 6)
             {
                 writer.Write(BlockCount);
                 for (var i = 0; i < BlockCount; i++)
@@ -60,12 +60,12 @@
                     BlocksInfo[i].Write(writer);
                 }
 
-                if (writer.Header.IsBlocksAndDirectoryInfoCombined())
+                if (header.IsBlocksAndDirectoryInfoCombined())
                 {
                     writer.Write(DirectoryCount);
                     for (var i = 0; i < DirectoryCount; i++)
                     {
-                        DirectoryInfo[i].Write(writer);
+                        DirectoryInfo[i].Write(writer, header.Version);
                     }
                 }
             }
@@ -74,7 +74,7 @@
                 writer.Write(DirectoryCount);
                 for (var i = 0; i < DirectoryCount; i++)
                 {
-                    DirectoryInfo[i].Write(writer);
+                    DirectoryInfo[i].Write(writer, header.Version);
                 }
                 writer.Align();
             }

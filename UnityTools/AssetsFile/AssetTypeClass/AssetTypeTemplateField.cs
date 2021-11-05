@@ -127,10 +127,10 @@ namespace UnityTools
                             valueField.Children = new List<AssetTypeValueField>(valueField.ChildrenCount);
                             for (var i = 0; i < valueField.ChildrenCount; i++)
                             {
-                                valueField.Children[i] = new AssetTypeValueField
+                                valueField.Children.Add(new AssetTypeValueField
                                 {
                                     TemplateField = valueField.TemplateField.children[1]
-                                };
+                                });
                                 valueField.Children[i] = ReadType(reader, valueField.Children[i]);
                             }
                             if (valueField.TemplateField.align) reader.Align();
@@ -211,10 +211,10 @@ namespace UnityTools
                         valueField.Children = new List<AssetTypeValueField>(valueField.ChildrenCount);
                         for (var i = 0; i < valueField.ChildrenCount; i++)
                         {
-                            valueField.Children[i] = new AssetTypeValueField
+                            valueField.Children.Add(new AssetTypeValueField
                             {
                                 TemplateField = valueField.TemplateField.children[i]
-                            };
+                            });
                             valueField.Children[i] = ReadType(reader, valueField.Children[i]);
                         }
                         if (valueField.TemplateField.align) reader.Align();

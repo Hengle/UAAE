@@ -56,9 +56,11 @@ namespace AssetsAdvancedEditor.Winforms
         {
             if (BundleInst == null) return;
             var dialog = new BundleDecompression(BundleInst);
-            if (dialog.ShowDialog() != DialogResult.OK)
+            var result = dialog.ShowDialog();
+            if (result != DialogResult.OK)
             {
-                DialogResult = DialogResult.Cancel;
+                if (result != DialogResult.Abort)
+                    DialogResult = DialogResult.Cancel;
                 return;
             }
 
@@ -77,8 +79,13 @@ namespace AssetsAdvancedEditor.Winforms
         private void btnCompress_Click(object sender, EventArgs e)
         {
             if (BundleInst == null) return;
-            var bunComp = new BundleCompression(BundleInst);
-            if (bunComp.ShowDialog() == DialogResult.OK && bunComp.Compressed) Close();
+            var dialog = new BundleCompression(BundleInst);
+            var result = dialog.ShowDialog();
+            if (result == DialogResult.OK && dialog.Compressed)
+            {
+                if (result != DialogResult.Abort)
+                    Close();
+            }
         }
 
         private void btnLoad_Click(object sender, EventArgs e)
