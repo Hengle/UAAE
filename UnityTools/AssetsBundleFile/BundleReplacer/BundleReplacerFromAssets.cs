@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using UnityTools.Utils;
 
 namespace UnityTools
 {
@@ -16,10 +16,7 @@ namespace UnityTools
         public BundleReplacerFromAssets(string oldName, string newName, AssetsFile assetsFile, List<AssetsReplacer> replacers, uint fileId, int bundleListIndex = -1)
         {
             this.oldName = oldName;
-            if (newName == null)
-                this.newName = oldName;
-            else
-                this.newName = newName;
+            this.newName = newName ?? oldName;
             this.assetsFile = assetsFile;
             this.replacers = replacers;
             this.fileId = fileId;
@@ -44,17 +41,9 @@ namespace UnityTools
                 return false;
 
             this.typeMeta = typeMeta;
-
-            entryReader.Position = entryPos;
-            //memorystream for alignment issue
-            var ms = new MemoryStream();
-            var r = new AssetsFileReader(ms);
-            var w = new AssetsFileWriter(ms);
-            {
-                w.Write(entryReader.ReadBytes((int)entrySize));
-                ms.Position = 0;
-                assetsFile = new AssetsFile(r);
-            }
+            var stream = new SegmentStream(entryReader.BaseStream, entryPos, entrySize);
+            var reader = new AssetsFileReader(stream);
+            assetsFile = new AssetsFile(reader);
             return true;
         }
 
@@ -62,11 +51,15 @@ namespace UnityTools
 
         public override long Write(AssetsFileWriter writer)
         {
-            //memorystream for alignment issue
-            using var ms = new MemoryStream();
-            using var w = new AssetsFileWriter(ms);
-            assetsFile.Write(w, -1, replacers, fileId, typeMeta);
-            writer.Write(ms.ToArray());
+            // Some parts of an assets file need to be aligned to a multiple of 4/8/16 bytes,
+            // but for this to work correctly, the start of the file of course needs to be aligned too.
+            // In a loose .assets file this is true by default, but inside a bundle file,
+            // this might not be the case. Therefore wrap the bundle output stream in a SegmentStream
+            // which will make it look like the start of the new assets file is at position 0
+            var alignedStream = new SegmentStream(writer.BaseStream, writer.Position);
+            var alignedWriter = new AssetsFileWriter(alignedStream);
+            assetsFile.Write(alignedWriter, -1, replacers, fileId, typeMeta);
+            writer.Position = writer.BaseStream.Length;
             return writer.Position;
         }
 

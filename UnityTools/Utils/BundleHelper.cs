@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using SevenZip.Compression.LZMA;
+using UnityTools.Utils;
 
 namespace UnityTools
 {
@@ -9,76 +10,61 @@ namespace UnityTools
     {
         public static byte[] LoadAssetDataFromBundle(AssetBundleFile bundle, int index)
         {
+            bundle.GetFileRange(index, out var offset, out var length);
             var reader = bundle.Reader;
-            var start = (int)(bundle.Header.GetFileDataOffset() + bundle.Metadata.DirectoryInfo[index].Offset);
-            var length = (int)bundle.Metadata.DirectoryInfo[index].DecompressedSize;
-            reader.Position = start;
-            return reader.ReadBytes(length);
-        }
-
-        public static AssetsFile LoadAssetFromBundle(AssetBundleFile bundle, int index)
-        {
-            var data = LoadAssetDataFromBundle(bundle, index);
-            var ms = new MemoryStream(data);
-            var r = new AssetsFileReader(ms);
-            return new AssetsFile(r);
-        }
-
-        public static AssetsFile LoadAssetFromBundle(AssetBundleFile bundle, string name)
-        {
-            var dirInf = bundle.Metadata.DirectoryInfo;
-            for (var i = 0; i < dirInf.Length; i++)
-            {
-                var info = dirInf[i];
-                if (info.Name == name)
-                {
-                    return LoadAssetFromBundle(bundle, i);
-                }
-            }
-            return null;
+            reader.Position = offset;
+            return reader.ReadBytes((int)length);
         }
 
         public static byte[] LoadAssetDataFromBundle(AssetBundleFile bundle, string name)
         {
-            var dirInf = bundle.Metadata.DirectoryInfo;
-            for (var i = 0; i < dirInf.Length; i++)
-            {
-                var info = dirInf[i];
-                if (info.Name == name)
-                {
-                    return LoadAssetDataFromBundle(bundle, i);
-                }
-            }
+            var index = bundle.GetFileIndex(name);
+            if (index != -1)
+                return LoadAssetDataFromBundle(bundle, index);
+
             return null;
         }
 
-        public static List<AssetsFile> LoadAllAssetsFromBundle(AssetBundleFile bundle)
+        public static AssetsFile LoadAssetFromBundle(AssetBundleFile bundle, int index)
         {
-            var files = new List<AssetsFile>();
-            var reader = bundle.Reader;
-            var dirInf = bundle.Metadata.DirectoryInfo;
-            for (var i = 0; i < dirInf.Length; i++)
-            {
-                var info = dirInf[i];
-                if (bundle.IsAssetsFile(reader, info))
-                {
-                    files.Add(LoadAssetFromBundle(bundle, i));
-                }
-            }
-            return files;
+            bundle.GetFileRange(index, out var offset, out var length);
+            var ss = new SegmentStream(bundle.Reader.BaseStream, offset, length);
+            var reader = new AssetsFileReader(ss);
+            return new AssetsFile(reader);
+        }
+
+        public static AssetsFile LoadAssetFromBundle(AssetBundleFile bundle, string name)
+        {
+            var index = bundle.GetFileIndex(name);
+            if (index != -1)
+                return LoadAssetFromBundle(bundle, index);
+
+            return null;
         }
 
         public static List<byte[]> LoadAllAssetsDataFromBundle(AssetBundleFile bundle)
         {
             var files = new List<byte[]>();
-            var reader = bundle.Reader;
-            var dirInf = bundle.Metadata.DirectoryInfo;
-            for (var i = 0; i < dirInf.Length; i++)
+            var fileCount = bundle.FileCount;
+            for (var i = 0; i < fileCount; i++)
             {
-                var info = dirInf[i];
-                if (bundle.IsAssetsFile(reader, info))
+                if (bundle.IsAssetsFile(i))
                 {
                     files.Add(LoadAssetDataFromBundle(bundle, i));
+                }
+            }
+            return files;
+        }
+
+        public static List<AssetsFile> LoadAllAssetsFromBundle(AssetBundleFile bundle)
+        {
+            var files = new List<AssetsFile>();
+            var fileCount = bundle.FileCount;
+            for (var i = 0; i < fileCount; i++)
+            {
+                if (bundle.IsAssetsFile(i))
+                {
+                    files.Add(LoadAssetFromBundle(bundle, i));
                 }
             }
             return files;

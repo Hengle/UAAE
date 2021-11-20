@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityTools.Utils;
 
 namespace UnityTools
 {
@@ -176,17 +177,16 @@ namespace UnityTools
 
         public AssetsFileInstance LoadAssetsFileFromBundle(BundleFileInstance bunInst, int index, bool loadDeps = false)
         {
-            var dirInf = bunInst.file.Metadata.DirectoryInfo[index];
-            var assetMemPath = Path.Combine(bunInst.path, dirInf.Name);
+            var assetMemPath = Path.Combine(bunInst.path, bunInst.file.GetFileName(index));
 
             var listIndex = files.FindIndex(f => string.Equals(f.path, Path.GetFullPath(assetMemPath), StringComparison.CurrentCultureIgnoreCase));
             if (listIndex == -1)
             {
-                if (bunInst.file.IsAssetsFile(bunInst.file.Reader, dirInf))
+                if (bunInst.file.IsAssetsFile(index))
                 {
-                    var assetData = BundleHelper.LoadAssetDataFromBundle(bunInst.file, index);
-                    var ms = new MemoryStream(assetData);
-                    var assetsInst = LoadAssetsFile(ms, assetMemPath, loadDeps, bunInst: bunInst);
+                    bunInst.file.GetFileRange(index, out var offset, out var length);
+                    var ss = new SegmentStream(bunInst.stream, offset, length);
+                    var assetsInst = LoadAssetsFile(ss, assetMemPath, loadDeps, bunInst: bunInst);
                     bunInst.loadedAssetsFiles.Add(assetsInst);
                     return assetsInst;
                 }
@@ -197,16 +197,13 @@ namespace UnityTools
             }
             return null;
         }
+
         public AssetsFileInstance LoadAssetsFileFromBundle(BundleFileInstance bunInst, string name, bool loadDeps = false)
         {
-            var dirInf = bunInst.file.Metadata.DirectoryInfo;
-            for (var i = 0; i < dirInf.Length; i++)
-            {
-                if (dirInf[i].Name == name)
-                {
-                    return LoadAssetsFileFromBundle(bunInst, i, loadDeps);
-                }
-            }
+            var index = bunInst.file.GetFileIndex(name);
+            if (index != -1)
+                return LoadAssetsFileFromBundle(bunInst, index, loadDeps);
+
             return null;
         }
         #endregion

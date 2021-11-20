@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModInstaller", "ModInstalle
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityTools", "UnityTools\UnityTools.csproj", "{A3CF0429-7529-49CF-BDFB-971FFFC1A7E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugins", "Plugins\Plugins.csproj", "{C46ADF29-ACC0-4079-8ED4-54CA27F7151E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugins", "Plugins\Plugins.csproj", "{C46ADF29-ACC0-4079-8ED4-54CA27F7151E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

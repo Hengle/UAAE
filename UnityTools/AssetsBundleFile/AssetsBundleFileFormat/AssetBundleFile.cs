@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using SevenZip.Compression.LZMA;
+using System;
 
 namespace UnityTools
 {
@@ -482,49 +482,61 @@ namespace UnityTools
             return true;
         }
 
-        public bool IsAssetsFile(AssetBundleDirectoryInfo entry)
+        public int FileCount
         {
-            return IsAssetsFile(Reader, entry);
+            get
+            {
+                if (Header != null)
+                    return Metadata.DirectoryCount;
+
+                return 0;
+            }
         }
 
-        public bool IsAssetsFile(AssetsFileReader reader, AssetBundleDirectoryInfo entry)
+        public bool IsAssetsFile(int index)
         {
-            //todo - not fully implemented
-            var offset = Header.GetFileDataOffset() + entry.Offset;
-            if (entry.DecompressedSize < 0x30)
-                return false;
+            GetFileRange(index, out var offset, out var length);
+            return AssetsFile.IsAssetsFile(Reader, offset, length);
+        }
 
-            reader.Position = offset;
-            var possibleBundleHeader = reader.ReadStringLength(7);
-            if (possibleBundleHeader == "UnityFS")
-                return false;
-
-            reader.Position = offset + 0x08;
-            var possibleFormat = reader.ReadInt32();
-            if (possibleFormat > 99)
-                return false;
-
-            reader.Position = offset + 0x14;
-
-            if (possibleFormat >= 0x16)
+        public int GetFileIndex(string name)
+        {
+            if (Header != null)
             {
-                reader.Position += 0x1c;
-            }
-
-            var possibleVersion = "";
-            char curChar;
-            while (reader.Position < reader.BaseStream.Length && (curChar = (char)reader.ReadByte()) != 0x00)
-            {
-                possibleVersion += curChar;
-                if (possibleVersion.Length > 0xFF)
+                var dirInf = Metadata.DirectoryInfo;
+                for (int i = 0; i < dirInf.Length; i++)
                 {
-                    return false;
+                    var info = dirInf[i];
+                    if (info.Name == name)
+                    {
+                        return i;
+                    }
                 }
             }
+            return -1;
+        }
 
-            var emptyVersion = Regex.Replace(possibleVersion, "[a-zA-Z0-9\\.]", "");
-            var fullVersion = Regex.Replace(possibleVersion, "[^a-zA-Z0-9\\.]", "");
-            return emptyVersion == "" && fullVersion.Length > 0;
+        public string GetFileName(int index)
+        {
+            if (Header != null)
+                return BundleHelper.GetDirInfo(this, index).Name;
+
+            return null;
+        }
+
+        internal void GetFileRange(int index, out long offset, out long length)
+        {
+            // unity 3 version bundles not tested
+            if (Header != null)
+            {
+                var entry = BundleHelper.GetDirInfo(this, index);
+                offset = Header.GetFileDataOffset() + entry.Offset;
+                length = entry.DecompressedSize;
+            }
+            else
+            {
+                throw new NullReferenceException(nameof(Header));
+            }
         }
     }
 }

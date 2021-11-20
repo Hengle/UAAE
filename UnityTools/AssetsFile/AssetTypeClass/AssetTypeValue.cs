@@ -12,76 +12,89 @@ namespace UnityTools
             private object value;
             public AssetTypeArray asArray
             {
-                get { return (AssetTypeArray)value; }
-                set { this.value = value; }
+                get => (AssetTypeArray)value;
+                set => this.value = value;
             }
+
             public AssetTypeByteArray asByteArray
             {
-                get { return (AssetTypeByteArray)value; }
-                set { this.value = value; }
+                get => (AssetTypeByteArray)value;
+                set => this.value = value;
             }
+
             public bool asBool
             {
-                get { return (bool)value; }
-                set { this.value = value; }
+                get => (bool)value;
+                set => this.value = value;
             }
+
             public sbyte asInt8
             {
-                get { return (sbyte)value; }
-                set { this.value = value; }
+                get => (sbyte)value;
+                set => this.value = value;
             }
+
             public byte asUInt8
             {
-                get { return (byte)value; }
-                set { this.value = value; }
+                get => (byte)value;
+                set => this.value = value;
             }
+
             public short asInt16
             {
-                get { return (short)value; }
-                set { this.value = value; }
+                get => (short)value;
+                set => this.value = value;
             }
+
             public ushort asUInt16
             {
-                get { return (ushort)value; }
-                set { this.value = value; }
+                get => (ushort)value;
+                set => this.value = value;
             }
+
             public int asInt32
             {
-                get { return (int)value; }
-                set { this.value = value; }
+                get => (int)value;
+                set => this.value = value;
             }
+
             public uint asUInt32
             {
-                get { return (uint)value; }
-                set { this.value = value; }
+                get => (uint)value;
+                set => this.value = value;
             }
+
             public long asInt64
             {
-                get { return (long)value; }
-                set { this.value = value; }
+                get => (long)value;
+                set => this.value = value;
             }
+
             public ulong asUInt64
             {
-                get { return (ulong)value; }
-                set { this.value = value; }
+                get => (ulong)value;
+                set => this.value = value;
             }
+
             public float asFloat
             {
-                get { return (float)value; }
-                set { this.value = value; }
+                get => (float)value;
+                set => this.value = value;
             }
+
             public double asDouble
             {
-                get { return (double)value; }
-                set { this.value = value; }
+                get => (double)value;
+                set => this.value = value;
             }
+
             public byte[] asString
             {
-                get { return (byte[])value; }
-                set { this.value = value; }
+                get => (byte[])value;
+                set => this.value = value;
             }
         }
-        public ValueTypes value = new ValueTypes();
+        public ValueTypes value;
 
         public AssetTypeValue(EnumValueTypes type, object valueContainer)
         {
@@ -89,10 +102,9 @@ namespace UnityTools
             if (valueContainer != null)
                 Set(valueContainer);
         }
-        public EnumValueTypes GetValueType()
-        {
-            return type;
-        }
+
+        public EnumValueTypes GetValueType() => type;
+
         public void Set(object valueContainer)
         {
             unchecked
@@ -100,7 +112,7 @@ namespace UnityTools
                 switch (type)
                 {
                     case EnumValueTypes.Bool:
-                        value.asBool = Convert.ToByte(valueContainer) == 1 ? true : false;
+                        value.asBool = Convert.ToByte(valueContainer) == 1;
                         break;
                     case EnumValueTypes.Int8:
                         value.asInt8 = Convert.ToSByte(valueContainer);
@@ -133,32 +145,44 @@ namespace UnityTools
                         value.asDouble = Convert.ToDouble(valueContainer);
                         break;
                     case EnumValueTypes.String:
-                        if (valueContainer is byte[] byteArr)
-                            value.asString = byteArr;
-                        else if (valueContainer is string str)
-                            value.asString = Encoding.UTF8.GetBytes(str);
-                        else
-                            value.asString = new byte[0];
-                        break;
+                        {
+                            value.asString = valueContainer switch
+                            {
+                                byte[] byteArr => byteArr,
+                                string str => Encoding.UTF8.GetBytes(str),
+                                _ => new byte[0],
+                            };
+                            break;
+                        }
                     case EnumValueTypes.Array:
                         value.asArray = (AssetTypeArray)valueContainer;
                         break;
                     case EnumValueTypes.ByteArray:
-                        value.asByteArray = (AssetTypeByteArray)valueContainer;
-                        break;
+                        {
+                            value.asByteArray = valueContainer switch
+                            {
+                                AssetTypeByteArray byteArray => byteArray,
+                                byte[] data => new AssetTypeByteArray(data),
+                                _ => new AssetTypeByteArray(new byte[0])
+                            };
+                            break;
+                        }
                     default:
                         break;
                 }
             }
         }
+
         public AssetTypeArray AsArray()
         {
-            return (type == EnumValueTypes.Array) ? value.asArray : new AssetTypeArray() { size = 0xFFFF };
+            return (type == EnumValueTypes.Array) ? value.asArray : new AssetTypeArray { size = 0xFFFF };
         }
+
         public AssetTypeByteArray AsByteArray()
         {
-            return (type == EnumValueTypes.ByteArray) ? value.asByteArray : new AssetTypeByteArray() { size = 0xFFFF };
+            return (type == EnumValueTypes.ByteArray) ? value.asByteArray : new AssetTypeByteArray { size = 0xFFFF };
         }
+
         public string AsString()
         {
             switch (type)
@@ -194,10 +218,12 @@ namespace UnityTools
                     return "";
             }
         }
+
         public byte[] AsStringBytes()
         {
             return (type == EnumValueTypes.String) ? value.asString : null;
         }
+
         public bool AsBool()
         {
             switch (type)
@@ -208,7 +234,6 @@ namespace UnityTools
                 case EnumValueTypes.ByteArray:
                 case EnumValueTypes.Array:
                     return false;
-                //new casts
                 case EnumValueTypes.Int8:
                     return value.asInt8 == 1;
                 case EnumValueTypes.Int16:
@@ -229,6 +254,7 @@ namespace UnityTools
                     return value.asBool;
             }
         }
+
         public int AsInt()
         {
             switch (type)
@@ -260,6 +286,7 @@ namespace UnityTools
                     return value.asInt32;
             }
         }
+
         public uint AsUInt()
         {
             switch (type)
@@ -278,7 +305,6 @@ namespace UnityTools
                     return (uint)value.asUInt16;
                 case EnumValueTypes.UInt64:
                     return (uint)value.asUInt64;
-                //new casts
                 case EnumValueTypes.Int8:
                     return (uint)value.asUInt8;
                 case EnumValueTypes.Int16:
@@ -291,6 +317,7 @@ namespace UnityTools
                     return value.asUInt32;
             }
         }
+
         public long AsInt64()
         {
             switch (type)
@@ -309,7 +336,6 @@ namespace UnityTools
                     return (long)value.asInt16;
                 case EnumValueTypes.Int32:
                     return (long)value.asInt32;
-                //new casts
                 case EnumValueTypes.UInt8:
                     return (long)value.asUInt8;
                 case EnumValueTypes.UInt16:
@@ -322,6 +348,7 @@ namespace UnityTools
                     return value.asInt64;
             }
         }
+
         public ulong AsUInt64()
         {
             switch (type)
@@ -340,7 +367,6 @@ namespace UnityTools
                     return (ulong)value.asUInt16;
                 case EnumValueTypes.UInt32:
                     return (ulong)value.asUInt32;
-                //new casts
                 case EnumValueTypes.Int8:
                     return (ulong)value.asUInt8;
                 case EnumValueTypes.Int16:
@@ -353,6 +379,7 @@ namespace UnityTools
                     return value.asUInt64;
             }
         }
+
         public float AsFloat()
         {
             switch (type)
@@ -371,7 +398,6 @@ namespace UnityTools
                     return (float)value.asInt16;
                 case EnumValueTypes.Int32:
                     return (float)value.asInt32;
-                //new casts
                 case EnumValueTypes.UInt8:
                     return (float)value.asUInt8;
                 case EnumValueTypes.UInt16:
@@ -382,6 +408,7 @@ namespace UnityTools
                     return (float)value.asUInt64;
             }
         }
+
         public double AsDouble()
         {
             switch (type)
@@ -400,7 +427,6 @@ namespace UnityTools
                     return (double)value.asInt16;
                 case EnumValueTypes.Int32:
                     return (double)value.asInt32;
-                //new casts
                 case EnumValueTypes.UInt8:
                     return (double)value.asUInt8;
                 case EnumValueTypes.UInt16:

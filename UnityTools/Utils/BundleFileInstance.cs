@@ -18,24 +18,18 @@ namespace UnityTools
             name = Path.Combine(root, Path.GetFileName(path));
             file = new AssetBundleFile();
             file.Read(new AssetsFileReader(stream), true);
-            if (file.Header.GetCompressionType() != 0 && unpackIfPacked)
+            if (file.Header != null && file.Header.GetCompressionType() != 0 && unpackIfPacked)
             {
                 file = BundleHelper.UnpackBundle(file);
+                this.stream = file.Reader.BaseStream;
             }
             loadedAssetsFiles = new List<AssetsFileInstance>();
         }
+
         public BundleFileInstance(FileStream stream, string root, bool unpackIfPacked)
+            : this(stream, stream.Name, root, unpackIfPacked)
         {
-            this.stream = stream;
-            path = stream.Name;
-            name = Path.Combine(root, Path.GetFileName(path));
-            file = new AssetBundleFile();
-            file.Read(new AssetsFileReader(stream), true);
-            if (file.Header.GetCompressionType() != 0 && unpackIfPacked)
-            {
-                file = BundleHelper.UnpackBundle(file);
-            }
-            loadedAssetsFiles = new List<AssetsFileInstance>();
+
         }
     }
 }

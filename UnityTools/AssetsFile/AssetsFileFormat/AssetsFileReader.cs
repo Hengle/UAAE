@@ -8,6 +8,7 @@ namespace UnityTools
         //todo, this should default to BigEndian = false
         //since it's more likely little endian than big endian
         public bool BigEndian = true;
+        public AssetsFileReader(string path) : base(File.OpenRead(path)) { }
         public AssetsFileReader(Stream stream) : base(stream) { }
 
         public override short ReadInt16()
