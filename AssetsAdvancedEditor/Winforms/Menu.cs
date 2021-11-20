@@ -295,7 +295,7 @@ namespace AssetsAdvancedEditor.Winforms
 
             //warning: does not update if you import an assets file onto
             //a file that wasn't originally an assets file
-            var isAssetsFile = BundleInst.file.IsAssetsFile(dirInf);
+            var isAssetsFile = BundleInst.file.IsAssetsFile(index);
 
             if (isAssetsFile)
             {
