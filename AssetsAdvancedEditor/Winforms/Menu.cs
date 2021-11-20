@@ -151,9 +151,13 @@ namespace AssetsAdvancedEditor.Winforms
                 BundleInst.file.Write(writer, ModifiedFiles.Values.ToList());
             }
             Modified = false;
-            var items = cboxBundleContents.Items.Cast<string>().Select(i => i.Replace(" *", ""));
-            cboxBundleContents.Items.Clear();
-            cboxBundleContents.Items.AddRange((object[])items);
+
+            for (var i = 0; i < cboxBundleContents.Items.Count; i++)
+            {
+                var item = cboxBundleContents.Items[i].ToString().Replace(" *", "");
+                cboxBundleContents.Items.RemoveAt(i);
+                cboxBundleContents.Items.Insert(i, item);
+            }
         }
 
         private void CloseAllFiles()
