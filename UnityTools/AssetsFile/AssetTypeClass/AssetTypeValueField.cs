@@ -41,6 +41,7 @@ namespace UnityTools
 
         public string GetName() => TemplateField.name;
         public string GetFieldType() => TemplateField.type;
+        public AssetTypeValue GetValue() => Value;
         public void SetChildrenList(List<AssetTypeValueField> children)
         {
             Children = children;

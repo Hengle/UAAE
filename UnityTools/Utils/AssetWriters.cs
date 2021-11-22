@@ -31,7 +31,7 @@ namespace UnityTools
             {
                 if (valueField.TemplateField.valueType == EnumValueTypes.ByteArray)
                 {
-                    var byteArray = valueField.Value.value.asByteArray;
+                    var byteArray = valueField.GetValue().value.asByteArray;
 
                     byteArray.size = (uint)byteArray.data.Length;
                     writer.Write(byteArray.size);
@@ -40,7 +40,7 @@ namespace UnityTools
                 }
                 else
                 {
-                    var array = valueField.Value.value.asArray;
+                    var array = valueField.GetValue().value.asArray;
 
                     array.size = valueField.ChildrenCount;
                     writer.Write(array.size);
@@ -58,46 +58,46 @@ namespace UnityTools
                     switch (valueField.TemplateField.valueType)
                     {
                         case EnumValueTypes.Int8:
-                            writer.Write(valueField.Value.value.asInt8);
+                            writer.Write(valueField.GetValue().value.asInt8);
                             if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.UInt8:
-                            writer.Write(valueField.Value.value.asUInt8);
+                            writer.Write(valueField.GetValue().value.asUInt8);
                             if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.Bool:
-                            writer.Write(valueField.Value.value.asBool);
+                            writer.Write(valueField.GetValue().value.asBool);
                             if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.Int16:
-                            writer.Write(valueField.Value.value.asInt16);
+                            writer.Write(valueField.GetValue().value.asInt16);
                             if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.UInt16:
-                            writer.Write(valueField.Value.value.asUInt16);
+                            writer.Write(valueField.GetValue().value.asUInt16);
                             if (valueField.TemplateField.align) writer.Align();
                             break;
                         case EnumValueTypes.Int32:
-                            writer.Write(valueField.Value.value.asInt32);
+                            writer.Write(valueField.GetValue().value.asInt32);
                             break;
                         case EnumValueTypes.UInt32:
-                            writer.Write(valueField.Value.value.asUInt32);
+                            writer.Write(valueField.GetValue().value.asUInt32);
                             break;
                         case EnumValueTypes.Int64:
-                            writer.Write(valueField.Value.value.asInt64);
+                            writer.Write(valueField.GetValue().value.asInt64);
                             break;
                         case EnumValueTypes.UInt64:
-                            writer.Write(valueField.Value.value.asUInt64);
+                            writer.Write(valueField.GetValue().value.asUInt64);
                             break;
                         case EnumValueTypes.Float:
-                            writer.Write(valueField.Value.value.asFloat);
+                            writer.Write(valueField.GetValue().value.asFloat);
                             break;
                         case EnumValueTypes.Double:
-                            writer.Write(valueField.Value.value.asDouble);
+                            writer.Write(valueField.GetValue().value.asDouble);
                             break;
                         case EnumValueTypes.String:
-                            writer.Write(valueField.Value.value.asString.Length);
-                            writer.Write(valueField.Value.value.asString);
+                            writer.Write(valueField.GetValue().value.asString.Length);
+                            writer.Write(valueField.GetValue().value.asString);
                             writer.Align();
                             break;
                     }

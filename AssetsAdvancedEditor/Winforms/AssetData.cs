@@ -33,9 +33,9 @@ namespace AssetsAdvancedEditor.Winforms
             {
                 if (children == null) return;
                 var value = "";
-                if (children.Value != null)
+                if (children.GetValue() != null)
                 {
-                    var evt = children.Value.GetValueType();
+                    var evt = children.GetValue().GetValueType();
                     var quote = "";
                     if (evt == EnumValueTypes.String)
                     {
@@ -43,7 +43,7 @@ namespace AssetsAdvancedEditor.Winforms
                     }
                     if (1 <= (int)evt && (int)evt <= 12)
                     {
-                        value = $" = {quote}{children.Value.AsString()}{quote}";
+                        value = $" = {quote}{children.GetValue().AsString()}{quote}";
                     }
                     var isOneItem = children.ChildrenCount == 1;
                     if (evt is EnumValueTypes.Array or EnumValueTypes.ByteArray)

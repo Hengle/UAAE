@@ -48,82 +48,82 @@ namespace UnityTools
             var texture = new TextureFile();
             AssetTypeValueField tempField;
 
-            texture.m_Name = baseField.Get("m_Name").Value.AsString();
+            texture.m_Name = baseField.Get("m_Name").GetValue().AsString();
 
             if (!(tempField = baseField.Get("m_ForcedFallbackFormat")).IsDummy())
-                texture.m_ForcedFallbackFormat = tempField.Value.AsInt();
+                texture.m_ForcedFallbackFormat = tempField.GetValue().AsInt();
 
             if (!(tempField = baseField.Get("m_DownscaleFallback")).IsDummy())
-                texture.m_DownscaleFallback = tempField.Value.AsBool();
+                texture.m_DownscaleFallback = tempField.GetValue().AsBool();
 
-            texture.m_Width = baseField.Get("m_Width").Value.AsInt();
+            texture.m_Width = baseField.Get("m_Width").GetValue().AsInt();
 
-            texture.m_Height = baseField.Get("m_Height").Value.AsInt();
+            texture.m_Height = baseField.Get("m_Height").GetValue().AsInt();
 
             if (!(tempField = baseField.Get("m_CompleteImageSize")).IsDummy())
-                texture.m_CompleteImageSize = tempField.Value.AsInt();
+                texture.m_CompleteImageSize = tempField.GetValue().AsInt();
 
-            texture.m_TextureFormat = baseField.Get("m_TextureFormat").Value.AsInt();
+            texture.m_TextureFormat = baseField.Get("m_TextureFormat").GetValue().AsInt();
 
             if (!(tempField = baseField.Get("m_MipCount")).IsDummy())
-                texture.m_MipCount = tempField.Value.AsInt();
+                texture.m_MipCount = tempField.GetValue().AsInt();
 
             if (!(tempField = baseField.Get("m_MipMap")).IsDummy())
-                texture.m_MipMap = tempField.Value.AsBool();
+                texture.m_MipMap = tempField.GetValue().AsBool();
 
-            texture.m_IsReadable = baseField.Get("m_IsReadable").Value.AsBool();
+            texture.m_IsReadable = baseField.Get("m_IsReadable").GetValue().AsBool();
 
             if (!(tempField = baseField.Get("m_ReadAllowed")).IsDummy())
-                texture.m_ReadAllowed = tempField.Value.AsBool();
+                texture.m_ReadAllowed = tempField.GetValue().AsBool();
 
             if (!(tempField = baseField.Get("m_StreamingMipmaps")).IsDummy())
-                texture.m_StreamingMipmaps = tempField.Value.AsBool();
+                texture.m_StreamingMipmaps = tempField.GetValue().AsBool();
 
             if (!(tempField = baseField.Get("m_StreamingMipmapsPriority")).IsDummy())
-                texture.m_StreamingMipmapsPriority = tempField.Value.AsInt();
+                texture.m_StreamingMipmapsPriority = tempField.GetValue().AsInt();
 
-            texture.m_ImageCount = baseField.Get("m_ImageCount").Value.AsInt();
+            texture.m_ImageCount = baseField.Get("m_ImageCount").GetValue().AsInt();
 
-            texture.m_TextureDimension = baseField.Get("m_TextureDimension").Value.AsInt();
+            texture.m_TextureDimension = baseField.Get("m_TextureDimension").GetValue().AsInt();
 
             var textureSettings = baseField.Get("m_TextureSettings");
 
-            texture.m_TextureSettings.m_FilterMode = textureSettings.Get("m_FilterMode").Value.AsInt();
+            texture.m_TextureSettings.m_FilterMode = textureSettings.Get("m_FilterMode").GetValue().AsInt();
 
-            texture.m_TextureSettings.m_Aniso = textureSettings.Get("m_Aniso").Value.AsInt();
+            texture.m_TextureSettings.m_Aniso = textureSettings.Get("m_Aniso").GetValue().AsInt();
 
-            texture.m_TextureSettings.m_MipBias = textureSettings.Get("m_MipBias").Value.AsFloat();
+            texture.m_TextureSettings.m_MipBias = textureSettings.Get("m_MipBias").GetValue().AsFloat();
 
             if (!(tempField = textureSettings.Get("m_WrapMode")).IsDummy())
-                texture.m_TextureSettings.m_WrapMode = tempField.Value.AsInt();
+                texture.m_TextureSettings.m_WrapMode = tempField.GetValue().AsInt();
 
             if (!(tempField = textureSettings.Get("m_WrapU")).IsDummy())
-                texture.m_TextureSettings.m_WrapU = tempField.Value.AsInt();
+                texture.m_TextureSettings.m_WrapU = tempField.GetValue().AsInt();
 
             if (!(tempField = textureSettings.Get("m_WrapV")).IsDummy())
-                texture.m_TextureSettings.m_WrapV = tempField.Value.AsInt();
+                texture.m_TextureSettings.m_WrapV = tempField.GetValue().AsInt();
 
             if (!(tempField = textureSettings.Get("m_WrapW")).IsDummy())
-                texture.m_TextureSettings.m_WrapW = tempField.Value.AsInt();
+                texture.m_TextureSettings.m_WrapW = tempField.GetValue().AsInt();
 
             if (!(tempField = baseField.Get("m_LightmapFormat")).IsDummy())
-                texture.m_LightmapFormat = tempField.Value.AsInt();
+                texture.m_LightmapFormat = tempField.GetValue().AsInt();
 
             if (!(tempField = baseField.Get("m_ColorSpace")).IsDummy())
-                texture.m_ColorSpace = tempField.Value.AsInt();
+                texture.m_ColorSpace = tempField.GetValue().AsInt();
 
             var imageData = baseField.Get("image data");
             if (imageData.TemplateField.valueType == EnumValueTypes.ByteArray)
             {
-                texture.pictureData = imageData.Value.AsByteArray().data;
+                texture.pictureData = imageData.GetValue().AsByteArray().data;
             }
             else
             {
-                var imageDataSize = imageData.Value.AsArray().size;
+                var imageDataSize = imageData.GetValue().AsArray().size;
                 texture.pictureData = new byte[imageDataSize];
                 for (var i = 0; i < imageDataSize; i++)
                 {
-                    texture.pictureData[i] = (byte)imageData[i].Value.AsInt();
+                    texture.pictureData[i] = (byte)imageData[i].GetValue().AsInt();
                 }
             }
 
@@ -131,9 +131,9 @@ namespace UnityTools
 
             if (!(streamData = baseField.Get("m_StreamData")).IsDummy())
             {
-                texture.m_StreamData.offset = streamData.Get("offset").Value.AsUInt64();
-                texture.m_StreamData.size = streamData.Get("size").Value.AsUInt();
-                texture.m_StreamData.path = streamData.Get("path").Value.AsString();
+                texture.m_StreamData.offset = streamData.Get("offset").GetValue().AsUInt64();
+                texture.m_StreamData.size = streamData.Get("size").GetValue().AsUInt();
+                texture.m_StreamData.path = streamData.Get("path").GetValue().AsString();
             }
 
             return texture;

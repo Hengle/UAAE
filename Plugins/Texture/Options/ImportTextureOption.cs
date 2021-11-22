@@ -89,7 +89,7 @@ namespace Plugins.Texture.Options
                     continue;
 
                 var baseField = cont.TypeInstance.GetBaseField();
-                var format = (TextureFormat)baseField.Get("m_TextureFormat").Value.AsInt();
+                var format = (TextureFormat)baseField.Get("m_TextureFormat").GetValue().AsInt();
 
                 var encodedBytes = TextureManager.ImportTexture(selectedFilePath, format, out var size);
 
@@ -100,24 +100,27 @@ namespace Plugins.Texture.Options
                 }
 
                 var m_StreamData = baseField.Get("m_StreamData");
-                m_StreamData.Get("offset").Value.Set(0);
-                m_StreamData.Get("size").Value.Set(0);
-                m_StreamData.Get("path").Value.Set("");
+                m_StreamData.Get("offset").GetValue().Set(0);
+                m_StreamData.Get("size").GetValue().Set(0);
+                m_StreamData.Get("path").GetValue().Set("");
 
-                baseField.Get("m_TextureFormat").Value.Set((int)format);
+                if (!baseField.Get("m_MipCount").IsDummy())
+                    baseField.Get("m_MipCount").GetValue().Set(1);
 
-                baseField.Get("m_Width").Value.Set(size.Width);
-                baseField.Get("m_Height").Value.Set(size.Height);
+                baseField.Get("m_TextureFormat").GetValue().Set((int)format);
+
+                baseField.Get("m_Width").GetValue().Set(size.Width);
+                baseField.Get("m_Height").GetValue().Set(size.Height);
 
                 var image_data = baseField.Get("image data");
-                image_data.Value.type = EnumValueTypes.ByteArray;
+                image_data.GetValue().type = EnumValueTypes.ByteArray;
                 image_data.TemplateField.valueType = EnumValueTypes.ByteArray;
                 var byteArray = new AssetTypeByteArray
                 {
                     size = (uint)encodedBytes.Length,
                     data = encodedBytes
                 };
-                image_data.Value.Set(byteArray);
+                image_data.GetValue().Set(byteArray);
             }
 
             if (errorBuilder.Length > 0)

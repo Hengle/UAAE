@@ -350,8 +350,8 @@ namespace UnityTools
 
         public AssetExternal GetExtAsset(AssetsFileInstance relativeTo, AssetTypeValueField atvf, bool onlyGetInfo = false, bool forceFromCldb = false)
         {
-            var fileId = atvf.Get("m_FileID").Value.AsInt();
-            var pathId = atvf.Get("m_PathID").Value.AsInt64();
+            var fileId = atvf.Get("m_FileID").GetValue().AsInt();
+            var pathId = atvf.Get("m_PathID").GetValue().AsInt64();
             return GetExtAsset(relativeTo, fileId, pathId, onlyGetInfo, forceFromCldb);
         }
 
@@ -421,9 +421,9 @@ namespace UnityTools
                 if (scriptAti == null)
                     return null;
 
-                scriptName = scriptAti.GetBaseField().Get("m_Name").Value.AsString();
-                var scriptNamespace = scriptAti.GetBaseField().Get("m_Namespace").Value.AsString();
-                var assemblyName = scriptAti.GetBaseField().Get("m_AssemblyName").Value.AsString();
+                scriptName = scriptAti.GetBaseField().Get("m_Name").GetValue().AsString();
+                var scriptNamespace = scriptAti.GetBaseField().Get("m_Namespace").GetValue().AsString();
+                var assemblyName = scriptAti.GetBaseField().Get("m_AssemblyName").GetValue().AsString();
 
                 if (scriptNamespace == string.Empty)
                 {

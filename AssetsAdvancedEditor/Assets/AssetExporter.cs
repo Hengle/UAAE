@@ -92,7 +92,7 @@ namespace AssetsAdvancedEditor.Assets
                 var sizeAlign = sizeTemplate.align ? "1" : "0";
                 var sizeTypeName = sizeTemplate.type;
                 var sizeFieldName = sizeTemplate.name;
-                var size = field.Value.AsArray().size;
+                var size = field.GetValue().AsArray().size;
                 Writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName} ({size} {(size != 1 ? "items" : "item")})");
                 Writer.WriteLine($"{new string(' ', depth + 1)}{sizeAlign} {sizeTypeName} {sizeFieldName} = {size}");
                 for (var i = 0; i < field.ChildrenCount; i++)
@@ -104,14 +104,14 @@ namespace AssetsAdvancedEditor.Assets
             else
             {
                 var value = "";
-                if (field.Value != null)
+                if (field.GetValue() != null)
                 {
-                    var evt = field.Value.GetValueType();
+                    var evt = field.GetValue().GetValueType();
                     if (evt == EnumValueTypes.String)
                     {
                         //only replace \ with \\ but not " with \" lol
                         //you just have to find the last "
-                        var fixedStr = field.Value.AsString()
+                        var fixedStr = field.GetValue().AsString()
                             .Replace("\\", "\\\\")
                             .Replace("\r", "\\r")
                             .Replace("\n", "\\n");
@@ -119,7 +119,7 @@ namespace AssetsAdvancedEditor.Assets
                     }
                     else if (1 <= (int)evt && (int)evt <= 12)
                     {
-                        value = $" = {field.Value.AsString()}";
+                        value = $" = {field.GetValue().AsString()}";
                     }
                 }
                 Writer.WriteLine($"{new string(' ', depth)}{align} {typeName} {fieldName}{value}");
@@ -171,8 +171,8 @@ namespace AssetsAdvancedEditor.Assets
                 typeName = template.valueType.ToString();
             }
 
-            var hasValue = field.Value != null;
-            var nodeName = hasValue ? field.Value.GetValueType().ToString() : "Object";
+            var hasValue = field.GetValue() != null;
+            var nodeName = hasValue ? field.GetValue().GetValueType().ToString() : "Object";
             var e = Doc.CreateElement(isArray ? "Array" : nodeName);
             e.SetAttribute("align", align);
 
@@ -188,7 +188,7 @@ namespace AssetsAdvancedEditor.Assets
                 var sizeAlign = sizeTemplate.align ? "True" : "False";
                 var sizeTypeName = sizeTemplate.type;
                 var sizeFieldName = sizeTemplate.name;
-                var size = field.Value.AsArray().size;
+                var size = field.GetValue().AsArray().size;
                 e.SetAttribute("size", size.ToString());
                 e.SetAttribute("sizeAlign", sizeAlign);
                 e.SetAttribute("sizeTypeName", sizeTypeName);
@@ -202,14 +202,14 @@ namespace AssetsAdvancedEditor.Assets
             else
             {
                 var value = "";
-                if (field.Value != null)
+                if (field.GetValue() != null)
                 {
-                    var evt = field.Value.GetValueType();
+                    var evt = field.GetValue().GetValueType();
                     if (evt == EnumValueTypes.String)
                     {
                         //only replace \ with \\ but not " with \" lol
                         //you just have to find the last "
-                        var fixedStr = field.Value.AsString()
+                        var fixedStr = field.GetValue().AsString()
                             .Replace("\\", "\\\\")
                             .Replace("\r", "\\r")
                             .Replace("\n", "\\n");
@@ -217,7 +217,7 @@ namespace AssetsAdvancedEditor.Assets
                     }
                     else if (1 <= (int)evt && (int)evt <= 12)
                     {
-                        value = field.Value.AsString();
+                        value = field.GetValue().AsString();
                     }
                     var text = Doc.CreateTextNode(value);
                     e.AppendChild(text);

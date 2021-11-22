@@ -250,25 +250,24 @@ namespace AssetsAdvancedEditor.Winforms
                 Filter = @"All types (*.*)|*.*|Assets file (*.assets)|*.assets"
             };
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            var i = 0;
             foreach (var file in ofd.FileNames)
             {
                 var fileName = Path.GetFileName(file);
                 var fileBytes = File.ReadAllBytes(fileName);
                 var isSerialized = !(file.EndsWith(".resS") || file.EndsWith(".resource"));
                 var replacer = AssetModifier.CreateBundleReplacer(fileName, isSerialized, fileBytes);
-                if (!cboxBundleContents.Items.Contains(fileName))
+                var index = cboxBundleContents.Items.IndexOf(fileName);
+                if (index != -1)
                 {
-                    cboxBundleContents.Items.Add(fileName + " *");
+                    var item = cboxBundleContents.Items[index] + " *";
+                    cboxBundleContents.Items.RemoveAt(index);
+                    cboxBundleContents.Items.Insert(index, item);
                 }
                 else
                 {
-                    var item = cboxBundleContents.Items[i] + " *";
-                    cboxBundleContents.Items.Remove(item);
-                    cboxBundleContents.Items.Insert(i, item);
+                    cboxBundleContents.Items.Add(fileName + " *");
                 }
                 ModifiedFiles[fileName] = replacer;
-                i++;
             }
             Modified = true;
         }
@@ -369,7 +368,7 @@ namespace AssetsAdvancedEditor.Winforms
                     //should always be somewhere on the disk
                     assetsManagerName = Path.Combine(BundleInst.path, fileName);
                 }
-                Am.LoadAssetsFile(assetsStream, assetsManagerName, false);
+                Am.LoadAssetsFile(assetsStream, assetsManagerName, true);
             }
 
             Modified = true;

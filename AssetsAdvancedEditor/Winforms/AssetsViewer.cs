@@ -340,7 +340,7 @@ namespace AssetsAdvancedEditor.Winforms
         {
             if (FromBundle)
             {
-                ModifiedFiles = WriteFilesInBundle();
+                WriteFilesInBundle();
                 Workspace.Modified = false;
                 ClearModified();
             }
@@ -396,20 +396,18 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        public Dictionary<BundleReplacer, MemoryStream> WriteFilesInBundle()
+        public void WriteFilesInBundle()
         {
-            var bunDict = new Dictionary<BundleReplacer, MemoryStream>();
+            ModifiedFiles.Clear();
             foreach (var (fileId, replacers) in Workspace.NewReplacers)
             {
                 var ms = new MemoryStream();
                 var writer = new AssetsFileWriter(ms);
                 var fileInst = Workspace.LoadedFiles[fileId];
 
-                fileInst.file.Write(writer, 0, replacers, 0);
-                var data = ms.ToArray();
-                bunDict.Add(AssetModifier.CreateBundleReplacer(fileInst.name, true, data), new MemoryStream(data));
+                fileInst.file.Write(writer, 0, replacers);
+                ModifiedFiles.Add(AssetModifier.CreateBundleReplacer(fileInst.name, true, ms.ToArray()), ms);
             }
-            return bunDict;
         }
 
         private void CloseFiles()
