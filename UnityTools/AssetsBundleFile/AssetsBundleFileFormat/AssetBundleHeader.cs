@@ -103,7 +103,7 @@ namespace UnityTools
                     reader.Align16();
                 }
             }
-            else
+            else if (Version >= 3)
             {
                 if (Version >= 4)
                 {
@@ -131,6 +131,10 @@ namespace UnityTools
                 }
                 //unknown2 = reader.ReadByte();
                 reader.Align();
+            }
+            else
+            {
+                throw new NotSupportedException("AssetBundleHeader.Read : Unknown file version!");
             }
         }
 
@@ -185,7 +189,7 @@ namespace UnityTools
             }
             else
             {
-                throw new Exception("AssetBundleHeader.Read : Unknown file version!");
+                throw new NotSupportedException("AssetBundleHeader.Write : Unknown file version!");
             }
         }
 

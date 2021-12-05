@@ -22,8 +22,8 @@ namespace UnityTools
             Reader = reader;
             Header = new AssetBundleHeader();
             Header.Read(Reader);
-
             Metadata = new AssetBundleMetadata();
+
             if (Header.GetCompressionType() != 0)
             {
                 if (allowCompressed)
@@ -32,14 +32,14 @@ namespace UnityTools
                 Close();
                 return false;
             }
-            Metadata.Read(Header.GetBundleInfoOffset(), reader, Header);
+            reader.Position = Header.GetBundleInfoOffset();
+            Metadata.Read(Header, reader);
             return true;
         }
 
         public bool Write(AssetsFileWriter writer, List<BundleReplacer> replacers, ClassDatabaseFile typeMeta = null)
         {
             Header.Write(writer);
-
             var newBundleInf6 = new AssetBundleMetadata
             {
                 Hash = new Hash128(new byte[16]),
@@ -135,7 +135,7 @@ namespace UnityTools
                     {
                         Offset = currentOffset,
                         DecompressedSize = replacer.GetSize(),
-                        Flags = (uint)(replacer.HasSerializedData() ? 0x04 : 0x00),
+                        Flags = 0x04,
                         Name = replacer.GetEntryName()
                     };
                     currentOffset += info.DecompressedSize;
@@ -148,7 +148,7 @@ namespace UnityTools
             //write the listings
             var bundleInfPos = writer.Position;
             newBundleInf6.DirectoryInfo = dirInfos.ToArray(); //this is only here to allocate enough space so it's fine if it's inaccurate
-            newBundleInf6.Write(writer, Header);
+            newBundleInf6.Write(Header, writer);
 
             var assetDataPos = writer.Position;
 
@@ -191,7 +191,7 @@ namespace UnityTools
             newBundleInf6.BlocksInfo[0].DecompressedSize = assetSize;
             newBundleInf6.BlocksInfo[0].CompressedSize = assetSize;
             newBundleInf6.DirectoryInfo = dirInfos.ToArray();
-            newBundleInf6.Write(writer, Header);
+            newBundleInf6.Write(Header, writer);
 
             var infoSize = (uint)(assetDataPos - bundleInfPos);
 
@@ -248,7 +248,7 @@ namespace UnityTools
                     {
                         Position = 0
                     };
-                    Metadata.Read(0, memReader, Header);
+                    Metadata.Read(Header, memReader);
                 }
                 var newBundleHeader6 = new AssetBundleHeader
                 {
@@ -297,7 +297,7 @@ namespace UnityTools
                 {
                     writer.Align16();
                 }
-                newBundleInf6.Write(writer, Header);
+                newBundleInf6.Write(Header, writer);
 
                 reader.Position = Header.GetFileDataOffset();
                 for (var i = 0; i < newBundleInf6.BlockCount; i++)
@@ -350,7 +350,7 @@ namespace UnityTools
                 Flags = 0x43
             };
 
-            var newBlockAndDirList = new AssetBundleMetadata
+            var newMetadata = new AssetBundleMetadata
             {
                 Hash = new Hash128(new byte[16]),
                 BlockCount = 0,
@@ -440,13 +440,13 @@ namespace UnityTools
                 }
             }
 
-            newBlockAndDirList.BlocksInfo = newBlocks.ToArray();
+            newMetadata.BlocksInfo = newBlocks.ToArray();
 
             byte[] bundleInfoBytes;
             using (var memStream = new MemoryStream())
             {
-                var afw = new AssetsFileWriter(memStream);
-                newBlockAndDirList.Write(afw, Header);
+                var memWriter = new AssetsFileWriter(memStream);
+                newMetadata.Write(Header, memWriter);
                 bundleInfoBytes = memStream.ToArray();
             }
 
@@ -459,8 +459,8 @@ namespace UnityTools
             byte[] bundleHeaderBytes;
             using (var memStream = new MemoryStream())
             {
-                var afw = new AssetsFileWriter(memStream);
-                newHeader.Write(afw);
+                var memWriter = new AssetsFileWriter(memStream);
+                newHeader.Write(memWriter);
                 bundleHeaderBytes = memStream.ToArray();
             }
 
@@ -530,7 +530,7 @@ namespace UnityTools
             if (Header != null)
             {
                 var entry = BundleHelper.GetDirInfo(this, index);
-                offset = Header.GetFileDataOffset() + entry.Offset;
+                offset = entry.GetAbsolutePos(Header);
                 length = entry.DecompressedSize;
             }
             else

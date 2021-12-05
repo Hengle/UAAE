@@ -150,11 +150,11 @@ namespace AssetsAdvancedEditor.Winforms
                                                        "This will break any reference to this/these.");
             if (choice != DialogResult.Yes) return;
 
-            foreach (ListViewItem listItem in assetList.SelectedItems)
+            foreach (int index in assetList.SelectedIndices)
             {
-                var item = Workspace.LoadedAssets[listItem.Index];
+                var item = Workspace.LoadedAssets[index];
                 Workspace.AddReplacer(ref item, AssetModifier.CreateAssetRemover(item));
-                assetList.Items.Remove(listItem);
+                assetList.Items.RemoveAt(index);
             }
         }
 
@@ -215,6 +215,7 @@ namespace AssetsAdvancedEditor.Winforms
 
         private void ClearModified()
         {
+            Workspace.Modified = false;
             for (var i = 0; i < assetList.Items.Count; i++)
             {
                 assetList.Items[i].SubItems[7].Text = "";
@@ -341,7 +342,6 @@ namespace AssetsAdvancedEditor.Winforms
             if (FromBundle)
             {
                 WriteFilesInBundle();
-                Workspace.Modified = false;
                 ClearModified();
             }
             else
@@ -353,7 +353,6 @@ namespace AssetsAdvancedEditor.Winforms
                     if (choice != DialogResult.Yes) return;
                 }
                 WriteFiles(overwrite);
-                Workspace.Modified = false;
                 ClearModified();
             }
         }
@@ -406,6 +405,7 @@ namespace AssetsAdvancedEditor.Winforms
                 var fileInst = Workspace.LoadedFiles[fileId];
 
                 fileInst.file.Write(writer, 0, replacers);
+                ms.Seek(0, SeekOrigin.Begin);
                 ModifiedFiles.Add(AssetModifier.CreateBundleReplacer(fileInst.name, true, ms.ToArray()), ms);
             }
         }

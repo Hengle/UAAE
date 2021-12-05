@@ -162,7 +162,7 @@ namespace UnityTools
                 {
                     Position = 0
                 };
-                bundle.Metadata.Read(0, memReader, bundle.Header);
+                bundle.Metadata.Read(bundle.Header, memReader);
             }
         }
     }

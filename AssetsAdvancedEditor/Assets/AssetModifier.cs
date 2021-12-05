@@ -16,7 +16,7 @@ namespace AssetsAdvancedEditor.Assets
 
         public static BundleReplacer CreateBundleReplacer(string name, bool isSerialized, byte[] data)
         {
-            return new BundleReplacerFromMemory(name, name, isSerialized, data, -1);
+            return new BundleReplacerFromMemory(name, name, isSerialized, data, data.Length);
         }
 
         public static BundleReplacer CreateBundleRemover(string name, bool isSerialized, int bundleListIndex = -1)

@@ -29,109 +29,112 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Menu));
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
+            this.MenuStrip = new System.Windows.Forms.MenuStrip();
             this.MenuFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadPackageFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuLoadPackageFile = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuClose = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuSave = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.compressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuCompress = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuModMaker = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuCreateStandaloneexeInstaller = new System.Windows.Forms.ToolStripMenuItem();
-            this.createPackageFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editTypeDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editTypePackageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuCreatePackageFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuEditTypeDatabase = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuEditTypePackage = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.lblFileName = new System.Windows.Forms.Label();
             this.cboxBundleContents = new System.Windows.Forms.ComboBox();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
-            this.btnInfo = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
-            this.menuStrip.SuspendLayout();
+            this.btnInfo = new System.Windows.Forms.Button();
+            this.MenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip
+            // MenuStrip
             // 
-            this.menuStrip.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuStrip.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.MenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuFile,
-            this.optionsToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
-            this.menuStrip.Size = new System.Drawing.Size(385, 24);
-            this.menuStrip.TabIndex = 0;
-            this.menuStrip.Text = "menuStrip";
+            this.MenuOptions,
+            this.MenuHelp});
+            this.MenuStrip.Location = new System.Drawing.Point(0, 0);
+            this.MenuStrip.Name = "MenuStrip";
+            this.MenuStrip.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
+            this.MenuStrip.Size = new System.Drawing.Size(385, 24);
+            this.MenuStrip.TabIndex = 0;
+            this.MenuStrip.Text = "MenuStrip";
             // 
             // MenuFile
             // 
             this.MenuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem,
-            this.loadPackageFileToolStripMenuItem,
+            this.MenuOpen,
+            this.MenuLoadPackageFile,
             this.MenuClose,
             this.MenuSave,
-            this.toolStripSeparator1,
-            this.compressToolStripMenuItem,
+            this.MenuSeparator1,
+            this.MenuCompress,
             this.MenuModMaker,
-            this.exitToolStripMenuItem});
+            this.MenuExit});
             this.MenuFile.Name = "MenuFile";
             this.MenuFile.Size = new System.Drawing.Size(37, 20);
             this.MenuFile.Text = "&File";
             // 
-            // openToolStripMenuItem
+            // MenuOpen
             // 
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.openToolStripMenuItem.Text = "&Open";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            this.MenuOpen.Name = "MenuOpen";
+            this.MenuOpen.Size = new System.Drawing.Size(180, 22);
+            this.MenuOpen.Text = "&Open";
+            this.MenuOpen.Click += new System.EventHandler(this.MenuOpen_Click);
             // 
-            // loadPackageFileToolStripMenuItem
+            // MenuLoadPackageFile
             // 
-            this.loadPackageFileToolStripMenuItem.Enabled = false;
-            this.loadPackageFileToolStripMenuItem.Name = "loadPackageFileToolStripMenuItem";
-            this.loadPackageFileToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.loadPackageFileToolStripMenuItem.Text = "&Load Package File";
+            this.MenuLoadPackageFile.Enabled = false;
+            this.MenuLoadPackageFile.Name = "MenuLoadPackageFile";
+            this.MenuLoadPackageFile.Size = new System.Drawing.Size(180, 22);
+            this.MenuLoadPackageFile.Text = "&Load Package File";
             // 
             // MenuClose
             // 
+            this.MenuClose.Enabled = false;
             this.MenuClose.Name = "MenuClose";
-            this.MenuClose.Size = new System.Drawing.Size(168, 22);
+            this.MenuClose.Size = new System.Drawing.Size(180, 22);
             this.MenuClose.Text = "&Close";
             this.MenuClose.Click += new System.EventHandler(this.MenuClose_Click);
             // 
             // MenuSave
             // 
+            this.MenuSave.Enabled = false;
             this.MenuSave.Name = "MenuSave";
-            this.MenuSave.Size = new System.Drawing.Size(168, 22);
+            this.MenuSave.Size = new System.Drawing.Size(180, 22);
             this.MenuSave.Text = "&Save";
             this.MenuSave.Click += new System.EventHandler(this.MenuSave_Click);
             // 
-            // toolStripSeparator1
+            // MenuSeparator1
             // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(165, 6);
+            this.MenuSeparator1.Name = "MenuSeparator1";
+            this.MenuSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
-            // compressToolStripMenuItem
+            // MenuCompress
             // 
-            this.compressToolStripMenuItem.Name = "compressToolStripMenuItem";
-            this.compressToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.compressToolStripMenuItem.Text = "&Compress";
-            this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
+            this.MenuCompress.Enabled = false;
+            this.MenuCompress.Name = "MenuCompress";
+            this.MenuCompress.Size = new System.Drawing.Size(180, 22);
+            this.MenuCompress.Text = "&Compress";
+            this.MenuCompress.Click += new System.EventHandler(this.MenuCompress_Click);
             // 
             // MenuModMaker
             // 
             this.MenuModMaker.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuCreateStandaloneexeInstaller,
-            this.createPackageFileToolStripMenuItem});
+            this.MenuCreatePackageFile});
             this.MenuModMaker.Enabled = false;
             this.MenuModMaker.Name = "MenuModMaker";
-            this.MenuModMaker.Size = new System.Drawing.Size(168, 22);
+            this.MenuModMaker.Size = new System.Drawing.Size(180, 22);
             this.MenuModMaker.Text = "Mod Maker";
             // 
             // MenuCreateStandaloneexeInstaller
@@ -140,56 +143,56 @@
             this.MenuCreateStandaloneexeInstaller.Size = new System.Drawing.Size(237, 22);
             this.MenuCreateStandaloneexeInstaller.Text = "Create standalone .exe installer";
             // 
-            // createPackageFileToolStripMenuItem
+            // MenuCreatePackageFile
             // 
-            this.createPackageFileToolStripMenuItem.Name = "createPackageFileToolStripMenuItem";
-            this.createPackageFileToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
-            this.createPackageFileToolStripMenuItem.Text = "Create package file";
+            this.MenuCreatePackageFile.Name = "MenuCreatePackageFile";
+            this.MenuCreatePackageFile.Size = new System.Drawing.Size(237, 22);
+            this.MenuCreatePackageFile.Text = "Create package file";
             // 
-            // exitToolStripMenuItem
+            // MenuExit
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.exitToolStripMenuItem.Text = "&Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.MenuExit.Name = "MenuExit";
+            this.MenuExit.Size = new System.Drawing.Size(180, 22);
+            this.MenuExit.Text = "&Exit";
+            this.MenuExit.Click += new System.EventHandler(this.MenuExit_Click);
             // 
-            // optionsToolStripMenuItem
+            // MenuOptions
             // 
-            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.editTypeDatabaseToolStripMenuItem,
-            this.editTypePackageToolStripMenuItem});
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "&Options";
+            this.MenuOptions.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuEditTypeDatabase,
+            this.MenuEditTypePackage});
+            this.MenuOptions.Name = "MenuOptions";
+            this.MenuOptions.Size = new System.Drawing.Size(61, 20);
+            this.MenuOptions.Text = "&Options";
             // 
-            // editTypeDatabaseToolStripMenuItem
+            // MenuEditTypeDatabase
             // 
-            this.editTypeDatabaseToolStripMenuItem.Enabled = false;
-            this.editTypeDatabaseToolStripMenuItem.Name = "editTypeDatabaseToolStripMenuItem";
-            this.editTypeDatabaseToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.editTypeDatabaseToolStripMenuItem.Text = "Edit Type &Database";
+            this.MenuEditTypeDatabase.Enabled = false;
+            this.MenuEditTypeDatabase.Name = "MenuEditTypeDatabase";
+            this.MenuEditTypeDatabase.Size = new System.Drawing.Size(180, 22);
+            this.MenuEditTypeDatabase.Text = "Edit Type &Database";
             // 
-            // editTypePackageToolStripMenuItem
+            // MenuEditTypePackage
             // 
-            this.editTypePackageToolStripMenuItem.Enabled = false;
-            this.editTypePackageToolStripMenuItem.Name = "editTypePackageToolStripMenuItem";
-            this.editTypePackageToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.editTypePackageToolStripMenuItem.Text = "Edit Type &Package";
+            this.MenuEditTypePackage.Enabled = false;
+            this.MenuEditTypePackage.Name = "MenuEditTypePackage";
+            this.MenuEditTypePackage.Size = new System.Drawing.Size(180, 22);
+            this.MenuEditTypePackage.Text = "Edit Type &Package";
             // 
-            // helpToolStripMenuItem
+            // MenuHelp
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "&Help";
+            this.MenuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuAbout});
+            this.MenuHelp.Name = "MenuHelp";
+            this.MenuHelp.Size = new System.Drawing.Size(44, 20);
+            this.MenuHelp.Text = "&Help";
             // 
-            // aboutToolStripMenuItem
+            // MenuAbout
             // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
-            this.aboutToolStripMenuItem.Text = "&About...";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            this.MenuAbout.Name = "MenuAbout";
+            this.MenuAbout.Size = new System.Drawing.Size(116, 22);
+            this.MenuAbout.Text = "&About...";
+            this.MenuAbout.Click += new System.EventHandler(this.MenuAbout_Click);
             // 
             // lblFileName
             // 
@@ -248,6 +251,21 @@
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
+            // btnRemove
+            // 
+            this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRemove.Enabled = false;
+            this.btnRemove.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnRemove.Location = new System.Drawing.Point(195, 82);
+            this.btnRemove.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(87, 33);
+            this.btnRemove.TabIndex = 6;
+            this.btnRemove.Text = "Remove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+            // 
             // btnInfo
             // 
             this.btnInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -263,21 +281,6 @@
             this.btnInfo.UseVisualStyleBackColor = true;
             this.btnInfo.Click += new System.EventHandler(this.btnInfo_Click);
             // 
-            // btnRemove
-            // 
-            this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRemove.Enabled = false;
-            this.btnRemove.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnRemove.Location = new System.Drawing.Point(195, 82);
-            this.btnRemove.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnRemove.Name = "btnRemove";
-            this.btnRemove.Size = new System.Drawing.Size(87, 33);
-            this.btnRemove.TabIndex = 6;
-            this.btnRemove.Text = "Remove";
-            this.btnRemove.UseVisualStyleBackColor = true;
-            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
-            // 
             // Menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -290,18 +293,18 @@
             this.Controls.Add(this.btnExport);
             this.Controls.Add(this.cboxBundleContents);
             this.Controls.Add(this.lblFileName);
-            this.Controls.Add(this.menuStrip);
+            this.Controls.Add(this.MenuStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStrip;
+            this.MainMenuStrip = this.MenuStrip;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.Name = "Menu";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Unity Assets Advanced Editor";
             this.Load += new System.EventHandler(this.Menu_Load);
-            this.menuStrip.ResumeLayout(false);
-            this.menuStrip.PerformLayout();
+            this.MenuStrip.ResumeLayout(false);
+            this.MenuStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -309,29 +312,29 @@
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip menuStrip;
+        private System.Windows.Forms.MenuStrip MenuStrip;
         private System.Windows.Forms.ToolStripMenuItem MenuFile;
-        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadPackageFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuOpen;
+        private System.Windows.Forms.ToolStripMenuItem MenuLoadPackageFile;
         private System.Windows.Forms.ToolStripMenuItem MenuClose;
         private System.Windows.Forms.ToolStripMenuItem MenuSave;
-        private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator MenuSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem MenuCompress;
         private System.Windows.Forms.ToolStripMenuItem MenuModMaker;
         private System.Windows.Forms.ToolStripMenuItem MenuCreateStandaloneexeInstaller;
-        private System.Windows.Forms.ToolStripMenuItem createPackageFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem editTypeDatabaseToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem editTypePackageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuCreatePackageFile;
+        private System.Windows.Forms.ToolStripMenuItem MenuExit;
+        private System.Windows.Forms.ToolStripMenuItem MenuOptions;
+        private System.Windows.Forms.ToolStripMenuItem MenuEditTypeDatabase;
+        private System.Windows.Forms.ToolStripMenuItem MenuEditTypePackage;
+        private System.Windows.Forms.ToolStripMenuItem MenuHelp;
+        private System.Windows.Forms.ToolStripMenuItem MenuAbout;
         private System.Windows.Forms.Label lblFileName;
         private System.Windows.Forms.ComboBox cboxBundleContents;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Button btnImport;
-        private System.Windows.Forms.Button btnInfo;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.Button btnRemove;
+        private System.Windows.Forms.Button btnInfo;
     }
 }
 

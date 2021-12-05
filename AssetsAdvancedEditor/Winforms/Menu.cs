@@ -52,7 +52,7 @@ namespace AssetsAdvancedEditor.Winforms
             Environment.Exit(1);
         }
 
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuOpen_Click(object sender, EventArgs e)
         {
             if (Modified) AskSaveChanges();
             var ofd = new OpenFileDialog
@@ -108,12 +108,12 @@ namespace AssetsAdvancedEditor.Winforms
             SaveBundle(sfd.FileName);
         }
 
-        private void compressToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuCompress_Click(object sender, EventArgs e)
         {
             new BundleCompression(BundleInst).ShowDialog();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuExit_Click(object sender, EventArgs e)
         {
             AskSaveChanges();
             if (!Modified)
@@ -131,6 +131,10 @@ namespace AssetsAdvancedEditor.Winforms
             btnImport.Enabled = true;
             btnRemove.Enabled = true;
             btnInfo.Enabled = true;
+            MenuClose.Enabled = true;
+            MenuSave.Enabled = true;
+            MenuCompress.Enabled = true;
+            MenuOpen.Enabled = false;
 
             var infos = BundleInst.file.Metadata.DirectoryInfo;
             cboxBundleContents.Items.Clear();
@@ -145,7 +149,13 @@ namespace AssetsAdvancedEditor.Winforms
         private void SaveBundle(string path)
         {
             if (BundleInst == null) return;
-            using (var fs = File.OpenWrite(path))
+
+            /*
+              Warning: due to a write bug, this option is temporarily suspended until the next update.
+              I apologize for the inconvenience.
+            */
+
+            /*using (var fs = File.OpenWrite(path))
             using (var writer = new AssetsFileWriter(fs))
             {
                 BundleInst.file.Write(writer, ModifiedFiles.Values.ToList());
@@ -154,10 +164,19 @@ namespace AssetsAdvancedEditor.Winforms
 
             for (var i = 0; i < cboxBundleContents.Items.Count; i++)
             {
-                var item = cboxBundleContents.Items[i].ToString().Replace(" *", "");
-                cboxBundleContents.Items.RemoveAt(i);
-                cboxBundleContents.Items.Insert(i, item);
-            }
+                var item = cboxBundleContents.Items[i].ToString();
+                if (item.Contains("*"))
+                {
+                    item = item.Replace(" *", "");
+                    var selIndex = cboxBundleContents.SelectedIndex;
+                    cboxBundleContents.Items.RemoveAt(i);
+                    cboxBundleContents.Items.Insert(i, item);
+                    if (selIndex == i)
+                    {
+                        cboxBundleContents.SelectedIndex = selIndex;
+                    }
+                }
+            }*/
         }
 
         private void CloseAllFiles()
@@ -174,6 +193,10 @@ namespace AssetsAdvancedEditor.Winforms
             btnImport.Enabled = false;
             btnRemove.Enabled = false;
             btnInfo.Enabled = false;
+            MenuClose.Enabled = false;
+            MenuSave.Enabled = false;
+            MenuCompress.Enabled = false;
+            MenuOpen.Enabled = true;
 
             lblFileName.Text = @"No file opened.";
         }
@@ -218,7 +241,7 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MenuAbout_Click(object sender, EventArgs e)
         {
             new About().ShowDialog();
         }
@@ -228,7 +251,7 @@ namespace AssetsAdvancedEditor.Winforms
             if (BundleInst == null || cboxBundleContents.SelectedItem == null) return;
             var index = cboxBundleContents.SelectedIndex;
 
-            var bunAssetName = BundleInst.file.Metadata.DirectoryInfo[index].Name;
+            var bunAssetName = BundleHelper.GetDirInfo(BundleInst.file, index).Name;
             var assetData = BundleHelper.LoadAssetDataFromBundle(BundleInst.file, index);
 
             var sfd = new SaveFileDialog
@@ -272,6 +295,26 @@ namespace AssetsAdvancedEditor.Winforms
             Modified = true;
         }
 
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            var index = cboxBundleContents.SelectedIndex;
+            var info = BundleHelper.GetDirInfo(BundleInst.file, index);
+            var name = info?.Name ?? cboxBundleContents.SelectedText.Replace(" *", "");
+            if (ModifiedFiles.ContainsKey(name))
+            {
+                ModifiedFiles.Remove(name);
+            }
+            else
+            {
+                var isSerialized = !(name.EndsWith(".resS") || name.EndsWith(".resource"));
+                ModifiedFiles.Add(name, AssetModifier.CreateBundleRemover(name, isSerialized));
+            }
+
+            cboxBundleContents.Items.RemoveAt(index);
+            if (cboxBundleContents.Items.Count != 0)
+                cboxBundleContents.SelectedIndex = 0;
+        }
+
         private void btnInfo_Click(object sender, EventArgs e)
         {
             if (BundleInst == null || cboxBundleContents.SelectedItem == null) return;
@@ -309,7 +352,7 @@ namespace AssetsAdvancedEditor.Winforms
                     return;
 
                 var info = new AssetsViewer(Am, fileInst, true);
-                info.Closing += AssetsViewerClosing;
+                info.Closing += AssetsViewer_Closing;
                 info.Show();
             }
             else
@@ -318,27 +361,7 @@ namespace AssetsAdvancedEditor.Winforms
             }
         }
 
-        private void btnRemove_Click(object sender, EventArgs e)
-        {
-            var selectedItem = cboxBundleContents.SelectedItem;
-            if (selectedItem == null) return;
-            var name = (string)selectedItem;
-            var origName = name.Replace(" *", "");
-            var isSerialized = !(origName.EndsWith(".resS") || origName.EndsWith(".resource"));
-            if (ModifiedFiles.ContainsKey(origName))
-            {
-                ModifiedFiles.Remove(origName);
-            }
-            else
-            {
-                ModifiedFiles.Add(origName, AssetModifier.CreateBundleRemover(origName, isSerialized));
-            }
-            cboxBundleContents.Items.Remove(name);
-            if (cboxBundleContents.Items.Count != 0)
-                cboxBundleContents.SelectedIndex = 0;
-        }
-
-        private void AssetsViewerClosing(object sender, CancelEventArgs e)
+        private void AssetsViewer_Closing(object sender, CancelEventArgs e)
         {
             if (sender == null) return;
 

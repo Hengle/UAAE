@@ -108,6 +108,7 @@ namespace Plugins.Texture.Options
                     baseField.Get("m_MipCount").GetValue().Set(1);
 
                 baseField.Get("m_TextureFormat").GetValue().Set((int)format);
+                baseField.Get("m_CompleteImageSize").GetValue().Set(encodedBytes.Length);
 
                 baseField.Get("m_Width").GetValue().Set(size.Width);
                 baseField.Get("m_Height").GetValue().Set(size.Height);
