@@ -4,20 +4,20 @@ A .net library for reading and modifying unity assets and bundles based off of t
 
 ## Table of contents
 
-* [What is this](https://github.com/Igor55x/UAAE#what-is-this)
-* [Getting started](https://github.com/Igor55x/UAAE#getting-started)
-* [Read an assets file](https://github.com/Igor55x/UAAE#read-an-assets-file)
-* [Write an assets file](https://github.com/Igor55x/UAAE#write-an-assets-file)
-* [Value builder (add assets/fields)](https://github.com/Igor55x/UAAE#value-builder-add-assetsfields)
-* [Read a bundle file](https://github.com/Igor55x/UAAE#read-a-bundle-file)
-* [Write a bundle file](https://github.com/Igor55x/UAAE#write-a-bundle-file) **(suspended until next update)**
-* [Compress a bundle file](https://github.com/Igor55x/UAAE#compress-a-bundle-file)
+* [What is this](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#what-is-this)
+* [Getting started](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#getting-started)
+* [Read an assets file](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#read-an-assets-file)
+* [Write an assets file](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#write-an-assets-file)
+* [Value builder (add assets/fields)](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#value-builder-add-assetsfields)
+* [Read a bundle file](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#read-a-bundle-file)
+* [Write a bundle file](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#write-a-bundle-file) **(suspended until next update)**
+* [Compress a bundle file](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#compress-a-bundle-file)
 * Bundle creator (create assets/bundle files) **(todo)**
-* [Reading a MonoBehaviour](https://github.com/Igor55x/UAAE#reading-a-monobehaviour)
-* [Reading asset paths from resources.assets and bundles](https://github.com/Igor55x/UAAE#reading-asset-paths-from-resourcesassets-and-bundles)
-* [Exporting a Texture2D](https://github.com/Igor55x/UAAE#exporting-a-texture2d)
-* [Class database](https://github.com/Igor55x/UAAE#class-database)
-* [Noooo it's not working!!](https://github.com/Igor55x/UAAE#noooo-its-not-working)
+* [Reading a MonoBehaviour](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#reading-a-monobehaviour)
+* [Reading asset paths from resources.assets and bundles](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#reading-asset-paths-from-resourcesassets-and-bundles)
+* [Exporting a Texture2D](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#exporting-a-texture2d)
+* [Class database](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#class-database)
+* [Noooo it's not working!!](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md#noooo-its-not-working)
 
 ### What is this
 
