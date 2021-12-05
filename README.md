@@ -93,7 +93,7 @@ This list may be incomplete!
 * Build the solution. Here's a [guide](https://docs.microsoft.com/en-us/visualstudio/ide/walkthrough-building-an-application?view=vs-2019) on how to do it
 
 ## Documentation
-**[Here](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION) you can find out how you can use the UnityTools library.**
+**[Here](https://github.com/Igor55x/UAAE/blob/master/DOCUMENTATION.md) you can find out how you can use the UnityTools library.**
 
 ## Libraries
 * UnityTools has borrowed code from nesrak1's [AssetsTools.NET](https://github.com/nesrak1/AssetsTools.NET) project licensed under the [MIT license](https://github.com/nesrak1/AssetsTools.NET/blob/master/LICENSE)
